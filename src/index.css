@@ -1,0 +1,361 @@
+/* =========================================================================
+   GLOBAL STYLESHEET
+   =========================================================================
+   Everything on the site is styled from this one file. It's organized in
+   sections (search for the === headers) so it's easy to find what you
+   want to tweak:
+
+     1. Variables (colors, spacing) — change these to retheme the whole site
+     2. Reset & base typography
+     3. Site layout (header, nav, footer)
+     4. Homepage (category sections, tool cards)
+     5. Tool page (ToolLayout + shared form controls)
+     6. Base64 tool specific bits
+     7. Accessibility (focus states)
+     8. Responsive / mobile
+   ========================================================================= */
+
+/* === 1. Variables ======================================================= */
+
+:root {
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-border: #e2e2e7;
+  --color-text: #2a2a30;
+  --color-text-muted: #6b6b75;
+  --color-accent: #6d28d9;
+  --color-accent-hover: #5b21b6;
+  --color-accent-contrast: #ffffff;
+  --color-danger: #c1121f;
+
+  --radius: 10px;
+  --shadow-card: 0 1px 3px rgba(20, 20, 30, 0.08), 0 1px 2px rgba(20, 20, 30, 0.06);
+  --shadow-card-hover: 0 6px 16px rgba(20, 20, 30, 0.12);
+
+  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #16161a;
+    --color-surface: #1f1f24;
+    --color-border: #33333a;
+    --color-text: #f0f0f2;
+    --color-text-muted: #a3a3ad;
+    --color-accent: #a78bfa;
+    --color-accent-hover: #c4b5fd;
+    --color-accent-contrast: #1a1a1e;
+    --color-danger: #ff6b6b;
+  }
+}
+
+/* === 2. Reset & base typography ========================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 16px/1.5 var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+button {
+  font: inherit;
+}
+
+/* === 3. Site layout ====================================================== */
+
+.site {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.site-header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.site-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.category-nav {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.category-nav a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.category-nav a:hover {
+  color: var(--color-accent);
+}
+
+.site-main {
+  flex: 1;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  padding: 20px 24px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* === 4. Homepage ========================================================= */
+
+.home-intro {
+  color: var(--color-text-muted);
+  max-width: 60ch;
+  margin-bottom: 40px;
+  font-size: 1.05rem;
+}
+
+.category-section {
+  margin-bottom: 40px;
+  scroll-margin-top: 90px; /* keeps the heading clear of the sticky header when jumped to */
+}
+
+.category-section h2 {
+  font-size: 1.4rem;
+  margin-bottom: 14px;
+}
+
+.category-empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  text-decoration: none;
+  color: var(--color-text);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.tool-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.tool-card-icon {
+  font-size: 1.6rem;
+}
+
+.tool-card-name {
+  font-weight: 600;
+}
+
+.tool-card-description {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* === 5. Tool page ========================================================= */
+
+.tool-header {
+  margin-bottom: 24px;
+}
+
+.tool-header h1 {
+  font-size: 1.75rem;
+  margin-bottom: 8px;
+}
+
+.tool-description {
+  color: var(--color-text-muted);
+}
+
+.tool-content {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+/* Shared form control styling — reuse these classes in future tools. */
+
+.field {
+  margin-bottom: 20px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.field-header label {
+  margin-bottom: 0;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.field-error {
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  margin-top: 8px;
+}
+
+button.copy-button,
+button.swap-button,
+button.mode-button {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.copy-button:hover:not(:disabled),
+button.swap-button:hover,
+button.mode-button:hover {
+  border-color: var(--color-accent);
+}
+
+/* === 6. Base64 tool specific bits ======================================== */
+
+.mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.mode-button.active {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.swap-button {
+  margin-left: auto;
+}
+
+/* === 7. Accessibility: visible keyboard focus ============================ */
+
+a:focus-visible,
+button:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* === 8. Responsive / mobile ============================================== */
+
+@media (max-width: 600px) {
+  .site-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .category-nav {
+    margin-left: 0;
+    gap: 12px;
+  }
+
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-toggle {
+    flex-direction: column;
+  }
+
+  .swap-button {
+    margin-left: 0;
+  }
+}
