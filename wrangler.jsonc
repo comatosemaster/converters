@@ -1,0 +1,14 @@
+{
+  // Config for Cloudflare's static-asset hosting (what "Workers & Pages" uses
+  // under the hood now). This replaces the older public/_redirects approach,
+  // which triggers a false-positive "infinite loop" error on this platform.
+  "name": "converters",
+  "compatibility_date": "2026-08-05",
+  "assets": {
+    "directory": "./dist/",
+    // Serves index.html for any URL that isn't a real file in dist/ — this
+    // is what makes routes like /tool/base64-encoder-decoder work on refresh
+    // or direct link, since React Router handles them client-side.
+    "not_found_handling": "single-page-application"
+  }
+}

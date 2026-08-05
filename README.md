@@ -115,5 +115,8 @@ with `=== N. Section name ===` comment headers so it's easy to find your way aro
 
 - Build command: `npm run build`
 - Build output directory: `dist`
-- The `public/_redirects` file is already set up so client-side routes (like
-  `/tool/base64-encoder-decoder`) work correctly on a hard refresh or direct link.
+- `wrangler.jsonc` at the project root already configures SPA fallback (`not_found_handling:
+  "single-page-application"`), so client-side routes (like `/tool/base64-encoder-decoder`) work
+  correctly on a hard refresh or direct link. (An older approach used a `public/_redirects`
+  file, but Cloudflare's newer asset-hosting pipeline flags that pattern as a false-positive
+  "infinite loop" — `wrangler.jsonc` is the current recommended way.)
