@@ -11,7 +11,7 @@
      4. Homepage (category sections, tool cards)
      5. Tool page (ToolLayout + shared form controls)
      6. Toggle-button pattern (used by Base64 direction + Image format pickers)
-     7. Image tools (converter, compressor, resizer/cropper) shared bits
+     7. Image tools (converter, compressor, resizer/cropper, favicon) shared bits
      8. Unsaved-changes confirmation modal
      9. Accessibility (focus states)
     10. Responsive / mobile
@@ -353,7 +353,7 @@ button.mode-button:hover {
   margin-left: auto;
 }
 
-/* === 7. Image tools (converter, compressor, resizer/cropper) shared bits == */
+/* === 7. Image tools (converter, compressor, resizer/cropper, favicon) shared bits == */
 
 .visually-hidden {
   position: absolute;
@@ -682,6 +682,61 @@ input[type='number'] {
 .download-button:hover {
   background: var(--color-accent-hover);
   border-color: var(--color-accent-hover);
+}
+
+.favicon-preview-row {
+  display: flex;
+  gap: 24px;
+  margin: 20px 0;
+}
+
+.favicon-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.favicon-preview-swatch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  /* Same checkerboard trick as the other image tools, so transparent
+     favicons don't look like they're just missing. */
+  background-image: linear-gradient(45deg, var(--color-bg) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-bg) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-bg) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-bg) 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+}
+
+.favicon-preview-swatch img {
+  /* Shows the actual pixels at a legible size instead of a blurry
+     browser upscale — these previews are only 16px/32px source images. */
+  image-rendering: pixelated;
+}
+
+.favicon-preview-16 {
+  width: 64px;
+  height: 64px;
+}
+
+.favicon-preview-16 img {
+  width: 32px;
+  height: 32px;
+}
+
+.favicon-preview-32 {
+  width: 64px;
+  height: 64px;
+}
+
+.favicon-preview-32 img {
+  width: 64px;
+  height: 64px;
 }
 
 /* === 8. Unsaved-changes confirmation modal ================================ */

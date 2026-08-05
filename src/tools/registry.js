@@ -14,6 +14,7 @@ import ImageConverter from './image-converter/ImageConverter.jsx';
 import ImageCompressor from './image-compressor/ImageCompressor.jsx';
 import ImageResizer from './image-resizer/ImageResizer.jsx';
 import HeicToJpg from './heic-to-jpg/HeicToJpg.jsx';
+import FaviconGenerator from './favicon-generator/FaviconGenerator.jsx';
 
 // The five fixed categories every tool must belong to. `id` is used in
 // URLs and as a React key, `name` is what gets displayed on screen.
@@ -71,6 +72,14 @@ export const tools = [
     category: 'graphics-media',
     icon: '📱',
     component: HeicToJpg,
+  },
+  {
+    id: 'favicon-generator',
+    name: 'Favicon Generator',
+    description: 'Turn any image into a complete favicon package in your browser. Files never leave your device.',
+    category: 'graphics-media',
+    icon: '🌐',
+    component: FaviconGenerator,
   },
 ];
 
