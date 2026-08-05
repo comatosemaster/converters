@@ -18,7 +18,7 @@ export default function Layout() {
           </Link>
           <nav className="category-nav" aria-label="Tool categories">
             {CATEGORIES.map((category) => (
-              <Link key={category.id} to={`/#${category.id}`}>
+              <Link key={category.id} to={`/category/${category.id}`}>
                 {category.name}
               </Link>
             ))}

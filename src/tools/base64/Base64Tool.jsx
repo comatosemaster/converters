@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 
 // --- Encode/decode helpers -------------------------------------------------
 //
@@ -35,6 +37,9 @@ export default function Base64Tool() {
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  // Remembers the exact input text at the moment it was last copied, so we
+  // can tell "already copied this" apart from "changed since copying".
+  const [savedInput, setSavedInput] = useState(null);
 
   // Compute the output fresh every render — simple and always in sync.
   let output = '';
@@ -62,11 +67,20 @@ export default function Base64Tool() {
     if (!output) return;
     await navigator.clipboard.writeText(output);
     setCopied(true);
+    setSavedInput(input); // this input's result is now safely copied out
     setTimeout(() => setCopied(false), 1500);
   }
 
+  // "Unsaved work" here means: there's text in the box, and it's not the
+  // exact text whose result was last copied. Warn on the former, not the
+  // latter — once you've copied the result, closing the tab is fine.
+  const hasUnsavedWork = input.length > 0 && input !== savedInput;
+  useUnsavedChangesWarning(hasUnsavedWork);
+
   return (
     <div className="base64-tool">
+      <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
+
       <div className="mode-toggle" role="radiogroup" aria-label="Direction">
         <button
           type="button"
