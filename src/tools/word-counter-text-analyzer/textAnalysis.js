@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// TEXT ANALYSIS LOGIC — no React, no DOM (aside from the tiny File-reading
+// TEXT ANALYSIS LOGIC - no React, no DOM (aside from the tiny File-reading
 // helper). Kept separate from WordCounterTextAnalyzer.jsx so the analysis
 // itself can be read (or reused) independently of the UI.
 // -----------------------------------------------------------------------
@@ -39,7 +39,7 @@ export function calculateStatistics(text) {
   const wordList = getWords(normalized);
 
   // Sentence splitting is a heuristic (it doesn't know "Mr." isn't a
-  // sentence end) — good enough for an estimate, not true NLP.
+  // sentence end) - good enough for an estimate, not true NLP.
   const sentenceList = normalized
     .split(/[.!?]+(?:\s|$)/)
     .map((sentence) => sentence.trim())
@@ -112,7 +112,7 @@ export function calculateWordStats(wordList) {
 // --- Character breakdown -----------------------------------------------------------
 
 // The four named buckets are counted directly by Unicode category; "special"
-// is whatever's left over (emoji, symbols, control characters, ...) — a
+// is whatever's left over (emoji, symbols, control characters, ...) - a
 // residual bucket rather than its own regex, so the parts always add up to
 // the whole instead of risking double-counting or gaps.
 export function calculateCharacterBreakdown(text) {
@@ -171,7 +171,7 @@ export function searchOccurrences(text, query, { matchCase = false, wholeWord = 
 // --- Case conversion -----------------------------------------------------------------
 //
 // Every mode below transforms only the letters themselves and leaves all
-// original whitespace/punctuation exactly where it was — none of these
+// original whitespace/punctuation exactly where it was - none of these
 // split the text into words and rejoin it, which would otherwise silently
 // collapse things like double spaces or blank lines.
 
@@ -229,7 +229,7 @@ export function cleanText(text, operation) {
 // --- Readability ------------------------------------------------------------------------
 
 // A standard simplified syllable-count heuristic (count vowel groups, drop
-// a trailing silent "e") — not true phonetic analysis, but the same
+// a trailing silent "e") - not true phonetic analysis, but the same
 // approach virtually every readability tool online uses. English-only, in
 // keeping with the Flesch formulas themselves being English-specific.
 function countSyllables(word) {
@@ -276,7 +276,7 @@ export function calculateReadability(wordList, sentenceCount) {
 
 // --- File loading ------------------------------------------------------------------------
 
-// A generous ceiling for uploaded .txt files — large enough for any
+// A generous ceiling for uploaded .txt files - large enough for any
 // realistic document, small enough that analyzing it on every keystroke
 // (this tool re-analyzes live, with no debounce) stays responsive.
 export const MAX_FILE_SIZE = 20 * 1024 * 1024;

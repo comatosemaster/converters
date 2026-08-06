@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-// A cap on how deep the tree will actually render — protects against a
+// A cap on how deep the tree will actually render - protects against a
 // pathologically deep JSON document blowing the call stack or rendering
 // millions of nested elements. Matches the cap used for stats in
 // jsonUtils.js.
@@ -18,7 +18,7 @@ function entriesOf(kind, value) {
 
 // Renders like real, syntax-highlighted JSON (quoted keys, colored
 // brackets, trailing commas between siblings) rather than a plain
-// "Object(3)" label — that's what makes it read as colorful at a glance,
+// "Object(3)" label - that's what makes it read as colorful at a glance,
 // not just on individual leaf values once you dig in.
 function JsonTreeNode({ label, value, depth, path, expandedPaths, onToggle, isLast }) {
   const description = describeNode(value);

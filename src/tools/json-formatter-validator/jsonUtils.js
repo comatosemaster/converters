@@ -1,10 +1,10 @@
 // -----------------------------------------------------------------------
-// JSON LOGIC — no React, no DOM (aside from the tiny File-reading helper).
+// JSON LOGIC - no React, no DOM (aside from the tiny File-reading helper).
 // Kept separate from JsonFormatter.jsx so parsing/formatting/stats logic
 // can be read (or reused) independently of the UI.
 // -----------------------------------------------------------------------
 
-// A generous ceiling for uploaded .json files — large enough for any
+// A generous ceiling for uploaded .json files - large enough for any
 // realistic config/data file, small enough that parsing it in the main
 // thread won't hang the page.
 export const MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -50,7 +50,7 @@ function lineColumnToPosition(text, line, column) {
 }
 
 // Browsers word their JSON.parse error messages differently (and some give
-// a character position, others a line/column) — this pulls whichever
+// a character position, others a line/column) - this pulls whichever
 // location info is available out of the message and fills in the rest.
 function extractErrorLocation(message, text) {
   const lineColumnMatch = message.match(/line (\d+) column (\d+)/i);
@@ -67,7 +67,7 @@ function extractErrorLocation(message, text) {
   }
 
   // No location in the message at all (e.g. "Unexpected end of JSON
-  // input") — that error means the JSON was cut off, so point at the end.
+  // input") - that error means the JSON was cut off, so point at the end.
   const position = text.length;
   return { position, ...positionToLineColumn(text, position) };
 }
@@ -86,7 +86,7 @@ export function validateJson(text) {
 // --- Formatting ---------------------------------------------------------------
 
 // `indent` is either a number of spaces (2, 4) or a literal string like
-// '\t' for tabs — both are valid third arguments to JSON.stringify.
+// '\t' for tabs - both are valid third arguments to JSON.stringify.
 export function formatJson(value, indent) {
   return JSON.stringify(value, null, indent);
 }
@@ -98,7 +98,7 @@ export function minifyJson(value) {
 // --- Duplicate key detection ---------------------------------------------------
 //
 // JSON.parse silently keeps only the LAST value for a repeated key, so its
-// result can't tell us a duplicate ever existed — detecting it means
+// result can't tell us a duplicate ever existed - detecting it means
 // scanning the raw text ourselves. This is a small hand-written scanner
 // (not a full parser): it tracks, for each currently-open `{ ... }`, which
 // keys have been seen, using a stack so nested objects each get their own
@@ -158,7 +158,7 @@ export function findDuplicateKeys(text) {
 
 // --- Statistics -----------------------------------------------------------------
 
-// A depth this deep is already pathological — capping it means a
+// A depth this deep is already pathological - capping it means a
 // maliciously/accidentally deeply-nested file can't crash the tab by
 // blowing the call stack while we count it.
 const MAX_STATS_DEPTH = 500;
@@ -212,7 +212,7 @@ export function calculateJsonStats(text, value) {
 
 // --- Explaining what the "Fix JSON" button changed ------------------------------
 //
-// The repair library (jsonrepair) just returns a corrected string — it
+// The repair library (jsonrepair) just returns a corrected string - it
 // doesn't report what it did. Rather than diffing the two strings
 // character-by-character (which wouldn't map cleanly onto "here's what was
 // wrong" for a human anyway), we re-examine the ORIGINAL broken text for a
@@ -238,7 +238,7 @@ export function describeFixes(original, repaired) {
   }
 
   if (/\/\/|\/\*/.test(original)) {
-    notes.push('Removed comments — JSON has no comment syntax.');
+    notes.push('Removed comments - JSON has no comment syntax.');
   }
 
   const bracketsChanged = ['{', '}', '[', ']'].some(

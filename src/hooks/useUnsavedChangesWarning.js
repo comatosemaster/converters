@@ -13,16 +13,16 @@ import { useEffect } from 'react';
 // back to `false` once that's saved (e.g. they've downloaded the result)
 // or cleared (e.g. the input is empty again).
 //
-// Note: modern browsers do NOT show whatever text you put in the dialog —
+// Note: modern browsers do NOT show whatever text you put in the dialog -
 // this is intentional on their part, so a malicious site can't trick
 // people with a fake custom message. Every browser shows its own generic
 // wording ("Leave site? Changes you made may not be saved.") no matter
 // what we do here. Setting event.returnValue is just the old-fashioned
-// signal that means "yes, please show that dialog" — most browsers still
+// signal that means "yes, please show that dialog" - most browsers still
 // require it even though they ignore its actual value.
 export function useUnsavedChangesWarning(hasUnsavedChanges) {
   useEffect(() => {
-    // Nothing worth protecting — don't attach anything at all, so a
+    // Nothing worth protecting - don't attach anything at all, so a
     // pristine, untouched tool never shows this warning.
     if (!hasUnsavedChanges) return;
 

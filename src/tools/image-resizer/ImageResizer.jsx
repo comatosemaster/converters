@@ -10,7 +10,7 @@ import { formatBytes } from '../../utils/formatBytes.js';
 // --- Helpers -----------------------------------------------------------------
 
 // Maps an actual output mime type (what the browser really produced) to a
-// file extension for the download name — keyed by the real blob type,
+// file extension for the download name - keyed by the real blob type,
 // since unsupported formats silently fall back to PNG.
 const EXTENSION_BY_MIME = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
 
@@ -22,7 +22,7 @@ function buildDownloadName(originalName, mime) {
 
 // The crop box is stored as FRACTIONS of the image (0 to 1 on each axis),
 // not pixels. That's what lets the same box work whether the preview is
-// shown at 300px or 800px wide — we only convert to real pixels right
+// shown at 300px or 800px wide - we only convert to real pixels right
 // before drawing the final crop.
 
 const ASPECT_PRESETS = { free: null, '1:1': 1, '4:3': 4 / 3, '16:9': 16 / 9 };
@@ -42,11 +42,11 @@ function clampBox({ x, y, width, height }) {
 // pixel aspect ratio like 4/3. `imageAspect` (naturalWidth / naturalHeight)
 // is needed because a fraction-based square isn't a pixel-based square
 // unless the source image itself happens to be square.
-// Picking an aspect preset starts over from the FULL image — the largest
-// centered box of that ratio that still fits — rather than reshaping
+// Picking an aspect preset starts over from the FULL image - the largest
+// centered box of that ratio that still fits - rather than reshaping
 // whatever partial selection was already there.
 function maxBoxForAspect(aspectRatio, imageAspect) {
-  if (!aspectRatio) return { x: 0, y: 0, width: 1, height: 1 }; // "Free" — select everything
+  if (!aspectRatio) return { x: 0, y: 0, width: 1, height: 1 }; // "Free" - select everything
 
   // Whichever axis (width or height) is the tighter fit stays at 100%;
   // the other shrinks to match the target ratio.
@@ -64,7 +64,7 @@ function maxBoxForAspect(aspectRatio, imageAspect) {
 // Given which corner handle is being dragged, works out the box's new
 // fractions from how far the pointer has moved (also in fractions).
 // When an aspect ratio is locked, the "far" edge stays put and the near
-// edge's height is recalculated to match — like resizing a window from a
+// edge's height is recalculated to match - like resizing a window from a
 // corner while holding its opposite corner in place.
 function resizeBoxFromHandle(handle, startBox, dxFraction, dyFraction, aspectRatio, imageAspect) {
   let { x, y, width, height } = startBox;
@@ -92,7 +92,7 @@ function resizeBoxFromHandle(handle, startBox, dxFraction, dyFraction, aspectRat
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 
 export default function ImageResizer() {
@@ -100,7 +100,7 @@ export default function ImageResizer() {
   // The loaded <img> element, kept between renders so we can redraw it onto
   // a canvas without re-decoding the file every time a setting changes.
   const imageElRef = useRef(null);
-  // The box that wraps the crop preview image — its on-screen size is what
+  // The box that wraps the crop preview image - its on-screen size is what
   // pointer-drag distances get divided by to turn them into fractions.
   const cropWrapperRef = useRef(null);
 
@@ -111,13 +111,13 @@ export default function ImageResizer() {
   const [isDragging, setIsDragging] = useState(false); // dropzone drag-over state
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   // A pasted image, held here while we wait for the discard confirmation
-  // above — null means "just resetting", not "resetting to load a file".
+  // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
 
   useDocumentMeta({
-    title: 'Image Resizer & Cropper — Free & Client-Side | Toolbox',
+    title: 'Image Resizer & Cropper - Free & Client-Side | Rootconverter',
     description:
-      'Resize or crop images to exact dimensions entirely in your browser. Lock aspect ratio, use scale presets, or drag a crop selection — no upload required.',
+      'Resize or crop images to exact dimensions entirely in your browser. Lock aspect ratio, use scale presets, or drag a crop selection - no upload required.',
   });
 
   const [mode, setMode] = useState('resize'); // 'resize' | 'crop'
@@ -202,11 +202,11 @@ export default function ImageResizer() {
   // Resize mode updates live: whenever width/height/format change, redraw
   // the whole source image onto a canvas sized to the new dimensions. The
   // 9-argument drawImage below maps the ENTIRE source image onto a
-  // differently-sized destination rectangle — that's what does the resize.
+  // differently-sized destination rectangle - that's what does the resize.
   useEffect(() => {
     if (mode !== 'resize') return;
     if (!sourceUrl || !dimensions || !imageElRef.current) return;
-    if (!resizeWidth || !resizeHeight) return; // fields empty/invalid — nothing to draw yet
+    if (!resizeWidth || !resizeHeight) return; // fields empty/invalid - nothing to draw yet
 
     const img = imageElRef.current;
     let cancelled = false;
@@ -222,7 +222,7 @@ export default function ImageResizer() {
     const ctx = canvas.getContext('2d');
 
     if (format === 'image/jpeg') {
-      // JPEG has no transparency channel — fill white first so transparent
+      // JPEG has no transparency channel - fill white first so transparent
       // areas don't turn black.
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, targetWidth, targetHeight);
@@ -243,7 +243,7 @@ export default function ImageResizer() {
           return;
         }
         if (blob.type !== format) {
-          setError("Your browser couldn't keep this format — exported as PNG instead.");
+          setError("Your browser couldn't keep this format - exported as PNG instead.");
         }
         setOutputBlob(blob);
         setOutputDimensions({ width: targetWidth, height: targetHeight });
@@ -287,9 +287,9 @@ export default function ImageResizer() {
   }
 
   // "Choose a different image" and pasting a new image both throw away the
-  // current file/result — if there's unsaved work, confirm first instead of
+  // current file/result - if there's unsaved work, confirm first instead of
   // silently discarding it. (Neither of these navigates anywhere, so
-  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // UnsavedChangesGuard can't catch them on its own - it only watches for
   // page-to-page navigation.) `pendingFile` remembers a pasted image while
   // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
@@ -413,7 +413,7 @@ export default function ImageResizer() {
 
     // The 9-argument drawImage here pulls just the selected rectangle
     // (sx/sy/sWidth/sHeight) out of the source and draws it filling the
-    // whole destination canvas — that's what does the cropping.
+    // whole destination canvas - that's what does the cropping.
     ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, sWidth, sHeight);
 
     canvas.toBlob(
@@ -424,7 +424,7 @@ export default function ImageResizer() {
           return;
         }
         if (blob.type !== format) {
-          setError("Your browser couldn't keep this format — exported as PNG instead.");
+          setError("Your browser couldn't keep this format - exported as PNG instead.");
         }
         setOutputBlob(blob);
         setOutputDimensions({ width: sWidth, height: sHeight });
@@ -447,7 +447,7 @@ export default function ImageResizer() {
   // covers both modes the same way, since they share the same output state.
   const hasUnsavedWork = Boolean(file) && (!outputBlob || outputBlob !== downloadedBlob);
   useUnsavedChangesWarning(hasUnsavedWork);
-  // Always listening (not just while the drop zone is empty) — pasting a
+  // Always listening (not just while the drop zone is empty) - pasting a
   // new image over an existing one is allowed, it just goes through the
   // same discard confirmation as "Choose a different image" when needed.
   usePasteToUpload(true, handlePastedFile);
@@ -558,7 +558,7 @@ export default function ImageResizer() {
 
               {showTransparencyWarning && (
                 <p className="field-error">
-                  This image has transparency, which JPEG doesn't support — transparent areas
+                  This image has transparency, which JPEG doesn't support - transparent areas
                   will turn white. Consider PNG or WebP instead.
                 </p>
               )}
@@ -614,7 +614,7 @@ export default function ImageResizer() {
                   </p>
                   {resizeWidth > dimensions.width && (
                     <p className="field-hint">
-                      Enlarging beyond the original size won't add detail — expect a softer,
+                      Enlarging beyond the original size won't add detail - expect a softer,
                       blurrier result.
                     </p>
                   )}
@@ -754,7 +754,7 @@ export default function ImageResizer() {
         <p>
           Resizing changes an image's overall dimensions; cropping cuts out just a rectangular
           region of it. This tool does both, entirely in your browser, using the same canvas
-          technique under the hood — pick whichever mode matches what you actually need to change.
+          technique under the hood - pick whichever mode matches what you actually need to change.
         </p>
 
         <h2>How it works</h2>
@@ -766,14 +766,14 @@ export default function ImageResizer() {
           as that selection.
         </p>
 
-        <h2>Resize vs crop — which do you need?</h2>
+        <h2>Resize vs crop - which do you need?</h2>
         <ul>
           <li>
             <strong>Resize</strong> when the whole image is right but it needs to be a different
-            size — e.g. shrinking a photo to fit a website's layout.
+            size - e.g. shrinking a photo to fit a website's layout.
           </li>
           <li>
-            <strong>Crop</strong> when only part of the image is what you want — e.g. cutting a
+            <strong>Crop</strong> when only part of the image is what you want - e.g. cutting a
             square profile picture out of a wider photo.
           </li>
         </ul>
@@ -782,44 +782,44 @@ export default function ImageResizer() {
         <p>
           Aspect ratio is the relationship between width and height (e.g. 16:9, 1:1). With "Lock
           aspect ratio" on, changing one resize dimension automatically adjusts the other to keep
-          the image looking the same, just bigger or smaller — turning it off lets you set both
+          the image looking the same, just bigger or smaller - turning it off lets you set both
           independently, which will stretch or squash the image if they don't match the original
           ratio.
         </p>
 
         <h2>Common mistakes</h2>
         <ul>
-          <li>Enlarging an image far beyond its original size expecting it to look sharp — upscaling can't invent detail that wasn't captured in the first place.</li>
+          <li>Enlarging an image far beyond its original size expecting it to look sharp - upscaling can't invent detail that wasn't captured in the first place.</li>
           <li>Unlocking aspect ratio and setting mismatched dimensions unintentionally, which visibly distorts the image.</li>
-          <li>Cropping a tiny selection from a large photo and expecting a large, detailed result — the crop's resolution is limited by the pixels available in that region.</li>
+          <li>Cropping a tiny selection from a large photo and expecting a large, detailed result - the crop's resolution is limited by the pixels available in that region.</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
         <div className="faq-item">
           <h3>Will resizing up add more detail to my image?</h3>
-          <p>No — enlarging stretches existing pixels rather than inventing new detail, so very large upscales tend to look soft or blurry.</p>
+          <p>No - enlarging stretches existing pixels rather than inventing new detail, so very large upscales tend to look soft or blurry.</p>
         </div>
         <div className="faq-item">
           <h3>Can I crop to an exact aspect ratio like 1:1 or 16:9?</h3>
-          <p>Yes — the crop mode's aspect presets constrain the selection box to that ratio while you drag it.</p>
+          <p>Yes - the crop mode's aspect presets constrain the selection box to that ratio while you drag it.</p>
         </div>
         <div className="faq-item">
           <h3>Does cropping reduce file size?</h3>
-          <p>Usually, since there are fewer pixels to store — but for maximum size savings after cropping, run the result through the <Link to="/tool/image-compressor">Image Compressor</Link>.</p>
+          <p>Usually, since there are fewer pixels to store - but for maximum size savings after cropping, run the result through the <Link to="/tool/image-compressor">Image Compressor</Link>.</p>
         </div>
         <div className="faq-item">
           <h3>Why did my transparent image turn white?</h3>
-          <p>You likely selected JPEG as the output format — JPEG has no transparency channel. Choose PNG or WebP to keep transparency.</p>
+          <p>You likely selected JPEG as the output format - JPEG has no transparency channel. Choose PNG or WebP to keep transparency.</p>
         </div>
         <div className="faq-item">
           <h3>Is my image uploaded anywhere?</h3>
-          <p>No — both resizing and cropping happen entirely in your browser using the Canvas API.</p>
+          <p>No - both resizing and cropping happen entirely in your browser using the Canvas API.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
-          Toolbox.
+          Rootconverter.
         </p>
       </article>
     </div>

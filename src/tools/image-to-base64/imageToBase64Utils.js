@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// IMAGE <-> BASE64 LOGIC — no React, no UI. Kept separate from
+// IMAGE <-> BASE64 LOGIC - no React, no UI. Kept separate from
 // ImageToBase64.jsx so the conversion/validation logic can be read (or
 // reused) completely independently of the component.
 // -----------------------------------------------------------------------
@@ -14,14 +14,14 @@ const SUPPORTED_TYPES = [
 ];
 
 // A generous but real ceiling. Encoding to Base64 means holding the
-// original file AND a ~33%-bigger text copy of it in memory at once —
+// original file AND a ~33%-bigger text copy of it in memory at once -
 // past a certain size that stops being safe to do on a web page. 25MB
 // comfortably covers normal photos/graphics while still catching the
 // rare huge file that would make the tab hang.
 const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
 // Checks a File before we try to do anything with it. Returns
-// `{ ok: true }` or `{ ok: false, error }` — never throws.
+// `{ ok: true }` or `{ ok: false, error }` - never throws.
 export function validateImage(file) {
   if (!file) return { ok: false, error: 'No file selected.' };
   if (file.size === 0) return { ok: false, error: 'That file is empty.' };
@@ -37,7 +37,7 @@ export function validateImage(file) {
   if (!looksSupported) {
     return {
       ok: false,
-      error: 'Unsupported file type — please choose a PNG, JPG, WebP, GIF, BMP, or SVG image.',
+      error: 'Unsupported file type - please choose a PNG, JPG, WebP, GIF, BMP, or SVG image.',
     };
   }
 
@@ -45,7 +45,7 @@ export function validateImage(file) {
 }
 
 // Reads a File as a Data URI. FileReader's own output already IS Base64
-// (with a "data:<mime>;base64," prefix) — the browser does the encoding
+// (with a "data:<mime>;base64," prefix) - the browser does the encoding
 // for us, so there's no need to hand-roll one.
 export function readImage(file) {
   return new Promise((resolve, reject) => {
@@ -75,14 +75,14 @@ export function imageToBase64(dataUri) {
   return commaIndex === -1 ? dataUri : dataUri.slice(commaIndex + 1);
 }
 
-// Rebuilds a full Data URI from a raw Base64 string and a mime type — the
+// Rebuilds a full Data URI from a raw Base64 string and a mime type - the
 // inverse of imageToBase64().
 export function createDataUri(base64, mimeType) {
   return `data:${mimeType};base64,${base64}`;
 }
 
 // Base64 encodes every 3 bytes as 4 characters, so the encoded text is
-// about 4/3 the size of the original — this estimates that without
+// about 4/3 the size of the original - this estimates that without
 // actually re-encoding anything.
 export function calculateBase64Size(originalBytes) {
   return Math.ceil(originalBytes / 3) * 4;

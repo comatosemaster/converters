@@ -17,10 +17,10 @@ import {
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 //
-// The actual encoding/validation logic lives in imageToBase64Utils.js —
+// The actual encoding/validation logic lives in imageToBase64Utils.js -
 // this file is just the UI wired up to it.
 
 export default function ImageToBase64() {
@@ -36,7 +36,7 @@ export default function ImageToBase64() {
   const [error, setError] = useState('');
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   // A pasted image, held here while we wait for the discard confirmation
-  // above — null means "just resetting", not "resetting to load a file".
+  // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
 
   const [copiedBase64, setCopiedBase64] = useState(false);
@@ -45,7 +45,7 @@ export default function ImageToBase64() {
   const [dataUriBlobUrl, setDataUriBlobUrl] = useState('');
 
   useDocumentMeta({
-    title: 'Image to Base64 Converter — Free & Client-Side | Toolbox',
+    title: 'Image to Base64 Converter - Free & Client-Side | Rootconverter',
     description:
       'Convert PNG, JPG, WebP, GIF, BMP, or SVG images to Base64 or a Data URI entirely in your browser. No upload, no backend.',
   });
@@ -91,7 +91,7 @@ export default function ImageToBase64() {
 
     try {
       // FileReader does the actual Base64 encoding for us (see
-      // imageToBase64Utils.js) — we just read the result.
+      // imageToBase64Utils.js) - we just read the result.
       const uri = await readImage(selectedFile);
       // Decoding it as an <img> both confirms it's a real, readable image
       // (catching corrupted files) and gives us its pixel dimensions.
@@ -100,7 +100,7 @@ export default function ImageToBase64() {
       setDataUri(uri);
       setDimensions(dims);
     } catch {
-      setError("This file couldn't be read as a valid image — it may be corrupted.");
+      setError("This file couldn't be read as a valid image - it may be corrupted.");
     } finally {
       setIsProcessing(false);
     }
@@ -114,9 +114,9 @@ export default function ImageToBase64() {
   }
 
   // "Choose a different image" and pasting a new image both throw away the
-  // current result — if there's unsaved work, confirm first instead of
+  // current result - if there's unsaved work, confirm first instead of
   // silently discarding it. (Neither of these navigates anywhere, so
-  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // UnsavedChangesGuard can't catch them on its own - it only watches for
   // page-to-page navigation.)
   function handleChooseAnotherClick() {
     if (hasUnsavedWork) {
@@ -156,14 +156,14 @@ export default function ImageToBase64() {
     setTimeout(() => setCopiedDataUri(false), 1500);
   }
 
-  // Always listening (not just while the drop zone is empty) — pasting a
+  // Always listening (not just while the drop zone is empty) - pasting a
   // new image over an existing one is allowed, it just goes through the
   // same discard confirmation as "Choose a different image" when needed.
   usePasteToUpload(true, handlePastedFile);
 
   // A file loaded here counts as unsaved work for as long as it's loaded.
   // Per this tool's spec, copying or downloading the output does NOT clear
-  // the flag (unlike the other image tools' "download = saved" pattern) —
+  // the flag (unlike the other image tools' "download = saved" pattern) -
   // only Clear does, so there's nothing extra to track beyond "is a file
   // loaded right now."
   const hasUnsavedWork = Boolean(file);
@@ -346,9 +346,9 @@ export default function ImageToBase64() {
 
         <h2>How Base64 encoding works</h2>
         <p>
-          Base64 represents binary data using only 64 printable characters (A–Z, a–z, 0–9,{' '}
+          Base64 represents binary data using only 64 printable characters (A-Z, a-z, 0-9,{' '}
           <code>+</code>, <code>/</code>), so it can travel safely through text-only channels.
-          Every 3 bytes of the original file become 4 Base64 characters — which is why the
+          Every 3 bytes of the original file become 4 Base64 characters - which is why the
           encoded output is roughly a third larger than the source file. Your browser's{' '}
           <code>FileReader</code> API does this encoding directly; nothing is uploaded to do it.
         </p>
@@ -357,7 +357,7 @@ export default function ImageToBase64() {
         <p>
           The raw Base64 string is just the encoded characters. A Data URI wraps that in a{' '}
           <code>data:&lt;mime-type&gt;;base64,&lt;data&gt;</code> prefix, which tells a browser
-          (or anything else that understands the scheme) exactly how to interpret it — paste a
+          (or anything else that understands the scheme) exactly how to interpret it - paste a
           Data URI straight into <code>&lt;img src="..."&gt;</code> or a CSS{' '}
           <code>background-image: url(...)</code> and it renders with no separate file needed.
         </p>
@@ -370,7 +370,7 @@ export default function ImageToBase64() {
           </li>
           <li>
             <strong>Disadvantages:</strong> about 33% larger than the original file, can't be
-            cached separately from the page that embeds it, and bloats HTML/CSS/JS if overused —
+            cached separately from the page that embeds it, and bloats HTML/CSS/JS if overused -
             not a good fit for large photos.
           </li>
         </ul>
@@ -386,7 +386,7 @@ export default function ImageToBase64() {
         <h2>Performance considerations</h2>
         <p>
           The ~33% size increase and loss of independent caching both matter more as the image
-          gets bigger — Base64 is generally best reserved for small icons and thumbnails, not
+          gets bigger - Base64 is generally best reserved for small icons and thumbnails, not
           full-size photos, which are usually better served as ordinary linked files.
         </p>
 
@@ -395,21 +395,21 @@ export default function ImageToBase64() {
           <h3>Why is my Base64 string so much longer than the original file?</h3>
           <p>
             Base64 encodes every 3 bytes as 4 characters, so it's inherently about 33% larger
-            than the source — that's the tradeoff for representing binary data as plain text.
+            than the source - that's the tradeoff for representing binary data as plain text.
           </p>
         </div>
         <div className="faq-item">
           <h3>What's the difference between the Base64 output and the Data URI?</h3>
           <p>
             The Base64 output is just the raw encoded characters. The Data URI wraps that in a{' '}
-            <code>data:image/...;base64,</code> prefix — that's the one you'd actually paste into
+            <code>data:image/...;base64,</code> prefix - that's the one you'd actually paste into
             an <code>&lt;img src&gt;</code> or CSS <code>url()</code>.
           </p>
         </div>
         <div className="faq-item">
           <h3>Can I use this for large images?</h3>
           <p>
-            Technically yes, but it's usually not a good idea — Base64-encoded images can't be
+            Technically yes, but it's usually not a good idea - Base64-encoded images can't be
             cached separately and bloat whatever file they're embedded in. It's best suited for
             small icons and thumbnails.
           </p>
@@ -417,19 +417,19 @@ export default function ImageToBase64() {
         <div className="faq-item">
           <h3>Is my image uploaded anywhere?</h3>
           <p>
-            No. Everything happens in your browser using the FileReader API — your image is
+            No. Everything happens in your browser using the FileReader API - your image is
             never sent anywhere.
           </p>
         </div>
         <div className="faq-item">
           <h3>Does this work with SVG files?</h3>
-          <p>Yes — SVGs convert to Base64 just like any other supported image format.</p>
+          <p>Yes - SVGs convert to Base64 just like any other supported image format.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
           Browse the rest of the{' '}
-          <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on Toolbox.
+          <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on Rootconverter.
         </p>
       </article>
     </div>

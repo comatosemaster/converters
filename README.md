@@ -1,7 +1,7 @@
-# Toolbox
+# Rootconverter
 
 A collection of small, free, browser-only utilities (image conversion, text formatting, QR
-codes, etc.), organized into categories. Everything runs 100% client-side — there is no backend,
+codes, etc.), organized into categories. Everything runs 100% client-side - there is no backend,
 no database, and no data ever leaves the visitor's browser. Built with Vite + React, deployed as
 a static site.
 
@@ -16,29 +16,39 @@ Then open the URL it prints (usually `http://localhost:5173`).
 
 Other useful commands:
 
-- `npm run build` — builds the production-ready static site into `dist/`
-- `npm run preview` — serves that `dist/` build locally so you can double-check it before deploying
+- `npm run build` - builds the production-ready static site into `dist/`
+- `npm run preview` - serves that `dist/` build locally so you can double-check it before deploying
 
 ## Folder structure
 
 ```
 src/
-├── main.jsx                 # React entry point — you shouldn't need to touch this
+├── main.jsx                 # React entry point - you shouldn't need to touch this
 ├── App.jsx                  # Sets up the routes (homepage, category pages, tool pages)
 ├── index.css                # The ONE stylesheet for the whole site
 ├── components/
-│   ├── Layout.jsx           # Header (site name + category nav), footer — wraps every page
-│   ├── ToolLayout.jsx       # Gives each tool page a consistent title/description/box
-│   └── ToolGrid.jsx         # The grid of tool cards, shared by Home and CategoryPage
+│   ├── Layout.jsx           # Sticky header (brand + category nav + search), footer
+│   ├── ToolLayout.jsx       # Breadcrumbs + title/description/box + related tools, per tool page
+│   ├── ToolGrid.jsx         # The grid of tool cards, shared by Home, CategoryPage, search
+│   ├── CommandPalette.jsx   # ⌘K / Ctrl+K search overlay
+│   ├── Breadcrumbs.jsx      # Shared breadcrumb trail
+│   ├── Highlight.jsx        # <mark>s the matching part of search results
+│   ├── ConfirmDialog.jsx    # Reusable "are you sure?" modal
+│   └── UnsavedChangesGuard.jsx  # Blocks in-app navigation when work is unsaved
 ├── hooks/
-│   └── useUnsavedChangesWarning.js   # Shared "are you sure you want to leave?" browser guard
+│   ├── useUnsavedChangesWarning.js   # Shared "are you sure you want to leave?" browser guard
+│   ├── usePasteToUpload.js  # Ctrl+V image paste for drop zones
+│   ├── useUndoRedo.js       # Undo/redo stack for one-click transform buttons
+│   └── useDocumentMeta.js   # Per-page <title> + meta description
+├── utils/
+│   └── formatBytes.js       # Shared byte-size formatting
 ├── pages/
-│   ├── Home.jsx             # Homepage — lists every tool, grouped by category
+│   ├── Home.jsx             # Homepage - lists every tool, grouped by category
 │   ├── CategoryPage.jsx     # Renders one category's tools at /category/:categoryId
 │   ├── ToolPage.jsx         # Renders whichever tool matches the URL's /tool/:id
 │   └── NotFound.jsx         # Shown for bad URLs
 └── tools/
-    ├── registry.js          # ⭐ THE LIST OF EVERY TOOL — see below
+    ├── registry.js          # ⭐ THE LIST OF EVERY TOOL - see below
     └── base64/
         └── Base64Tool.jsx   # The reference tool (copy this folder for new tools)
 
@@ -51,7 +61,7 @@ public/
 
 `src/tools/registry.js` is the single place that lists every tool on the site. The homepage,
 the header navigation, and the routing all read from this file automatically. **You never need
-to edit `Home.jsx`, `App.jsx`, or the nav to add a new tool** — one new file plus one new entry
+to edit `Home.jsx`, `App.jsx`, or the nav to add a new tool** - one new file plus one new entry
 in the registry is the whole job.
 
 Each entry looks like this:
@@ -62,10 +72,22 @@ Each entry looks like this:
   name: 'Base64 Encoder / Decoder',   // shown as the page title and card name
   description: 'Encode plain text into Base64, or decode Base64 back into readable text.',
   category: 'text-data',              // must match one of the CATEGORIES ids below
-  icon: '🔤',                         // any emoji, shown on the homepage card
+  icon: Binary,                       // a lucide-react COMPONENT (not a string) - import it at the top
   component: Base64Tool,              // the React component that does the actual work
+  keywords: ['base64', 'encode', 'decode'],  // extra search terms (see below)
+  popular: true,                      // optional - surfaces it in "Popular tools" on the homepage
 }
 ```
+
+Two fields are worth calling out:
+
+- **`icon`** is a [lucide-react](https://lucide.dev) component, imported at the top of `registry.js`
+  (e.g. `import { Binary } from 'lucide-react'`). Browse [lucide.dev/icons](https://lucide.dev/icons)
+  to pick one. It's a component, not an emoji string - emoji render differently on every OS, which
+  made the old cards look inconsistent.
+- **`keywords`** is what makes search actually find your tool. People rarely type a tool's exact
+  name, so list the formats and verbs they'd search for instead ("png", "shrink", "ocr"). These feed
+  both the homepage search box and the ⌘K command palette.
 
 The five categories (`CATEGORIES` in the same file) are fixed: `graphics-media`, `text-data`,
 `business-finance`, `developer`, `everyday`.
@@ -79,13 +101,13 @@ Say you want to add a "Word Counter" tool under Text & Data.
    src/tools/word-counter/WordCounter.jsx
    ```
    Write a normal React component with whatever inputs/logic it needs. Look at
-   `src/tools/base64/Base64Tool.jsx` as a template — copy it and rework the inside.
+   `src/tools/base64/Base64Tool.jsx` as a template - copy it and rework the inside.
 
    Important: your component does **not** need to render `<ToolLayout>`, an `<h1>`, or a
-   description — the routing does that for you automatically using the `name`/`description`
+   description - the routing does that for you automatically using the `name`/`description`
    you put in the registry. Just build the tool's actual UI (inputs, buttons, results).
 
-   It should, however, call `useUnsavedChangesWarning(...)` — see the section below.
+   It should, however, call `useUnsavedChangesWarning(...)` - see the section below.
 
 2. **Import it and add one entry** to `src/tools/registry.js`:
    ```js
@@ -107,24 +129,57 @@ Say you want to add a "Word Counter" tool under Text & Data.
 3. **Save and check the dev server.** The new tool now appears automatically on the homepage
    under "Text & Data," in the site as `/tool/word-counter`, and it's reachable from the nav.
 
-That's the entire process — repeat it for tool #3, #4, and so on.
+That's the entire process - repeat it for tool #3, #4, and so on.
 
 ### Styling new tools
 
-`src/index.css` already has reusable classes for common form pieces: `.field`,
-`textarea`, `button.copy-button` / `.swap-button` / `.mode-button`, `.field-error`. Reuse
-those classes in new tool components so everything looks consistent without writing new CSS
-each time. If a tool needs something bespoke, add a new section to `index.css` (it's organized
-with `=== N. Section name ===` comment headers so it's easy to find your way around).
+`src/index.css` is organized with `=== N. Section name ===` comment headers. **Sections 1-6 are
+the shared design system** - read those before writing any new CSS, because most of what a tool
+needs already exists.
+
+**Design tokens (section 1)** - never hard-code a color, size, or radius. Use the variables:
+
+| Purpose | Tokens |
+| --- | --- |
+| Surfaces | `--bg`, `--bg-elevated`, `--surface`, `--surface-2`, `--surface-hover` |
+| Lines | `--border`, `--border-hover` |
+| Text | `--text`, `--text-secondary`, `--text-muted` |
+| Accent (interactive only) | `--accent`, `--accent-hover`, `--accent-subtle`, `--accent-border` |
+| Status | `--success`, `--warning`, `--danger`, `--danger-subtle` |
+| Spacing | `--sp-1` … `--sp-24` (4px scale) |
+| Type size | `--fs-xs` … `--fs-4xl` |
+| Radius | `--r-sm` … `--r-2xl`, `--r-full` |
+| Elevation | `--shadow-sm/md/lg/xl` |
+| Motion | `--t-fast` (120ms), `--t` (180ms), `--t-slow` (240ms), `--ease` |
+
+The accent color is reserved for **interactive** things - buttons, links, active nav, focus rings,
+selected states. Using it for decoration is what makes an interface look noisy.
+
+**Reusable classes** - these are already styled, so use them instead of new CSS:
+
+- Layout: `.field`, `.field-header`, `.field-hint`, `.field-error`, `.field-warning`
+- Buttons: `.btn` + `.btn-primary` / `.btn-ghost` / `.btn-danger` / `.btn-lg` / `.btn-sm` /
+  `.is-loading`. The older per-tool names (`.mode-button`, `.copy-button`, `.download-button`,
+  `.ghost-button`, `.modal-button`) all map onto the same button system, so existing tools
+  automatically match.
+- Inputs: plain `<input>`, `<select>`, and `<textarea>` are styled globally - no class needed.
+  `.checkbox-field` for a checkbox + label pair.
+- Toggles: `.mode-toggle` wrapping `.mode-button`s, with `.active` on the selected one.
+- File input: `.drop-zone` + `.drop-zone-title` + `.drop-zone-hint`.
+- Comparison panels: `.comparison` grid + `.comparison-panel` + `.comparison-meta` (a `<dl>`).
+- Article content at the bottom of a tool page: `.tool-article` + `.faq-item`.
+
+If a tool genuinely needs something bespoke, add a new numbered section at the end of `index.css`
+rather than editing the shared sections.
 
 ### Warning before losing unsaved work
 
 Every tool should warn the user with the browser's native "Leave site?" dialog if they try to
-close the tab or refresh while they have unsaved work — but only once they've actually done
+close the tab or refresh while they have unsaved work - but only once they've actually done
 something. A pristine, untouched tool should stay silent.
 
 This is done with one shared hook: `src/hooks/useUnsavedChangesWarning.js`. It's deliberately
-**not** wired through `ToolLayout` or a context provider — each tool already knows, from its own
+**not** wired through `ToolLayout` or a context provider - each tool already knows, from its own
 state, whether the user has done anything worth protecting, so it just reports that directly:
 
 ```js
@@ -134,14 +189,14 @@ import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.j
 useUnsavedChangesWarning(hasUnsavedWork);
 ```
 
-That's the entire integration — one import, one boolean, one line. The trick is deciding what
+That's the entire integration - one import, one boolean, one line. The trick is deciding what
 `hasUnsavedWork` should be for your tool. The rule of thumb: **true once there's something a
 user would be annoyed to lose, false once it's saved/downloaded or cleared back to empty.**
 
-**Closing the tab isn't the only way to lose work, though** — clicking to a different tool, going
+**Closing the tab isn't the only way to lose work, though** - clicking to a different tool, going
 back, or clicking a category link is just our own React app swapping what it renders, not a real
 page unload. Browsers won't force their plain dialog for that, but they also don't block it for
-us automatically — so there's a second, complementary piece for exactly that case:
+us automatically - so there's a second, complementary piece for exactly that case:
 `src/components/UnsavedChangesGuard.jsx`. It uses react-router's `useBlocker` to pause an
 in-app navigation and show our own stylish "Leave without saving?" confirmation instead (see
 `.modal`/`.modal-overlay` in `index.css` if you want to restyle it). Render it once anywhere in
@@ -154,13 +209,13 @@ import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
 ```
 
-So a new tool's full opt-in is: compute `hasUnsavedWork`, call the hook, render the guard — three
+So a new tool's full opt-in is: compute `hasUnsavedWork`, call the hook, render the guard - three
 lines total, all driven by the one boolean you already worked out. (This is also the reason
-`src/App.jsx` uses react-router's "data router" form — `createBrowserRouter`/`RouterProvider` —
+`src/App.jsx` uses react-router's "data router" form - `createBrowserRouter`/`RouterProvider` -
 instead of the plainer `<BrowserRouter>`/`<Routes>` JSX; `useBlocker` requires it.)
 
 **A third case:** some tools have their own destructive button that isn't a "leave the page" action
-at all — e.g. "Choose a different image" or "Clear all" wipe the current file/result immediately,
+at all - e.g. "Choose a different image" or "Clear all" wipe the current file/result immediately,
 with no navigation and no page unload for either of the two mechanisms above to catch. For any
 button like that, confirm first if `hasUnsavedWork` is true, using the same
 `src/components/ConfirmDialog.jsx` the navigation guard is built from:
@@ -188,25 +243,25 @@ function handleChooseAnotherClick() {
 ```
 
 Every image tool's "Choose a different image" button (and HEIC to JPG's "Clear all") follows this
-exact pattern — copy whichever is closest to your tool's shape.
+exact pattern - copy whichever is closest to your tool's shape.
 
 Here's what each existing tool passes, as a reference:
 
 | Tool | `hasUnsavedWork` expression | Why |
 | --- | --- | --- |
-| Base64 | `input.length > 0 && input !== savedInput` | Text in the box counts as work; clicking Copy remembers that input as "saved" so it stops warning — until the box is edited again. |
-| Image Converter / Compressor / Resizer | `Boolean(file) && (!outputBlob \|\| outputBlob !== downloadedBlob)` | Picking a file alone counts as work (it took effort to choose). Clicking Download remembers *that exact result* as saved — if you then change any setting, a new `outputBlob` is produced, it no longer matches `downloadedBlob`, and the warning comes back. |
+| Base64 | `input.length > 0 && input !== savedInput` | Text in the box counts as work; clicking Copy remembers that input as "saved" so it stops warning - until the box is edited again. |
+| Image Converter / Compressor / Resizer | `Boolean(file) && (!outputBlob \|\| outputBlob !== downloadedBlob)` | Picking a file alone counts as work (it took effort to choose). Clicking Download remembers *that exact result* as saved - if you then change any setting, a new `outputBlob` is produced, it no longer matches `downloadedBlob`, and the warning comes back. |
 | HEIC to JPG | `items.some(item => item.status !== 'error' && !item.downloaded)` | A batch of files: as long as any photo is still converting or finished-but-not-downloaded, there's something to lose. Clearing the list or downloading everything turns it off. |
 
 Notice the pattern repeating: rather than a plain "has X changed from default" flag, most tools
-compare their *current* result to whatever was last saved/downloaded — an object/string
+compare their *current* result to whatever was last saved/downloaded - an object/string
 reference match means "already safe," any difference means "new work since then." Reuse that
 same idea for your tool rather than inventing a new shape.
 
 ### Paste-to-upload
 
-Every tool should also accept a pasted image (Ctrl+V / Cmd+V) at any time — not just while the
-drop zone is empty — handy for screenshots, since there's often no file on disk to drag in. This
+Every tool should also accept a pasted image (Ctrl+V / Cmd+V) at any time - not just while the
+drop zone is empty - handy for screenshots, since there's often no file on disk to drag in. This
 is another shared hook, `src/hooks/usePasteToUpload.js`, called once alongside the others:
 
 ```js
@@ -218,7 +273,7 @@ usePasteToUpload(true, handlePastedFile);
 
 Pasting is always listening (the first argument is only there in case a tool needs to disable it
 for some reason). Because it's always on, pasting a new image can throw away unsaved work just
-like "Choose a different image" can — so route it through the **same discard confirmation**
+like "Choose a different image" can - so route it through the **same discard confirmation**
 rather than calling `handleFile` directly. The established shape (see any existing tool) is:
 
 ```js
@@ -237,16 +292,16 @@ function handlePastedFile(newFile) {
 ```
 
 For a tool that accepts multiple files at once (like HEIC to JPG, whose drop zone never hides and
-where adding a file isn't destructive), there's nothing to discard — just adapt the callback to
+where adding a file isn't destructive), there's nothing to discard - just adapt the callback to
 its `handleFiles` function: `usePasteToUpload(true, (file) => handleFiles([file]))`.
 
 Remember to update the drop zone's own text (`.drop-zone-title`) to mention pasting, so it's
-actually discoverable — every existing tool's says "Drag & drop, paste, or click to browse".
+actually discoverable - every existing tool's says "Drag & drop, paste, or click to browse".
 
 ### Undo/redo for one-click transforms
 
 Any tool with buttons that rewrite the whole editor at once (case conversion, "sort lines",
-"remove duplicates," ...) should let the user undo one of those clicks — a `<textarea>`'s own
+"remove duplicates," ...) should let the user undo one of those clicks - a `<textarea>`'s own
 native Ctrl+Z doesn't help here, since it only tracks real typed keystrokes, not programmatic
 `setState` calls. `src/hooks/useUndoRedo.js` wraps a piece of state with a small undo/redo
 snapshot stack for exactly this:
@@ -267,8 +322,8 @@ const { value: text, set: applyChange, setWithoutHistory: setText, undo, redo, c
 ```
 
 If you also want Ctrl+Z/Ctrl+Y to trigger it, wire a scoped `onKeyDown` on the textarea itself
-(not a global `window` listener) that only calls `undo()`/`redo()` — and only calls
-`event.preventDefault()` — when `canUndo`/`canRedo` is true; otherwise let the key press fall
+(not a global `window` listener) that only calls `undo()`/`redo()` - and only calls
+`event.preventDefault()` - when `canUndo`/`canRedo` is true; otherwise let the key press fall
 through untouched so native typing-undo still works when there's nothing of yours to undo. See
 `WordCounterTextAnalyzer.jsx` for the exact pattern.
 
@@ -280,4 +335,4 @@ through untouched so native typing-undo still works when there's nothing of your
   "single-page-application"`), so client-side routes (like `/tool/base64-encoder-decoder`) work
   correctly on a hard refresh or direct link. (An older approach used a `public/_redirects`
   file, but Cloudflare's newer asset-hosting pipeline flags that pattern as a false-positive
-  "infinite loop" — `wrangler.jsonc` is the current recommended way.)
+  "infinite loop" - `wrangler.jsonc` is the current recommended way.)

@@ -49,10 +49,10 @@ const CLEAN_BUTTONS = [
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 //
-// The analysis logic lives in textAnalysis.js — this file is just the UI
+// The analysis logic lives in textAnalysis.js - this file is just the UI
 // wired up to it, re-run directly in the render body on every change
 // (like the other text tools on this site, there's no debounce).
 
@@ -60,7 +60,7 @@ export default function WordCounterTextAnalyzer() {
   const fileInputRef = useRef(null);
 
   // Raw typing uses setRawText (relies on the textarea's own native
-  // Ctrl+Z) — every button below that transforms the whole text uses
+  // Ctrl+Z) - every button below that transforms the whole text uses
   // applyChange instead, so a single Undo click reverses that one action.
   const { value: rawText, set: applyChange, setWithoutHistory: setRawText, undo, redo, canUndo, canRedo } =
     useUndoRedo('');
@@ -81,9 +81,9 @@ export default function WordCounterTextAnalyzer() {
   const [targetWordCount, setTargetWordCount] = useState('');
 
   useDocumentMeta({
-    title: 'Word Counter & Text Analyzer — Free & Client-Side | Toolbox',
+    title: 'Word Counter & Text Analyzer - Free & Client-Side | Rootconverter',
     description:
-      'Live word count, character count, reading time, keyword density, readability scores, and text cleanup tools — entirely in your browser.',
+      'Live word count, character count, reading time, keyword density, readability scores, and text cleanup tools - entirely in your browser.',
   });
 
   // Builds a downloadable .txt file whenever the text changes.
@@ -109,7 +109,7 @@ export default function WordCounterTextAnalyzer() {
 
   // Bringing in content from OUTSIDE (a file or the clipboard) needs the
   // discard confirmation below, since that can silently clobber unsaved
-  // work — but either way, it goes through applyChange so it's undoable
+  // work - but either way, it goes through applyChange so it's undoable
   // too, the same as Clear and the case/cleanup buttons below.
   function loadNewContent(text) {
     if (hasUnsavedWork) {
@@ -126,7 +126,7 @@ export default function WordCounterTextAnalyzer() {
       loadNewContent(text);
       setFileError('');
     } catch {
-      setFileError("Couldn't read the clipboard — your browser may need permission, or paste directly into the editor instead.");
+      setFileError("Couldn't read the clipboard - your browser may need permission, or paste directly into the editor instead.");
     }
   }
 
@@ -181,7 +181,7 @@ export default function WordCounterTextAnalyzer() {
   const goalRemaining = Math.max(0, targetWords - stats.words);
 
   const hasText = rawText.trim().length > 0;
-  // "Unsaved work" also covers a writing goal set on otherwise-empty text —
+  // "Unsaved work" also covers a writing goal set on otherwise-empty text -
   // per this tool's spec, losing that setting counts too.
   const hasUnsavedWork = hasText || targetWordCount.trim().length > 0;
   useUnsavedChangesWarning(hasUnsavedWork);
@@ -272,7 +272,7 @@ export default function WordCounterTextAnalyzer() {
           onChange={(event) => setRawText(event.target.value)}
           onKeyDown={(event) => {
             // Only step in when there's actually a button-action to undo/
-            // redo — otherwise let the key press fall through untouched,
+            // redo - otherwise let the key press fall through untouched,
             // so the browser's own native undo still handles plain typing.
             const withModifier = event.ctrlKey || event.metaKey;
             const isUndo = withModifier && !event.shiftKey && event.key.toLowerCase() === 'z';
@@ -295,12 +295,12 @@ export default function WordCounterTextAnalyzer() {
 
       {!hasText && (
         <p className="field-hint">
-          Type, paste, or upload text to get started — every stat further down updates live as
+          Type, paste, or upload text to get started - every stat further down updates live as
           you go.
         </p>
       )}
 
-      {/* Utilities first, right next to the editor — these are things you
+      {/* Utilities first, right next to the editor - these are things you
           actively click while writing, so they shouldn't be buried below
           six panels of read-only statistics. */}
       <div className="field">
@@ -363,7 +363,7 @@ export default function WordCounterTextAnalyzer() {
         )}
       </div>
 
-      {/* Statistics below the utilities — useful reference, but not
+      {/* Statistics below the utilities - useful reference, but not
           something you click, so it doesn't need top billing. */}
       <div className="comparison">
         <div className="comparison-panel">
@@ -392,8 +392,8 @@ export default function WordCounterTextAnalyzer() {
         <div className="comparison-panel">
           <h3>Text statistics</h3>
           <dl className="comparison-meta">
-            <div><dt>Longest word</dt><dd>{wordStats.longestWord || '—'}</dd></div>
-            <div><dt>Shortest word</dt><dd>{wordStats.shortestWord || '—'}</dd></div>
+            <div><dt>Longest word</dt><dd>{wordStats.longestWord || '-'}</dd></div>
+            <div><dt>Shortest word</dt><dd>{wordStats.shortestWord || '-'}</dd></div>
             <div><dt>Unique words</dt><dd>{wordStats.uniqueWords.toLocaleString()}</dd></div>
             <div><dt>Repeated words</dt><dd>{wordStats.repeatedWords.toLocaleString()}</dd></div>
             <div><dt>Vocabulary richness</dt><dd>{wordStats.vocabularyRichness.toFixed(1)}%</dd></div>
@@ -418,7 +418,7 @@ export default function WordCounterTextAnalyzer() {
               <div>
                 <dt>Flesch Reading Ease</dt>
                 <dd>
-                  {readability.fleschReadingEase.toFixed(1)} — {readability.fleschReadingEaseLabel}
+                  {readability.fleschReadingEase.toFixed(1)} - {readability.fleschReadingEaseLabel}
                 </dd>
               </div>
               <div>
@@ -430,7 +430,7 @@ export default function WordCounterTextAnalyzer() {
             <p className="field-hint">Add at least one full sentence to calculate this.</p>
           )}
           <p className="field-hint">
-            Estimates based on English sentence/syllable heuristics — treat as a guide, not an
+            Estimates based on English sentence/syllable heuristics - treat as a guide, not an
             exact score.
           </p>
         </div>
@@ -504,17 +504,17 @@ export default function WordCounterTextAnalyzer() {
       <article className="tool-article">
         <p>
           From a quick character count for a tweet to a full readability check on an essay, this
-          tool analyzes text as you type — word and character counts, reading time, keyword
-          density, readability scores, and a set of one-click cleanup and case-conversion tools —
+          tool analyzes text as you type - word and character counts, reading time, keyword
+          density, readability scores, and a set of one-click cleanup and case-conversion tools -
           entirely in your browser.
         </p>
 
         <h2>How word counting works</h2>
         <p>
-          Words are counted by splitting the text on whitespace — every run of non-space
+          Words are counted by splitting the text on whitespace - every run of non-space
           characters counts as one word. Sentences and paragraphs use simpler heuristics
           (sentence-ending punctuation, and blank lines) that work well for typical writing but
-          aren't true language parsing — an abbreviation like "Mr." can occasionally be
+          aren't true language parsing - an abbreviation like "Mr." can occasionally be
           miscounted as a sentence end, the same limitation every simple word-count tool shares.
         </p>
 
@@ -523,23 +523,23 @@ export default function WordCounterTextAnalyzer() {
           Word count measures how much you've written in the units people actually think in;
           character count measures raw size, which is what matters for hard limits like a tweet,
           SMS, or meta description. A "word" can be one letter or twenty, so the two numbers
-          often diverge — a good reason this tool shows both instead of just one.
+          often diverge - a good reason this tool shows both instead of just one.
         </p>
 
         <h2>Reading time, explained</h2>
         <p>
-          Reading time is estimated from your word count at roughly 200 words per minute — a
-          commonly-cited average adult silent-reading speed — and speaking time at roughly 130
+          Reading time is estimated from your word count at roughly 200 words per minute - a
+          commonly-cited average adult silent-reading speed - and speaking time at roughly 130
           words per minute, a typical spoken pace. Both are estimates: actual speed varies a lot
           by reader, topic difficulty, and formatting.
         </p>
 
         <h2>Readability scores explained</h2>
         <p>
-          The <strong>Flesch Reading Ease</strong> score (0–100, higher is easier) and{' '}
+          The <strong>Flesch Reading Ease</strong> score (0-100, higher is easier) and{' '}
           <strong>Flesch-Kincaid Grade Level</strong> (roughly, the US school grade needed to
           understand the text) are both calculated from average sentence length and average
-          syllables per word — shorter sentences and shorter words score as easier to read. They're
+          syllables per word - shorter sentences and shorter words score as easier to read. They're
           English-specific formulas, and syllable counting here uses a standard estimation
           heuristic rather than a dictionary, so treat the scores as a useful guide, not an exact
           measurement.
@@ -555,7 +555,7 @@ export default function WordCounterTextAnalyzer() {
 
         <h2>Writing tips</h2>
         <ul>
-          <li>Shorter sentences and simpler words consistently improve readability scores — and usually readability itself.</li>
+          <li>Shorter sentences and simpler words consistently improve readability scores - and usually readability itself.</li>
           <li>A high "repeated words" count isn't necessarily bad, but check the keyword list for accidental overuse of one word.</li>
           <li>Use the case converter's Sentence case after drafting in all caps or lowercase, instead of retyping.</li>
           <li>Set a writing goal before drafting long-form content to track progress at a glance.</li>
@@ -573,7 +573,7 @@ export default function WordCounterTextAnalyzer() {
         <div className="faq-item">
           <h3>What's a good Flesch Reading Ease score?</h3>
           <p>
-            60–70 is considered "standard," roughly understandable by 8th–9th graders, and is a
+            60-70 is considered "standard," roughly understandable by 8th-9th graders, and is a
             common target for general-audience writing. Higher scores are easier to read; lower
             scores suit more technical or academic audiences.
           </p>
@@ -581,25 +581,25 @@ export default function WordCounterTextAnalyzer() {
         <div className="faq-item">
           <h3>Does the keyword list include common words like "the" and "and"?</h3>
           <p>
-            Not by default — toggle off "Ignore common words" if you want to see raw frequency
+            Not by default - toggle off "Ignore common words" if you want to see raw frequency
             including those.
           </p>
         </div>
         <div className="faq-item">
           <h3>Can I analyze a large document?</h3>
           <p>
-            Yes — there's no practical text-length limit for typing or pasting; uploaded .txt
+            Yes - there's no practical text-length limit for typing or pasting; uploaded .txt
             files are capped at 20 MB, well beyond any normal document.
           </p>
         </div>
         <div className="faq-item">
           <h3>Is my text uploaded anywhere?</h3>
-          <p>No — every calculation runs locally in your browser; nothing is sent anywhere.</p>
+          <p>No - every calculation runs locally in your browser; nothing is sent anywhere.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
-          Browse the rest of the <Link to="/category/developer">Developer tools</Link> on Toolbox.
+          Browse the rest of the <Link to="/category/developer">Developer tools</Link> on Rootconverter.
         </p>
       </article>
     </div>

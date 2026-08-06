@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-// A generic "are you sure?" modal — the same stylish dialog used for the
+// A generic "are you sure?" modal - the same stylish dialog used for the
 // in-app navigation warning (see UnsavedChangesGuard.jsx) is reused here
 // for any other destructive action a tool wants to confirm first, like a
 // "choose a different image" button that would throw away unsaved work.

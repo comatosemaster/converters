@@ -28,7 +28,7 @@ function buildDownloadName(originalName, mime) {
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 
 export default function ImageCompressor() {
@@ -45,11 +45,11 @@ export default function ImageCompressor() {
   const [isDragging, setIsDragging] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   // A pasted image, held here while we wait for the discard confirmation
-  // above — null means "just resetting", not "resetting to load a file".
+  // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
 
   useDocumentMeta({
-    title: 'Image Compressor — Shrink File Size in Your Browser | Toolbox',
+    title: 'Image Compressor - Shrink File Size in Your Browser | Rootconverter',
     description:
       'Compress PNG, JPG, and WebP images to reduce file size without uploading them anywhere. Adjustable quality and optional resizing.',
   });
@@ -85,7 +85,7 @@ export default function ImageCompressor() {
   }, [file]);
 
   // Loads the image once per file, and while we're at it checks whether it
-  // has any actually-transparent pixels — used later to warn before
+  // has any actually-transparent pixels - used later to warn before
   // compressing to JPEG, which has no transparency channel.
   useEffect(() => {
     if (!sourceUrl) {
@@ -158,7 +158,7 @@ export default function ImageCompressor() {
     const ctx = canvas.getContext('2d');
 
     if (outputMime === 'image/jpeg') {
-      // JPEG has no transparency channel — without this, transparent
+      // JPEG has no transparency channel - without this, transparent
       // areas would turn black instead of staying white.
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, targetWidth, targetHeight);
@@ -177,9 +177,9 @@ export default function ImageCompressor() {
           return;
         }
         // Browsers that don't support the requested format silently fall
-        // back to PNG — let the user know instead of pretending it worked.
+        // back to PNG - let the user know instead of pretending it worked.
         if (blob.type !== outputMime) {
-          setError("Your browser couldn't keep this format — exported as PNG instead.");
+          setError("Your browser couldn't keep this format - exported as PNG instead.");
         }
         setOutputBlob(blob);
         setOutputDimensions({ width: targetWidth, height: targetHeight });
@@ -219,9 +219,9 @@ export default function ImageCompressor() {
   }
 
   // "Choose a different image" and pasting a new image both throw away the
-  // current file/result — if there's unsaved work, confirm first instead of
+  // current file/result - if there's unsaved work, confirm first instead of
   // silently discarding it. (Neither of these navigates anywhere, so
-  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // UnsavedChangesGuard can't catch them on its own - it only watches for
   // page-to-page navigation.) `pendingFile` remembers a pasted image while
   // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
@@ -248,7 +248,7 @@ export default function ImageCompressor() {
     handleFile(event.dataTransfer.files[0]);
   }
 
-  // PNG output is lossless, so the quality slider has no effect on it —
+  // PNG output is lossless, so the quality slider has no effect on it -
   // guide the user toward WebP/JPEG instead of leaving them guessing.
   const isOriginalPng = formatChoice === 'original' && file?.type === 'image/png';
   const showTransparencyWarning = formatChoice === 'image/jpeg' && hasTransparency;
@@ -260,7 +260,7 @@ export default function ImageCompressor() {
   // yet or the current result isn't the one that's been downloaded.
   const hasUnsavedWork = Boolean(file) && (!outputBlob || outputBlob !== downloadedBlob);
   useUnsavedChangesWarning(hasUnsavedWork);
-  // Always listening (not just while the drop zone is empty) — pasting a
+  // Always listening (not just while the drop zone is empty) - pasting a
   // new image over an existing one is allowed, it just goes through the
   // same discard confirmation as "Choose a different image" when needed.
   usePasteToUpload(true, handlePastedFile);
@@ -393,7 +393,7 @@ export default function ImageCompressor() {
 
           {showTransparencyWarning && (
             <p className="field-error">
-              This image has transparency, which JPEG doesn't support — transparent areas will
+              This image has transparency, which JPEG doesn't support - transparent areas will
               turn white. Consider WebP instead.
             </p>
           )}
@@ -487,7 +487,7 @@ export default function ImageCompressor() {
       <article className="tool-article">
         <p>
           A photo straight from a phone or camera is often far larger than a web page actually
-          needs. This tool shrinks image file size — by lowering quality, resizing, or both —
+          needs. This tool shrinks image file size - by lowering quality, resizing, or both -
           entirely in your browser, so you can see exactly how much you're saving before you
           download anything.
         </p>
@@ -500,10 +500,10 @@ export default function ImageCompressor() {
           size only changes if you resize the image, not the quality slider.
         </p>
 
-        <h2>Quality vs resizing — which saves more?</h2>
+        <h2>Quality vs resizing - which saves more?</h2>
         <p>
-          Resizing is usually the bigger win. Halving both dimensions cuts the pixel count — and
-          roughly the file size — to a quarter, before quality even comes into it. Lowering
+          Resizing is usually the bigger win. Halving both dimensions cuts the pixel count - and
+          roughly the file size - to a quarter, before quality even comes into it. Lowering
           quality helps too, but there are diminishing returns: going from 100% to 80% quality
           often looks identical while saving a lot of space, but pushing much lower starts to
           visibly degrade the image.
@@ -518,23 +518,23 @@ export default function ImageCompressor() {
 
         <h2>Common mistakes</h2>
         <ul>
-          <li>Compressing an already heavily-compressed JPG repeatedly — quality loss compounds each time you re-save.</li>
-          <li>Choosing PNG output for a photo when trying to shrink it — PNG's lossless nature means the quality slider won't help; WebP or JPG will compress much further.</li>
-          <li>Compressing to JPG without noticing the image had transparency — JPG has no alpha channel, so transparent areas fill with a solid color.</li>
+          <li>Compressing an already heavily-compressed JPG repeatedly - quality loss compounds each time you re-save.</li>
+          <li>Choosing PNG output for a photo when trying to shrink it - PNG's lossless nature means the quality slider won't help; WebP or JPG will compress much further.</li>
+          <li>Compressing to JPG without noticing the image had transparency - JPG has no alpha channel, so transparent areas fill with a solid color.</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
         <div className="faq-item">
           <h3>Why doesn't the quality slider change anything?</h3>
-          <p>You likely have PNG selected as the output — PNG is lossless, so quality has no effect on it. Switch to WebP or JPEG for real savings.</p>
+          <p>You likely have PNG selected as the output - PNG is lossless, so quality has no effect on it. Switch to WebP or JPEG for real savings.</p>
         </div>
         <div className="faq-item">
           <h3>What's the best quality setting?</h3>
-          <p>80–90% is a common sweet spot — visually close to the original but meaningfully smaller. Drop lower only if file size matters more than appearance.</p>
+          <p>80-90% is a common sweet spot - visually close to the original but meaningfully smaller. Drop lower only if file size matters more than appearance.</p>
         </div>
         <div className="faq-item">
           <h3>Will compressing reduce the image dimensions?</h3>
-          <p>Only if you set a max width/height — quality alone changes file size, not pixel dimensions.</p>
+          <p>Only if you set a max width/height - quality alone changes file size, not pixel dimensions.</p>
         </div>
         <div className="faq-item">
           <h3>Which format compresses best?</h3>
@@ -542,13 +542,13 @@ export default function ImageCompressor() {
         </div>
         <div className="faq-item">
           <h3>Is my image uploaded anywhere?</h3>
-          <p>No — compression happens entirely in your browser using the Canvas API.</p>
+          <p>No - compression happens entirely in your browser using the Canvas API.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
-          Toolbox.
+          Rootconverter.
         </p>
       </article>
     </div>

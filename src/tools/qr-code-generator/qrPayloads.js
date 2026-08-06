@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------
-// QR PAYLOAD BUILDING + VALIDATION — no React, no DOM. Each QR "type" here
+// QR PAYLOAD BUILDING + VALIDATION - no React, no DOM. Each QR "type" here
 // (URL, WiFi, vCard, ...) has its own well-known text format that phone
 // camera apps already know how to interpret (a phone doesn't know or care
-// that a QR code came from this site — it just reads the text and acts on
+// that a QR code came from this site - it just reads the text and acts on
 // its format). These functions build that exact text, and check that the
 // fields needed to build it validly are actually filled in.
 // -----------------------------------------------------------------------
@@ -202,7 +202,7 @@ const HANDLERS = {
   location: { validate: validateLocation, build: buildLocationPayload, isEmpty: (f) => isBlank(f.lat) && isBlank(f.lng) },
 };
 
-// Checks whether the fields relevant to `type` have been touched at all —
+// Checks whether the fields relevant to `type` have been touched at all -
 // used to show a neutral "fill in the fields" hint instead of a scary
 // validation error on a pristine tab.
 export function isTypeEmpty(type, fields) {

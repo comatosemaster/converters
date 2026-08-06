@@ -19,10 +19,10 @@ const QR_TYPES = [
 ];
 
 const ERROR_CORRECTION_LEVELS = [
-  { value: 'L', label: 'L — Low (~7% recovery)' },
-  { value: 'M', label: 'M — Medium (~15% recovery)' },
-  { value: 'Q', label: 'Q — Quartile (~25% recovery)' },
-  { value: 'H', label: 'H — High (~30% recovery)' },
+  { value: 'L', label: 'L - Low (~7% recovery)' },
+  { value: 'M', label: 'M - Medium (~15% recovery)' },
+  { value: 'Q', label: 'Q - Quartile (~25% recovery)' },
+  { value: 'H', label: 'H - High (~30% recovery)' },
 ];
 
 const WIFI_SECURITY_OPTIONS = [
@@ -66,10 +66,10 @@ const DEFAULT_BACKGROUND = '#ffffff';
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 //
-// The payload-building/validation logic lives in qrPayloads.js — this
+// The payload-building/validation logic lives in qrPayloads.js - this
 // file is just the UI and the actual QR image generation wired up to it.
 
 export default function QrCodeGenerator() {
@@ -96,7 +96,7 @@ export default function QrCodeGenerator() {
   const [copiedPayload, setCopiedPayload] = useState(false);
 
   useDocumentMeta({
-    title: 'QR Code Generator — URL, WiFi, vCard & More | Toolbox',
+    title: 'QR Code Generator - URL, WiFi, vCard & More | Rootconverter',
     description:
       'Generate customizable QR codes for URLs, text, email, phone, SMS, WiFi, contacts, and locations entirely in your browser. PNG and SVG export, no upload required.',
   });
@@ -200,7 +200,7 @@ export default function QrCodeGenerator() {
       setCopiedImage(true);
       setTimeout(() => setCopiedImage(false), 1500);
     } catch {
-      setGenError("Your browser doesn't support copying images — try downloading instead.");
+      setGenError("Your browser doesn't support copying images - try downloading instead.");
     }
   }
 
@@ -218,7 +218,7 @@ export default function QrCodeGenerator() {
     setTimeout(() => setCopiedPayload(false), 1500);
   }
 
-  // "Unsaved work" is anything that differs from the pristine defaults —
+  // "Unsaved work" is anything that differs from the pristine defaults -
   // matches this tool's own spec (switching type, tweaking a color, typing
   // a field all count), and Clear resets every one of these back to
   // baseline, which is what turns the flag back off.
@@ -625,7 +625,7 @@ export default function QrCodeGenerator() {
 
       <article className="tool-article">
         <p>
-          QR codes pack a URL, WiFi login, contact card, or plain text into a scannable square —
+          QR codes pack a URL, WiFi login, contact card, or plain text into a scannable square -
           any phone camera can read one instantly. This tool builds all the common types and
           renders them entirely in your browser, so nothing you type is ever sent anywhere.
         </p>
@@ -635,7 +635,7 @@ export default function QrCodeGenerator() {
           A QR code is a grid of black and white squares ("modules") that encode data using the
           same kind of error-correcting math used in CDs and satellite transmissions. A scanner
           reads the pattern, corrects for minor damage or glare using that redundancy, and
-          recovers the original text — which is just a specially-formatted string (like{' '}
+          recovers the original text - which is just a specially-formatted string (like{' '}
           <code>WIFI:T:WPA;S:MyNetwork;P:mypassword;;</code>) that the phone's OS then knows how
           to act on, whether that's opening a URL, joining a network, or saving a contact.
         </p>
@@ -652,10 +652,10 @@ export default function QrCodeGenerator() {
 
         <h2>Static vs dynamic QR codes</h2>
         <p>
-          The QR codes this tool generates are <strong>static</strong> — the destination or data
+          The QR codes this tool generates are <strong>static</strong> - the destination or data
           is encoded directly into the code itself, permanently. <strong>Dynamic</strong> QR
           codes (offered by some paid services) instead encode a short redirect URL that you can
-          repoint later without reprinting the code — useful for tracking scans or changing a
+          repoint later without reprinting the code - useful for tracking scans or changing a
           destination after printing, at the cost of depending on that service staying online.
           For most personal and one-off uses, a static code (like the ones here) is simpler and
           has no ongoing dependency.
@@ -664,17 +664,17 @@ export default function QrCodeGenerator() {
         <h2>Best practices</h2>
         <ul>
           <li>Keep the error correction level at M or higher if the code will be printed small or handled physically.</li>
-          <li>Leave the margin (quiet zone) intact — cropping it too tight can make codes unreadable to some scanners.</li>
+          <li>Leave the margin (quiet zone) intact - cropping it too tight can make codes unreadable to some scanners.</li>
           <li>Test a printed code with more than one phone/scanner app before distributing it widely.</li>
-          <li>Use high contrast between foreground and background — QR codes rely on that contrast to be readable at all.</li>
+          <li>Use high contrast between foreground and background - QR codes rely on that contrast to be readable at all.</li>
         </ul>
 
         <h2>Common mistakes</h2>
         <ul>
           <li>Making the foreground and background colors too close in contrast, which many scanners can't read reliably.</li>
-          <li>Setting a transparent background and then placing the code over a busy image — same underlying contrast problem.</li>
+          <li>Setting a transparent background and then placing the code over a busy image - same underlying contrast problem.</li>
           <li>Generating a WiFi code with the wrong security type selected, which produces a code that fails to connect.</li>
-          <li>Printing a code too small for its content — dense payloads (long URLs, full vCards) need more modules and don't shrink well.</li>
+          <li>Printing a code too small for its content - dense payloads (long URLs, full vCards) need more modules and don't shrink well.</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
@@ -690,14 +690,14 @@ export default function QrCodeGenerator() {
           <h3>Can I put a logo in the middle of my QR code?</h3>
           <p>
             This tool doesn't overlay a logo, but if you add one yourself afterward, use the{' '}
-            <strong>H</strong> error correction level first — it tolerates the most obscured area
+            <strong>H</strong> error correction level first - it tolerates the most obscured area
             before becoming unreadable.
           </p>
         </div>
         <div className="faq-item">
           <h3>Do QR codes expire?</h3>
           <p>
-            No — a static QR code (like the ones generated here) encodes its data permanently and
+            No - a static QR code (like the ones generated here) encodes its data permanently and
             works for as long as the destination (e.g. a URL) still exists. It's dynamic QR
             services, not the codes themselves, that can "expire" if that service shuts down.
           </p>
@@ -705,20 +705,20 @@ export default function QrCodeGenerator() {
         <div className="faq-item">
           <h3>Will the WiFi QR code share my password with anyone who scans it?</h3>
           <p>
-            Yes — anyone who scans it can join the network (and technically read the password
+            Yes - anyone who scans it can join the network (and technically read the password
             back out of the code), so treat a printed WiFi QR code the way you'd treat writing the
             password on a sticky note.
           </p>
         </div>
         <div className="faq-item">
           <h3>Is my data uploaded anywhere to generate the code?</h3>
-          <p>No — the QR image is generated entirely in your browser; nothing is sent to a server.</p>
+          <p>No - the QR image is generated entirely in your browser; nothing is sent to a server.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
-          Toolbox.
+          Rootconverter.
         </p>
       </article>
     </div>

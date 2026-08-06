@@ -1,10 +1,10 @@
 // -----------------------------------------------------------------------
-// COLOR CONVERSION LOGIC — no React, no DOM. Pure functions only, so this
+// COLOR CONVERSION LOGIC - no React, no DOM. Pure functions only, so this
 // file can be read (or reused) completely independently of the UI in
 // ColorConverter.jsx.
 //
 // Every function ultimately works through one canonical shape:
-//   { r, g, b, a }   — r/g/b are integers 0–255, a is a float 0–1
+//   { r, g, b, a }   - r/g/b are integers 0-255, a is a float 0-1
 // Every supported text format is just a different way of writing that
 // same four numbers.
 // -----------------------------------------------------------------------
@@ -24,7 +24,7 @@ function roundAlpha(a) {
 // --- Format detection ---------------------------------------------------------
 
 // Looks at the shape of the text to guess which parser to try. This is a
-// quick guess, not full validation — the actual parser still checks the
+// quick guess, not full validation - the actual parser still checks the
 // values are in range.
 export function detectColorFormat(input) {
   const value = input.trim();
@@ -33,7 +33,7 @@ export function detectColorFormat(input) {
   if (/^rgb\s*\(/i.test(value)) return 'rgb';
   if (/^hsla\s*\(/i.test(value)) return 'hsla';
   if (/^hsl\s*\(/i.test(value)) return 'hsl';
-  // Bare comma-separated numbers with no wrapper, e.g. "255, 87, 51" —
+  // Bare comma-separated numbers with no wrapper, e.g. "255, 87, 51" -
   // treat as RGB(A), since that's the format people type shorthand.
   if (/^[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+(\s*,\s*[\d.]+)?$/.test(value)) return 'rgb';
   return null;
@@ -46,11 +46,11 @@ export function detectColorFormat(input) {
 function parseHexString(value) {
   const hex = value.replace('#', '').trim();
   if (!/^[0-9a-fA-F]+$/.test(hex)) {
-    throw new Error('Hex colors can only contain 0–9 and A–F.');
+    throw new Error('Hex colors can only contain 0-9 and A-F.');
   }
 
   switch (hex.length) {
-    case 3: // #RGB shorthand — each digit is doubled, e.g. "f" -> "ff"
+    case 3: // #RGB shorthand - each digit is doubled, e.g. "f" -> "ff"
       return {
         r: parseInt(hex[0] + hex[0], 16),
         g: parseInt(hex[1] + hex[1], 16),
@@ -101,7 +101,7 @@ function parseAlpha(text) {
 
 function parseRgbString(value) {
   // Strip an optional rgb(...) / rgba(...) wrapper, leaving just the numbers
-  // — this is what lets bare "255,87,51" and "rgb(255,87,51)" share a parser.
+  // - this is what lets bare "255,87,51" and "rgb(255,87,51)" share a parser.
   const inner = value.replace(/^rgba?\s*\(|\)\s*$/gi, '');
   const parts = inner.split(',').map((part) => part.trim());
 
@@ -117,7 +117,7 @@ function parseRgbString(value) {
 function parseHue(text) {
   const num = Number(text.trim().replace(/deg$/i, ''));
   if (!Number.isFinite(num)) {
-    throw new Error('Hue must be a number of degrees (0–360).');
+    throw new Error('Hue must be a number of degrees (0-360).');
   }
   // Hue wraps around a circle, so normalize instead of rejecting
   // out-of-range values like 370 or -10.
@@ -148,7 +148,7 @@ function parseHslString(value) {
 }
 
 // Detects the format and parses it in one step. Returns either
-// `{ ok: true, rgba }` or `{ ok: false, error }` — never throws, so the UI
+// `{ ok: true, rgba }` or `{ ok: false, error }` - never throws, so the UI
 // never needs a try/catch of its own.
 export function parseColor(input) {
   const value = input.trim();
@@ -169,7 +169,7 @@ export function parseColor(input) {
 }
 
 // A thin view of parseColor() for callers that only care whether the input
-// is valid, not the parsed color itself — kept separate mainly to match the
+// is valid, not the parsed color itself - kept separate mainly to match the
 // "detect / parse / validate" vocabulary used throughout this file.
 export function validateColor(input) {
   const { ok, error } = parseColor(input);
@@ -182,7 +182,7 @@ export function hexToRgb(hex) {
   return parseHexString(hex);
 }
 
-// Ignores alpha — this is the plain 6-digit form used by the native
+// Ignores alpha - this is the plain 6-digit form used by the native
 // <input type="color"> and as the base of rgbaToHex().
 export function rgbToHex({ r, g, b }) {
   return `#${toHexByte(r)}${toHexByte(g)}${toHexByte(b)}`;

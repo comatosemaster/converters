@@ -7,7 +7,7 @@ import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 
 // A handful of common languages, plus Georgian as specifically requested.
-// These are tesseract's own language codes — the matching "traineddata"
+// These are tesseract's own language codes - the matching "traineddata"
 // file (the language model) is fetched the first time each one is used.
 const LANGUAGES = [
   { code: 'eng', name: 'English' },
@@ -34,7 +34,7 @@ function confidenceLevel(confidence) {
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 
 export default function ImageToText() {
@@ -45,11 +45,11 @@ export default function ImageToText() {
   const [isDragging, setIsDragging] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   // A pasted image, held here while we wait for the discard confirmation
-  // above — null means "just resetting", not "resetting to load a file".
+  // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
 
   useDocumentMeta({
-    title: 'Image to Text (OCR) — Free & Client-Side | Toolbox',
+    title: 'Image to Text (OCR) - Free & Client-Side | Rootconverter',
     description:
       'Extract text from images using OCR entirely in your browser, in English, Georgian, and more. No upload, no limits.',
   });
@@ -116,9 +116,9 @@ export default function ImageToText() {
   }
 
   // "Choose a different image" and pasting a new image both throw away the
-  // current result — if there's unsaved work, confirm first instead of
+  // current result - if there's unsaved work, confirm first instead of
   // silently discarding it. (Neither of these navigates anywhere, so
-  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // UnsavedChangesGuard can't catch them on its own - it only watches for
   // page-to-page navigation.) `pendingFile` remembers a pasted image while
   // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
@@ -158,7 +158,7 @@ export default function ImageToText() {
     let worker;
     try {
       // tesseract.js is dynamically imported so its code isn't part of the
-      // main site bundle for tools that never run OCR — only someone who
+      // main site bundle for tools that never run OCR - only someone who
       // actually uses this tool downloads it.
       const { createWorker } = await import('tesseract.js');
 
@@ -166,7 +166,7 @@ export default function ImageToText() {
         // Self-hosted (see public/tesseract/) so the OCR engine itself
         // loads from our own site instead of a third-party CDN. Only the
         // per-language training data below still comes from tesseract.js's
-        // own CDN — vendoring every language's multi-megabyte data file
+        // own CDN - vendoring every language's multi-megabyte data file
         // isn't practical, and that CDN is what the library itself
         // documents and relies on.
         workerPath: '/tesseract/worker.min.js',
@@ -187,7 +187,7 @@ export default function ImageToText() {
         "Something went wrong running OCR on this image. Try a clearer image, or a different language.",
       );
     } finally {
-      // Always terminate — the worker holds a large WASM instance in
+      // Always terminate - the worker holds a large WASM instance in
       // memory that won't be freed until we do.
       if (worker) await worker.terminate();
       setIsProcessing(false);
@@ -204,7 +204,7 @@ export default function ImageToText() {
 
   const hasUnsavedWork = resultText.length > 0 && resultText !== savedText;
   useUnsavedChangesWarning(hasUnsavedWork);
-  // Always listening (not just while the drop zone is empty) — pasting a
+  // Always listening (not just while the drop zone is empty) - pasting a
   // new image over an existing one is allowed, it just goes through the
   // same discard confirmation as "Choose a different image" when needed.
   usePasteToUpload(true, handlePastedFile);
@@ -294,7 +294,7 @@ export default function ImageToText() {
               ))}
             </select>
             <p className="field-hint">
-              First use of a language downloads its OCR data (several MB) — it's cached in your
+              First use of a language downloads its OCR data (several MB) - it's cached in your
               browser after that.
             </p>
           </div>
@@ -368,52 +368,52 @@ export default function ImageToText() {
 
         <h2>Getting the best accuracy</h2>
         <ul>
-          <li>Use a clear, high-resolution image — blurry or tiny text is much harder to recognize correctly.</li>
+          <li>Use a clear, high-resolution image - blurry or tiny text is much harder to recognize correctly.</li>
           <li>Straight-on, unskewed photos work far better than angled ones.</li>
           <li>Printed text is much more reliable than handwriting, which OCR still struggles with generally.</li>
           <li>Simple single-column layouts recognize more accurately than complex multi-column ones.</li>
         </ul>
 
-        <h2>When to use it — and when not to</h2>
+        <h2>When to use it - and when not to</h2>
         <p>
           Great for pulling text out of screenshots, scanned documents, or photos of signs and
           printed pages. Less reliable for handwriting, stylized fonts, low-resolution images, or
-          heavily skewed photos — for those, expect to manually correct some of the output.
+          heavily skewed photos - for those, expect to manually correct some of the output.
         </p>
 
         <h2>Common mistakes</h2>
         <ul>
-          <li>Expecting perfect accuracy on a low-quality or heavily compressed image — OCR accuracy tracks image quality closely.</li>
-          <li>Picking the wrong language before running — recognition is tuned per language, so a mismatch produces garbled results even on clear text.</li>
-          <li>Not checking the confidence score — a low score is a signal to double-check the output rather than trust it blindly.</li>
+          <li>Expecting perfect accuracy on a low-quality or heavily compressed image - OCR accuracy tracks image quality closely.</li>
+          <li>Picking the wrong language before running - recognition is tuned per language, so a mismatch produces garbled results even on clear text.</li>
+          <li>Not checking the confidence score - a low score is a signal to double-check the output rather than trust it blindly.</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
         <div className="faq-item">
           <h3>Why is the extracted text full of errors?</h3>
-          <p>Usually image quality, skew, or an unusual font — try a clearer, straighter photo, or confirm the right language is selected.</p>
+          <p>Usually image quality, skew, or an unusual font - try a clearer, straighter photo, or confirm the right language is selected.</p>
         </div>
         <div className="faq-item">
           <h3>Does this work on handwriting?</h3>
-          <p>It can, but much less reliably than printed text — handwriting recognition is a genuinely harder problem for OCR engines in general.</p>
+          <p>It can, but much less reliably than printed text - handwriting recognition is a genuinely harder problem for OCR engines in general.</p>
         </div>
         <div className="faq-item">
           <h3>What does the confidence percentage mean?</h3>
-          <p>It's the OCR engine's own estimate of how sure it is about the result — lower numbers mean it's worth proofreading the output more carefully.</p>
+          <p>It's the OCR engine's own estimate of how sure it is about the result - lower numbers mean it's worth proofreading the output more carefully.</p>
         </div>
         <div className="faq-item">
           <h3>Why did the first run take so long?</h3>
-          <p>The OCR engine and language data (several MB) download on first use and are cached afterward — later runs with the same language are noticeably faster.</p>
+          <p>The OCR engine and language data (several MB) download on first use and are cached afterward - later runs with the same language are noticeably faster.</p>
         </div>
         <div className="faq-item">
           <h3>Is my image uploaded anywhere?</h3>
-          <p>No — recognition runs entirely in your browser. Only the OCR engine/language files themselves are fetched from tesseract.js's own hosting, not your image.</p>
+          <p>No - recognition runs entirely in your browser. Only the OCR engine/language files themselves are fetched from tesseract.js's own hosting, not your image.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/text-data">Text &amp; Data tools</Link> on
-          Toolbox.
+          Rootconverter.
         </p>
       </article>
     </div>

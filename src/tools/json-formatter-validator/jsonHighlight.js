@@ -1,9 +1,9 @@
 // -----------------------------------------------------------------------
-// JSON SYNTAX HIGHLIGHTING — turns raw JSON text into an HTML string with
+// JSON SYNTAX HIGHLIGHTING - turns raw JSON text into an HTML string with
 // colored <span>s per token, for the editor's highlight overlay (see the
 // "Editor overlay" comment in JsonFormatter.jsx for how it's displayed).
 //
-// This is a lenient TOKENIZER, not a parser — it has to run on text that
+// This is a lenient TOKENIZER, not a parser - it has to run on text that
 // might currently be invalid (mid-edit, or genuinely broken), so it just
 // classifies each chunk of text by what it looks like rather than
 // requiring the whole document to be valid JSON. Every character of the
@@ -32,7 +32,7 @@ export function highlightJson(text) {
     const [full, stringToken, numberToken, booleanToken, nullToken, punctuationToken, spaceToken] = match;
 
     if (stringToken !== undefined) {
-      // A string is a KEY if, skipping whitespace, a colon follows it —
+      // A string is a KEY if, skipping whitespace, a colon follows it -
       // otherwise it's a value. Peeking at the real text (not another
       // regex token) keeps this simple and always in sync.
       let after = TOKEN_REGEX.lastIndex;
@@ -51,7 +51,7 @@ export function highlightJson(text) {
       html += escapeHtml(full); // whitespace doesn't need a color
     } else {
       // Doesn't look like any known token (e.g. an unquoted key, or
-      // genuinely invalid syntax) — left uncolored, which itself is a
+      // genuinely invalid syntax) - left uncolored, which itself is a
       // useful visual signal that something here isn't recognized.
       html += escapeHtml(full);
     }

@@ -21,10 +21,10 @@ import {
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 //
-// The actual parsing/formatting/stats logic lives in jsonUtils.js — this
+// The actual parsing/formatting/stats logic lives in jsonUtils.js - this
 // file is just the UI wired up to it.
 
 export default function JsonFormatter() {
@@ -54,12 +54,12 @@ export default function JsonFormatter() {
   const [fixError, setFixError] = useState('');
 
   useDocumentMeta({
-    title: 'JSON Formatter, Validator & Fixer — Free & Client-Side | Toolbox',
+    title: 'JSON Formatter, Validator & Fixer - Free & Client-Side | Rootconverter',
     description:
-      'Format, validate, minify, and automatically fix broken JSON instantly in your browser. One-click repair for missing commas/brackets, line/column error locations, a colorful tree view, and stats — no upload required.',
+      'Format, validate, minify, and automatically fix broken JSON instantly in your browser. One-click repair for missing commas/brackets, line/column error locations, a colorful tree view, and stats - no upload required.',
   });
 
-  // Re-parses on every change — simple, and matches how the other text
+  // Re-parses on every change - simple, and matches how the other text
   // tools on this site work (no debouncing). Fine for anything up to a
   // few MB; a very large document could feel less snappy while typing.
   const validation = rawInput.trim() ? validateJson(rawInput) : null;
@@ -132,14 +132,14 @@ export default function JsonFormatter() {
       const repairedValidation = validateJson(repairedText);
 
       if (!repairedValidation.ok) {
-        setFixError("Couldn't automatically fix this JSON — some of the errors are too severe to repair.");
+        setFixError("Couldn't automatically fix this JSON - some of the errors are too severe to repair.");
         return;
       }
 
       setFixReport(describeFixes(rawInput, repairedText));
       setRawInput(formatJson(repairedValidation.value, indentValue));
     } catch {
-      setFixError("Couldn't automatically fix this JSON — some of the errors are too severe to repair.");
+      setFixError("Couldn't automatically fix this JSON - some of the errors are too severe to repair.");
     } finally {
       setIsFixing(false);
     }
@@ -155,7 +155,7 @@ export default function JsonFormatter() {
     try {
       const text = await readJsonFile(file);
       setFileError('');
-      // Loading a file overwrites the whole editor — if there's unsaved
+      // Loading a file overwrites the whole editor - if there's unsaved
       // work already, confirm first instead of silently discarding it.
       if (hasUnsavedWork) {
         setPendingContent(text);
@@ -195,7 +195,7 @@ export default function JsonFormatter() {
     setTimeout(() => setCopiedMinified(false), 1500);
   }
 
-  // Any non-empty editor content counts as unsaved work — only Clear
+  // Any non-empty editor content counts as unsaved work - only Clear
   // resets it, matching this tool's own spec (formatting/minifying/
   // copying/downloading all keep it "unsaved" since they don't change
   // whether there's content worth protecting).
@@ -301,7 +301,7 @@ export default function JsonFormatter() {
           })}
         </div>
         {/* Editor overlay: a textarea can't color individual characters,
-            so the colored text you actually see is this <pre> underneath —
+            so the colored text you actually see is this <pre> underneath -
             the real textarea sits on top with fully transparent text (only
             its caret and selection highlight are visible), capturing input
             normally while the syntax-highlighted copy shows through. Both
@@ -313,7 +313,7 @@ export default function JsonFormatter() {
             aria-hidden="true"
             ref={highlightRef}
             // Safe: highlightJson() HTML-escapes every piece of the
-            // original text before wrapping it in <span> tags — see
+            // original text before wrapping it in <span> tags - see
             // jsonHighlight.js.
             dangerouslySetInnerHTML={{ __html: highlightedHtml }}
           />
@@ -371,7 +371,7 @@ export default function JsonFormatter() {
 
       {validation?.ok && duplicateKeys.length > 0 && (
         <p className="field-warning">
-          Warning: duplicate key{duplicateKeys.length > 1 ? 's' : ''} found — {duplicateKeys.join(', ')}.
+          Warning: duplicate key{duplicateKeys.length > 1 ? 's' : ''} found - {duplicateKeys.join(', ')}.
           JavaScript silently kept only the last value for each; the others were dropped.
         </p>
       )}
@@ -450,13 +450,13 @@ export default function JsonFormatter() {
         <p>
           Whether you're debugging an API response, cleaning up a config file, or just trying to
           read a wall of minified JSON, this tool formats, validates, minifies, automatically
-          repairs broken syntax, and inspects JSON with a colorful tree view — entirely in your
+          repairs broken syntax, and inspects JSON with a colorful tree view - entirely in your
           browser, with your data never uploaded anywhere.
         </p>
 
         <h2>How JSON formatting works</h2>
         <p>
-          "Formatting" (or pretty-printing) doesn't change the data at all — it only changes the
+          "Formatting" (or pretty-printing) doesn't change the data at all - it only changes the
           whitespace, adding indentation and line breaks so nested structure is easy to read.
           Under the hood this tool uses <code>JSON.parse()</code> to read your JSON into a real
           JavaScript value, then <code>JSON.stringify()</code> to write it back out with your
@@ -466,7 +466,7 @@ export default function JsonFormatter() {
         <h2>Why JSON validation matters</h2>
         <p>
           A single stray comma or missing quote makes an entire JSON document unreadable to any
-          program expecting to parse it — and the resulting error messages are often unhelpful on
+          program expecting to parse it - and the resulting error messages are often unhelpful on
           their own. This tool points to the exact line, column, and character where parsing
           failed, so you can find and fix the problem directly instead of scanning by eye.
         </p>
@@ -474,7 +474,7 @@ export default function JsonFormatter() {
         <h2>Automatically fixing broken JSON</h2>
         <p>
           When your JSON is invalid, the <strong>Fix JSON</strong> button attempts to repair it
-          automatically — handling the most common problems in one click: missing or trailing
+          automatically - handling the most common problems in one click: missing or trailing
           commas, missing closing brackets/braces, unquoted object keys, single-quoted strings,
           and stray comments. Afterward it shows a short summary of what it believes it changed,
           so a fix is never a silent black box. If the JSON is too badly broken to recover, it
@@ -483,24 +483,24 @@ export default function JsonFormatter() {
 
         <h2>Pretty print vs minify</h2>
         <p>
-          Pretty-printed JSON is for humans — indentation and line breaks make structure easy to
+          Pretty-printed JSON is for humans - indentation and line breaks make structure easy to
           follow while editing or reviewing. Minified JSON strips all of that whitespace, producing
-          the smallest possible file — better for what you actually send over a network or store,
+          the smallest possible file - better for what you actually send over a network or store,
           since the extra formatting characters serve no purpose there.
         </p>
 
         <h2>Common JSON mistakes</h2>
         <ul>
-          <li>Trailing commas after the last item in an object or array — valid in JavaScript object literals, but not in JSON. (Auto-fixable.)</li>
-          <li>Using single quotes instead of double quotes — JSON strings must use double quotes. (Auto-fixable.)</li>
-          <li>Leaving a comment in the file — JSON has no comment syntax at all. (Auto-fixable.)</li>
+          <li>Trailing commas after the last item in an object or array - valid in JavaScript object literals, but not in JSON. (Auto-fixable.)</li>
+          <li>Using single quotes instead of double quotes - JSON strings must use double quotes. (Auto-fixable.)</li>
+          <li>Leaving a comment in the file - JSON has no comment syntax at all. (Auto-fixable.)</li>
           <li>Missing a closing bracket or brace, especially in deeply nested structures. (Auto-fixable.)</li>
-          <li>Duplicate keys in the same object — technically parseable (the last one silently wins), but almost always a mistake worth fixing. This one isn't something "Fix JSON" changes, since it's valid syntax — the duplicate-key warning flags it instead.</li>
+          <li>Duplicate keys in the same object - technically parseable (the last one silently wins), but almost always a mistake worth fixing. This one isn't something "Fix JSON" changes, since it's valid syntax - the duplicate-key warning flags it instead.</li>
         </ul>
 
         <h2>Best practices</h2>
         <ul>
-          <li>Keep nesting as shallow as practical — deeply nested JSON is hard for humans to read and easy to make mistakes in.</li>
+          <li>Keep nesting as shallow as practical - deeply nested JSON is hard for humans to read and easy to make mistakes in.</li>
           <li>Use consistent key naming (e.g. always camelCase or always snake_case) throughout a document.</li>
           <li>Minify JSON before sending it over a network; keep a pretty-printed copy for editing.</li>
         </ul>
@@ -509,21 +509,21 @@ export default function JsonFormatter() {
         <div className="faq-item">
           <h3>Why does my JSON say "Unexpected token" but I can't find the problem?</h3>
           <p>
-            Check the line and column this tool reports — the error usually points at, or just
+            Check the line and column this tool reports - the error usually points at, or just
             after, a missing comma, quote, or bracket immediately before that position.
           </p>
         </div>
         <div className="faq-item">
           <h3>Are trailing commas ever allowed in JSON?</h3>
           <p>
-            No — unlike JavaScript object/array literals, standard JSON never allows a trailing
+            No - unlike JavaScript object/array literals, standard JSON never allows a trailing
             comma before a closing <code>{'}'}</code> or <code>]</code>.
           </p>
         </div>
         <div className="faq-item">
           <h3>What happens if my JSON has duplicate keys?</h3>
           <p>
-            It still parses — JavaScript keeps only the last value for a repeated key and silently
+            It still parses - JavaScript keeps only the last value for a repeated key and silently
             drops the earlier ones. This tool detects and warns about that rather than failing,
             since it's technically valid but usually unintentional.
           </p>
@@ -532,18 +532,18 @@ export default function JsonFormatter() {
           <h3>What's the difference between formatting and validating?</h3>
           <p>
             Validating just checks whether the JSON is syntactically correct. Formatting also
-            rewrites its whitespace for readability — you can't format invalid JSON, since there's
+            rewrites its whitespace for readability - you can't format invalid JSON, since there's
             no valid structure to lay out.
           </p>
         </div>
         <div className="faq-item">
           <h3>Is my JSON uploaded anywhere?</h3>
-          <p>No — parsing, formatting, and minifying all happen locally using your browser's own JSON engine.</p>
+          <p>No - parsing, formatting, and minifying all happen locally using your browser's own JSON engine.</p>
         </div>
         <div className="faq-item">
           <h3>Can this tool fix broken JSON automatically?</h3>
           <p>
-            Yes — the <strong>Fix JSON</strong> button (enabled whenever the JSON is invalid)
+            Yes - the <strong>Fix JSON</strong> button (enabled whenever the JSON is invalid)
             handles common problems like missing commas, missing brackets, unquoted keys, and
             single quotes, then shows a short summary of what it changed. Severely malformed
             input may still be beyond automatic repair.
@@ -552,7 +552,7 @@ export default function JsonFormatter() {
 
         <h2>Related tools</h2>
         <p>
-          Browse the rest of the <Link to="/category/developer">Developer tools</Link> on Toolbox.
+          Browse the rest of the <Link to="/category/developer">Developer tools</Link> on Rootconverter.
         </p>
       </article>
     </div>

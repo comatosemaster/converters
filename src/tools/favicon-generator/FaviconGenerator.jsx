@@ -29,7 +29,7 @@ function buildSquareCanvas(img, backgroundHex) {
     ctx.fillRect(0, 0, side, side);
   }
   // Leaving it unfilled keeps the padding transparent (canvases start
-  // fully transparent) — that's the default, matching "keep alpha".
+  // fully transparent) - that's the default, matching "keep alpha".
 
   const dx = (side - img.naturalWidth) / 2;
   const dy = (side - img.naturalHeight) / 2;
@@ -38,7 +38,7 @@ function buildSquareCanvas(img, backgroundHex) {
 }
 
 // The square base is already fully opaque-or-transparent edge to edge, so
-// scaling it down/up to a new size is just a plain draw — no extra
+// scaling it down/up to a new size is just a plain draw - no extra
 // background fill needed here.
 function resizeSquareCanvas(sourceCanvas, size) {
   const canvas = document.createElement('canvas');
@@ -55,10 +55,10 @@ function resizeSquareCanvas(sourceCanvas, size) {
 // the ICO format is just a small header, one "directory entry" per image
 // describing its size/offset, and then the images themselves back to back.
 // Modern ICOs are allowed to store each image as a plain PNG (instead of
-// old-style raw bitmap data) — every current OS/browser understands that —
+// old-style raw bitmap data) - every current OS/browser understands that -
 // so we can reuse the PNG blobs we already made for the other sizes.
 async function buildIco(entries) {
-  // entries: [{ size, blob }, ...] — one PNG blob per icon size to include.
+  // entries: [{ size, blob }, ...] - one PNG blob per icon size to include.
   const images = await Promise.all(
     entries.map(async ({ size, blob }) => ({
       size,
@@ -82,7 +82,7 @@ async function buildIco(entries) {
   let entryPos = HEADER_SIZE;
   let dataPos = dataOffset;
   for (const image of images) {
-    // A width/height byte of 0 means "256px" in the ICO format — not
+    // A width/height byte of 0 means "256px" in the ICO format - not
     // relevant at our sizes, but included for correctness.
     output[entryPos] = image.size >= 256 ? 0 : image.size; // width
     output[entryPos + 1] = image.size >= 256 ? 0 : image.size; // height
@@ -132,7 +132,7 @@ const PNG_SIZES = [16, 32, 48, 180, 192, 512];
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 
 export default function FaviconGenerator() {
@@ -148,11 +148,11 @@ export default function FaviconGenerator() {
   const [isDragging, setIsDragging] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   // A pasted image, held here while we wait for the discard confirmation
-  // above — null means "just resetting", not "resetting to load a file".
+  // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
 
   useDocumentMeta({
-    title: 'Favicon Generator — Full Icon Package, Client-Side | Toolbox',
+    title: 'Favicon Generator - Full Icon Package, Client-Side | Rootconverter',
     description:
       'Generate a complete favicon package (ICO, PNG sizes, web manifest, and HTML tags) from any image, entirely in your browser.',
   });
@@ -287,9 +287,9 @@ export default function FaviconGenerator() {
   }
 
   // "Choose a different image" and pasting a new image both throw away the
-  // current package — if there's unsaved work, confirm first instead of
+  // current package - if there's unsaved work, confirm first instead of
   // silently discarding it. (Neither of these navigates anywhere, so
-  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // UnsavedChangesGuard can't catch them on its own - it only watches for
   // page-to-page navigation.) `pendingFile` remembers a pasted image while
   // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
@@ -328,7 +328,7 @@ export default function FaviconGenerator() {
   // yet or the current package isn't the one that's been downloaded.
   const hasUnsavedWork = Boolean(file) && (!zipBlob || zipBlob !== downloadedBlob);
   useUnsavedChangesWarning(hasUnsavedWork);
-  // Always listening (not just while the drop zone is empty) — pasting a
+  // Always listening (not just while the drop zone is empty) - pasting a
   // new image over an existing one is allowed, it just goes through the
   // same discard confirmation as "Choose a different image" when needed.
   usePasteToUpload(true, handlePastedFile);
@@ -422,7 +422,7 @@ export default function FaviconGenerator() {
 
           {!addBackground && (
             <p className="field-hint">
-              No background selected — transparent areas of your image will stay transparent.
+              No background selected - transparent areas of your image will stay transparent.
             </p>
           )}
 
@@ -435,7 +435,7 @@ export default function FaviconGenerator() {
           )}
           {isSmallSource && (
             <p className="field-hint">
-              Your source image is smaller than the recommended 512×512 — the larger sizes may
+              Your source image is smaller than the recommended 512×512 - the larger sizes may
               look soft since shrinking down can't invent missing detail, and this can't add any
               back.
             </p>
@@ -487,7 +487,7 @@ export default function FaviconGenerator() {
 
       <article className="tool-article">
         <p>
-          A favicon isn't just one file anymore — modern sites need several sizes for browser
+          A favicon isn't just one file anymore - modern sites need several sizes for browser
           tabs, bookmarks, home-screen icons, and a manifest tying it together. This tool
           generates that entire package from a single source image, entirely in your browser.
         </p>
@@ -496,41 +496,41 @@ export default function FaviconGenerator() {
         <p>
           Your image is padded to a square (if it isn't already), then redrawn at each required
           size using the Canvas API. The various PNGs are packed into a proper <code>.ico</code>{' '}
-          file by hand — Canvas can't export ICO directly — and a <code>site.webmanifest</code>{' '}
+          file by hand - Canvas can't export ICO directly - and a <code>site.webmanifest</code>{' '}
           plus the HTML tags to reference everything are generated alongside it, all bundled into
           one ZIP.
         </p>
 
         <h2>What's actually in the package</h2>
         <ul>
-          <li><code>favicon.ico</code> — a multi-size icon (16/32/48px) most browsers still check for by default.</li>
-          <li><code>favicon-16x16.png</code> / <code>favicon-32x32.png</code> — modern browser tab icons.</li>
-          <li><code>apple-touch-icon.png</code> (180×180) — used when someone adds your site to an iOS home screen.</li>
-          <li><code>android-chrome-192x192.png</code> / <code>-512x512.png</code> — Android home-screen and splash icons.</li>
-          <li><code>site.webmanifest</code> — JSON describing your app's icons, name, and theme color.</li>
+          <li><code>favicon.ico</code> - a multi-size icon (16/32/48px) most browsers still check for by default.</li>
+          <li><code>favicon-16x16.png</code> / <code>favicon-32x32.png</code> - modern browser tab icons.</li>
+          <li><code>apple-touch-icon.png</code> (180×180) - used when someone adds your site to an iOS home screen.</li>
+          <li><code>android-chrome-192x192.png</code> / <code>-512x512.png</code> - Android home-screen and splash icons.</li>
+          <li><code>site.webmanifest</code> - JSON describing your app's icons, name, and theme color.</li>
         </ul>
 
         <h2>When to regenerate your favicon</h2>
         <p>
-          Any time you change your logo or brand colors — an outdated favicon is a small but
+          Any time you change your logo or brand colors - an outdated favicon is a small but
           common inconsistency. It's also worth double-checking after a redesign, since it's easy
           to update the visible logo and forget the favicon entirely.
         </p>
 
         <h2>Common mistakes</h2>
         <ul>
-          <li>Only providing a <code>favicon.ico</code> and skipping the PNG sizes — modern browsers and devices look for specific sizes the ICO alone doesn't cover.</li>
-          <li>Using a small or detailed source image — fine detail gets lost at 16×16px, so simple, bold designs work best.</li>
-          <li>Forgetting to actually add the generated <code>&lt;link&gt;</code> tags to your site's <code>&lt;head&gt;</code> — generating the files alone doesn't install them.</li>
+          <li>Only providing a <code>favicon.ico</code> and skipping the PNG sizes - modern browsers and devices look for specific sizes the ICO alone doesn't cover.</li>
+          <li>Using a small or detailed source image - fine detail gets lost at 16×16px, so simple, bold designs work best.</li>
+          <li>Forgetting to actually add the generated <code>&lt;link&gt;</code> tags to your site's <code>&lt;head&gt;</code> - generating the files alone doesn't install them.</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
         <div className="faq-item">
           <h3>Do I really need all these different sizes?</h3>
-          <p>For full compatibility, yes — different browsers and devices each look for specific files and sizes; this package covers the common ones.</p>
+          <p>For full compatibility, yes - different browsers and devices each look for specific files and sizes; this package covers the common ones.</p>
         </div>
         <div className="faq-item">
-          <h3>My source image isn't square — what happens?</h3>
+          <h3>My source image isn't square - what happens?</h3>
           <p>It gets padded to a square (with transparency or a background color you choose) rather than stretched, so nothing gets distorted.</p>
         </div>
         <div className="faq-item">
@@ -543,13 +543,13 @@ export default function FaviconGenerator() {
         </div>
         <div className="faq-item">
           <h3>Is my image uploaded anywhere?</h3>
-          <p>No — every size is generated locally using the Canvas API, and the ZIP is built in your browser too.</p>
+          <p>No - every size is generated locally using the Canvas API, and the ZIP is built in your browser too.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
-          Toolbox.
+          Rootconverter.
         </p>
       </article>
     </div>

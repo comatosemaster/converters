@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 
 // Sets the browser tab title and the page's <meta name="description"> tag
-// while a component is mounted, restoring the site's defaults on unmount —
+// while a component is mounted, restoring the site's defaults on unmount -
 // so navigating away (e.g. to another tool) doesn't leave a stale title
 // behind. Plain DOM calls, no dependency needed for something this small.
 //
-// Usage: useDocumentMeta({ title: 'My Tool | Toolbox', description: '...' });
+// Usage: useDocumentMeta({ title: 'My Tool | Rootconverter', description: '...' });
 export function useDocumentMeta({ title, description }) {
   useEffect(() => {
     const previousTitle = document.title;

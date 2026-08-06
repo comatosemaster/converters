@@ -14,7 +14,7 @@ function formatBytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
-// HEIC files are notoriously inconsistent about their reported MIME type —
+// HEIC files are notoriously inconsistent about their reported MIME type -
 // many browsers/OSes report an empty string instead of "image/heic". So we
 // check the file extension too, not just file.type.
 function isHeicFile(file) {
@@ -34,13 +34,13 @@ function buildDownloadName(originalName) {
 
 // --- The tool component -------------------------------------------------------
 //
-// Unlike the other image tools, this one handles a LIST of files at once —
+// Unlike the other image tools, this one handles a LIST of files at once -
 // HEIC conversion is a one-shot batch job people run on a whole camera roll
 // export, not a single image to tweak interactively. Each file gets its own
 // little card tracking whether it's still converting, done, or failed.
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 
 export default function HeicToJpg() {
@@ -52,7 +52,7 @@ export default function HeicToJpg() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   useDocumentMeta({
-    title: 'HEIC to JPG Converter — Free & Client-Side | Toolbox',
+    title: 'HEIC to JPG Converter - Free & Client-Side | Rootconverter',
     description:
       'Convert iPhone HEIC/HEIF photos to JPG entirely in your browser, one or many at a time. No upload, no limits, unlike most online converters.',
   });
@@ -81,12 +81,12 @@ export default function HeicToJpg() {
     try {
       // heic2any bundles a large WASM decoder (over a megabyte). Importing
       // it dynamically, right when we actually need it, keeps that weight
-      // out of the main site bundle — everyone else's page stays fast, and
+      // out of the main site bundle - everyone else's page stays fast, and
       // only someone actually converting a HEIC photo downloads it.
       const { default: heic2any } = await import('heic2any');
       const result = await heic2any({ blob: file, toType: 'image/jpeg', quality: qualityAtStart });
       // Some HEIC files (e.g. iPhone "Live Photos") bundle more than one
-      // image — heic2any returns an array in that case. We only want the
+      // image - heic2any returns an array in that case. We only want the
       // main photo, which is always the first one.
       const blob = Array.isArray(result) ? result[0] : result;
       const url = URL.createObjectURL(blob);
@@ -99,7 +99,7 @@ export default function HeicToJpg() {
       setItems((prev) =>
         prev.map((item) =>
           item.id === id
-            ? { ...item, status: 'error', error: "Couldn't convert this file — it may be corrupted or not a real HEIC/HEIF image." }
+            ? { ...item, status: 'error', error: "Couldn't convert this file - it may be corrupted or not a real HEIC/HEIF image." }
             : item,
         ),
       );
@@ -112,7 +112,7 @@ export default function HeicToJpg() {
     const skipped = files.length - heicFiles.length;
 
     setGlobalError(
-      skipped > 0 ? `Skipped ${skipped} file(s) — only .heic/.heif photos are supported.` : '',
+      skipped > 0 ? `Skipped ${skipped} file(s) - only .heic/.heif photos are supported.` : '',
     );
 
     const newItems = heicFiles.map((file) => ({
@@ -126,7 +126,7 @@ export default function HeicToJpg() {
     }));
     setItems((prev) => [...prev, ...newItems]);
 
-    // Kick off every conversion right away — they run independently, so
+    // Kick off every conversion right away - they run independently, so
     // the UI updates each card as soon as its own decode finishes instead
     // of waiting for the whole batch.
     newItems.forEach((item) => convertItem(item.id, item.file, quality));
@@ -154,9 +154,9 @@ export default function HeicToJpg() {
     setGlobalError('');
   }
 
-  // "Clear all" throws away every photo in the list — if any are still
+  // "Clear all" throws away every photo in the list - if any are still
   // converting or not yet downloaded, confirm first. (This doesn't
-  // navigate anywhere, so UnsavedChangesGuard can't catch it on its own —
+  // navigate anywhere, so UnsavedChangesGuard can't catch it on its own -
   // it only watches for page-to-page navigation.)
   function handleClearAllClick() {
     if (hasUnsavedWork) {
@@ -176,7 +176,7 @@ export default function HeicToJpg() {
   const hasUnsavedWork = items.some((item) => item.status !== 'error' && !item.downloaded);
   useUnsavedChangesWarning(hasUnsavedWork);
   // This drop zone stays visible even after files are added (you can keep
-  // adding more), so paste stays enabled the whole time too — unlike the
+  // adding more), so paste stays enabled the whole time too - unlike the
   // single-image tools, there's no "already have one" state to protect.
   usePasteToUpload(true, (file) => handleFiles([file]));
 
@@ -220,7 +220,7 @@ export default function HeicToJpg() {
         onDrop={handleDrop}
       >
         <p className="drop-zone-title">Drag &amp; drop, paste, or click to browse</p>
-        <p className="drop-zone-hint">HEIC/HEIF photos only — you can select more than one at a time</p>
+        <p className="drop-zone-hint">HEIC/HEIF photos only - you can select more than one at a time</p>
         <input
           ref={fileInputRef}
           type="file"
@@ -305,7 +305,7 @@ export default function HeicToJpg() {
         <p>
           HEIC (also called HEIF) is the format iPhones save photos in by default. It's an
           efficient format, but browsers can't display it natively, and it won't open on many
-          Windows PCs, Android devices, or websites — this tool converts it to universally
+          Windows PCs, Android devices, or websites - this tool converts it to universally
           supported JPG, entirely in your browser, with no limit on how many photos you convert.
         </p>
 
@@ -313,7 +313,7 @@ export default function HeicToJpg() {
         <p>
           Since browsers can't decode HEIC on their own, this tool loads a WebAssembly decoder
           (only when you actually use it, so it doesn't slow down the rest of the site) that
-          reads the HEIC data and re-encodes it as a standard JPEG — all inside your browser tab.
+          reads the HEIC data and re-encodes it as a standard JPEG - all inside your browser tab.
         </p>
 
         <h2>Why can't browsers just open HEIC directly?</h2>
@@ -326,9 +326,9 @@ export default function HeicToJpg() {
 
         <h2>Common mistakes</h2>
         <ul>
-          <li>Assuming a HEIC file is corrupted just because it won't open — it's very likely just an unsupported format on that device, not damaged.</li>
-          <li>Not checking photo rotation after converting — EXIF orientation data isn't preserved during decoding, so an occasional photo may come out sideways.</li>
-          <li>Expecting a "Live Photo" HEIC to convert its motion/video component — only the still image is extracted.</li>
+          <li>Assuming a HEIC file is corrupted just because it won't open - it's very likely just an unsupported format on that device, not damaged.</li>
+          <li>Not checking photo rotation after converting - EXIF orientation data isn't preserved during decoding, so an occasional photo may come out sideways.</li>
+          <li>Expecting a "Live Photo" HEIC to convert its motion/video component - only the still image is extracted.</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
@@ -338,7 +338,7 @@ export default function HeicToJpg() {
         </div>
         <div className="faq-item">
           <h3>Can I convert more than one photo at once?</h3>
-          <p>Yes — drop or select multiple HEIC files and each converts independently, with its own download button.</p>
+          <p>Yes - drop or select multiple HEIC files and each converts independently, with its own download button.</p>
         </div>
         <div className="faq-item">
           <h3>Why does a converted photo look sideways?</h3>
@@ -346,17 +346,17 @@ export default function HeicToJpg() {
         </div>
         <div className="faq-item">
           <h3>Does this cost anything or have a conversion limit?</h3>
-          <p>No — unlike many online HEIC converters, this runs entirely in your browser, so there's no server cost driving a paywall or limit.</p>
+          <p>No - unlike many online HEIC converters, this runs entirely in your browser, so there's no server cost driving a paywall or limit.</p>
         </div>
         <div className="faq-item">
           <h3>Are my photos uploaded anywhere?</h3>
-          <p>No — decoding and re-encoding both happen locally in your browser.</p>
+          <p>No - decoding and re-encoding both happen locally in your browser.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
-          Toolbox.
+          Rootconverter.
         </p>
       </article>
     </div>

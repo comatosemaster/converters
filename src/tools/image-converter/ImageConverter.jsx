@@ -11,7 +11,7 @@ import { formatBytes } from '../../utils/formatBytes.js';
 //
 // `lossy: true` means the format has a quality slider (it can trade file
 // size for image quality). PNG is lossless, so it never loses quality no
-// matter what — there's nothing to slide.
+// matter what - there's nothing to slide.
 
 const FORMATS = [
   { mime: 'image/png', label: 'PNG', extension: 'png', lossy: false },
@@ -39,7 +39,7 @@ function buildDownloadName(originalName, mime) {
 // --- The tool component -----------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 
 export default function ImageConverter() {
@@ -51,11 +51,11 @@ export default function ImageConverter() {
   const [isDragging, setIsDragging] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   // A pasted image, held here while we wait for the discard confirmation
-  // above — null means "just resetting", not "resetting to load a file".
+  // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
 
   useDocumentMeta({
-    title: 'Image Converter — PNG, JPG, WebP, AVIF | Toolbox',
+    title: 'Image Converter - PNG, JPG, WebP, AVIF | Rootconverter',
     description:
       'Convert images between PNG, JPG, WebP, and AVIF entirely in your browser. Free, fast, and no upload required.',
   });
@@ -113,7 +113,7 @@ export default function ImageConverter() {
       const ctx = canvas.getContext('2d');
 
       if (format === 'image/jpeg') {
-        // JPEG has no transparency channel — without this, transparent
+        // JPEG has no transparency channel - without this, transparent
         // areas would turn black instead of staying white/blank.
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -129,10 +129,10 @@ export default function ImageConverter() {
             return;
           }
           // Browsers that don't support the requested format silently fall
-          // back to PNG — let the user know instead of pretending it worked.
+          // back to PNG - let the user know instead of pretending it worked.
           if (blob.type !== format) {
             setError(
-              `Your browser doesn't support exporting ${FORMAT_BY_MIME[format].label} — showing PNG instead.`,
+              `Your browser doesn't support exporting ${FORMAT_BY_MIME[format].label} - showing PNG instead.`,
             );
           }
           setOutputBlob(blob);
@@ -174,9 +174,9 @@ export default function ImageConverter() {
   }
 
   // "Choose a different image" and pasting a new image both throw away the
-  // current file/result — if there's unsaved work, confirm first instead of
+  // current file/result - if there's unsaved work, confirm first instead of
   // silently discarding it. (Neither of these navigates anywhere, so
-  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // UnsavedChangesGuard can't catch them on its own - it only watches for
   // page-to-page navigation.) `pendingFile` remembers a pasted image while
   // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
@@ -211,7 +211,7 @@ export default function ImageConverter() {
   // yet or the current result isn't the one that's been downloaded.
   const hasUnsavedWork = Boolean(file) && (!outputBlob || outputBlob !== downloadedBlob);
   useUnsavedChangesWarning(hasUnsavedWork);
-  // Always listening (not just while the drop zone is empty) — pasting a
+  // Always listening (not just while the drop zone is empty) - pasting a
   // new image over an existing one is allowed, it just goes through the
   // same discard confirmation as "Choose a different image" when needed.
   usePasteToUpload(true, handlePastedFile);
@@ -390,7 +390,7 @@ export default function ImageConverter() {
         <p>
           PNG, JPG, WebP, and AVIF each make different tradeoffs between quality, file size, and
           browser support. This tool re-encodes any image into whichever of those formats you
-          need, entirely in your browser using the Canvas API — nothing is uploaded to convert it.
+          need, entirely in your browser using the Canvas API - nothing is uploaded to convert it.
         </p>
 
         <h2>How it works</h2>
@@ -404,21 +404,21 @@ export default function ImageConverter() {
         <h2>PNG vs JPG vs WebP vs AVIF</h2>
         <ul>
           <li>
-            <strong>PNG</strong> is lossless and supports transparency — best for graphics, logos,
+            <strong>PNG</strong> is lossless and supports transparency - best for graphics, logos,
             and screenshots with sharp edges or text, but larger for photos.
           </li>
           <li>
-            <strong>JPG</strong> is lossy with no transparency — a long-standing, universally
+            <strong>JPG</strong> is lossy with no transparency - a long-standing, universally
             supported default for photos.
           </li>
           <li>
             <strong>WebP</strong> supports both lossy and lossless compression plus transparency,
-            usually beating JPG and PNG at the same visual quality — supported by all modern
+            usually beating JPG and PNG at the same visual quality - supported by all modern
             browsers.
           </li>
           <li>
             <strong>AVIF</strong> compresses even further than WebP at equivalent quality, but
-            encoding/decoding support is newer and less universal — check the browser
+            encoding/decoding support is newer and less universal - check the browser
             compatibility note below.
           </li>
         </ul>
@@ -433,43 +433,43 @@ export default function ImageConverter() {
 
         <h2>Common mistakes</h2>
         <ul>
-          <li>Converting a JPG to PNG expecting it to look sharper — JPG's lossy compression already discarded detail that PNG can't bring back.</li>
-          <li>Converting a transparent PNG to JPG and being surprised the transparent areas turned white — JPG has no alpha channel.</li>
+          <li>Converting a JPG to PNG expecting it to look sharper - JPG's lossy compression already discarded detail that PNG can't bring back.</li>
+          <li>Converting a transparent PNG to JPG and being surprised the transparent areas turned white - JPG has no alpha channel.</li>
           <li>Re-compressing an already-compressed JPG repeatedly, which compounds quality loss each time.</li>
         </ul>
 
         <h2>Frequently asked questions</h2>
         <div className="faq-item">
           <h3>Will converting PNG to JPG reduce quality?</h3>
-          <p>Yes, if you use a JPG quality below 100% — JPG is lossy, so some detail is discarded. PNG itself is always lossless.</p>
+          <p>Yes, if you use a JPG quality below 100% - JPG is lossy, so some detail is discarded. PNG itself is always lossless.</p>
         </div>
         <div className="faq-item">
           <h3>Why doesn't AVIF work in my browser?</h3>
           <p>
-            AVIF support varies — if your browser can't produce it, this tool falls back to PNG
+            AVIF support varies - if your browser can't produce it, this tool falls back to PNG
             automatically and tells you so, rather than failing silently.
           </p>
         </div>
         <div className="faq-item">
           <h3>Does converting formats reduce file size?</h3>
           <p>
-            Often, but it depends on the image and settings — for size specifically, try the{' '}
+            Often, but it depends on the image and settings - for size specifically, try the{' '}
             <Link to="/tool/image-compressor">Image Compressor</Link>, which is built for that.
           </p>
         </div>
         <div className="faq-item">
           <h3>Can I convert multiple images at once?</h3>
-          <p>Not in this tool — it's built for one image at a time. See <Link to="/tool/heic-to-jpg">HEIC to JPG</Link> for an example of a batch-capable tool.</p>
+          <p>Not in this tool - it's built for one image at a time. See <Link to="/tool/heic-to-jpg">HEIC to JPG</Link> for an example of a batch-capable tool.</p>
         </div>
         <div className="faq-item">
           <h3>Is my image uploaded anywhere?</h3>
-          <p>No — the conversion runs entirely in your browser using the Canvas API.</p>
+          <p>No - the conversion runs entirely in your browser using the Canvas API.</p>
         </div>
 
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
-          Toolbox.
+          Rootconverter.
         </p>
       </article>
     </div>

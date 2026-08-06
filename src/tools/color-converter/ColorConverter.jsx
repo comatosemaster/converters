@@ -29,10 +29,10 @@ const EMPTY_TEXTS = { hex: '', rgb: '', rgba: '', hsl: '', hsla: '' };
 // --- The tool component -------------------------------------------------------
 //
 // Note: this component only renders its own UI. It does NOT wrap itself in
-// <ToolLayout> — the router (see src/pages/ToolPage.jsx) does that
+// <ToolLayout> - the router (see src/pages/ToolPage.jsx) does that
 // automatically using the name/description from the registry.
 //
-// All the actual color math lives in colorConversions.js — this file is
+// All the actual color math lives in colorConversions.js - this file is
 // just the UI wired up to it.
 
 export default function ColorConverter() {
@@ -43,7 +43,7 @@ export default function ColorConverter() {
   // agree with `rgba`, except the field currently being edited (see the
   // effect below).
   const [texts, setTexts] = useState(EMPTY_TEXTS);
-  // Which field (if any) currently has focus — the effect below skips
+  // Which field (if any) currently has focus - the effect below skips
   // reformatting that one, so we don't fight the user's cursor mid-type.
   const [activeField, setActiveField] = useState(null);
   const [error, setError] = useState('');
@@ -52,9 +52,9 @@ export default function ColorConverter() {
   const [copiedSnippet, setCopiedSnippet] = useState(null);
 
   useDocumentMeta({
-    title: 'Color Converter — HEX, RGB, HSL & More | Toolbox',
+    title: 'Color Converter - HEX, RGB, HSL & More | Rootconverter',
     description:
-      'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA. Free, fast, and 100% client-side — nothing you enter ever leaves your browser.',
+      'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA. Free, fast, and 100% client-side - nothing you enter ever leaves your browser.',
   });
 
   // Whenever the canonical color changes, refresh every field's text EXCEPT
@@ -71,11 +71,11 @@ export default function ColorConverter() {
   }, [rgba, activeField]);
 
   // Lets you paste a color anywhere on the page, not just inside a specific
-  // field — e.g. right after loading the tool, before clicking any input.
+  // field - e.g. right after loading the tool, before clicking any input.
   useEffect(() => {
     function handleGlobalPaste(event) {
       // A focused text field already handles paste through its own
-      // onChange below — only step in when nothing is focused there.
+      // onChange below - only step in when nothing is focused there.
       if (document.activeElement?.tagName === 'INPUT') return;
       const text = event.clipboardData?.getData('text');
       if (!text) return;
@@ -104,7 +104,7 @@ export default function ColorConverter() {
       setRgba(result.rgba);
       setError('');
     } else {
-      // Keep the last valid color showing in the preview/other fields —
+      // Keep the last valid color showing in the preview/other fields -
       // don't blank everything out just because this field is mid-edit.
       setError(result.error);
     }
@@ -112,7 +112,7 @@ export default function ColorConverter() {
 
   function handleColorPicker(event) {
     const picked = hexToRgb(event.target.value);
-    // The native picker has no alpha channel — keep whatever alpha we had.
+    // The native picker has no alpha channel - keep whatever alpha we had.
     setRgba({ ...picked, a: rgba ? rgba.a : 1 });
     setActiveField(null);
     setError('');
@@ -151,7 +151,7 @@ export default function ColorConverter() {
     setTimeout(() => setCopiedSnippet(null), 1500);
   }
 
-  // Any text in any field — even invalid or half-typed — counts as work the
+  // Any text in any field - even invalid or half-typed - counts as work the
   // user would be annoyed to lose, not just a color that parsed cleanly.
   // Only Clear (which empties everything) turns this back off.
   const hasUnsavedWork = rgba !== null || Object.values(texts).some((text) => text.trim() !== '');
@@ -187,7 +187,7 @@ export default function ColorConverter() {
 
         <div className="color-top-info">
           <p className="field-hint">
-            {rgba ? `Alpha: ${Math.round(rgba.a * 100)}%` : 'No color yet — type, paste, pick, or generate one'}
+            {rgba ? `Alpha: ${Math.round(rgba.a * 100)}%` : 'No color yet - type, paste, pick, or generate one'}
           </p>
           <div className="mode-toggle">
             <button type="button" className="mode-button" onClick={handleRandomColor}>
@@ -271,12 +271,12 @@ export default function ColorConverter() {
         <h2>How it works</h2>
         <p>
           Type or paste a color in any supported format, use the native picker, or hit "Random
-          Color" — every other format updates immediately. Conversions run entirely in your
+          Color" - every other format updates immediately. Conversions run entirely in your
           browser using the standard CSS Color Module formulas for translating between RGB and
           HSL; nothing you type is ever transmitted anywhere.
         </p>
 
-        <h2>HEX vs RGB vs HSL — what's the difference?</h2>
+        <h2>HEX vs RGB vs HSL - what's the difference?</h2>
         <ul>
           <li>
             <strong>HEX</strong> (<code>#RRGGBB</code>) packs red, green, and blue into a 6-digit
@@ -284,12 +284,12 @@ export default function ColorConverter() {
             most design tools.
           </li>
           <li>
-            <strong>RGB</strong> describes the same three channels as plain numbers from 0–255 —
+            <strong>RGB</strong> describes the same three channels as plain numbers from 0-255 -
             easier to read and hand-edit, and what most color pickers work with internally.
           </li>
           <li>
-            <strong>HSL</strong> describes a color by hue (position on a color wheel, 0–360°),
-            saturation (how vivid), and lightness (how close to black or white) — much more
+            <strong>HSL</strong> describes a color by hue (position on a color wheel, 0-360°),
+            saturation (how vivid), and lightness (how close to black or white) - much more
             intuitive for adjusting a color by feel, like "make this darker" or "more vivid,"
             without guessing new numbers.
           </li>
@@ -303,21 +303,21 @@ export default function ColorConverter() {
             code, or need transparency alongside plain numbers.
           </li>
           <li>
-            Use <strong>HSL(A)</strong> when picking or tweaking a color by feel — for example,
+            Use <strong>HSL(A)</strong> when picking or tweaking a color by feel - for example,
             generating a palette of the same hue at a few different lightness values.
           </li>
         </ul>
 
         <h2>Formula overview</h2>
         <ul>
-          <li><strong>HEX → RGB:</strong> each pair of hex digits (00–FF) is one channel, read as base 16.</li>
+          <li><strong>HEX → RGB:</strong> each pair of hex digits (00-FF) is one channel, read as base 16.</li>
           <li>
             <strong>RGB → HSL:</strong> lightness is the average of the highest and lowest
             channel; saturation and hue come from how far apart the channels are and which one is
             largest.
           </li>
           <li>
-            <strong>HSL → RGB:</strong> the reverse — hue determines which channel starts out
+            <strong>HSL → RGB:</strong> the reverse - hue determines which channel starts out
             highest, then saturation and lightness scale it back down.
           </li>
         </ul>
@@ -325,15 +325,15 @@ export default function ColorConverter() {
         <h2>Common mistakes</h2>
         <ul>
           <li>
-            Mixing up the HSL value order — it's always hue, saturation, lightness, in that order.
+            Mixing up the HSL value order - it's always hue, saturation, lightness, in that order.
           </li>
           <li>
-            Forgetting the <code>%</code> signs on saturation/lightness —{' '}
+            Forgetting the <code>%</code> signs on saturation/lightness -{' '}
             <code>hsl(9, 100, 60)</code> isn't valid CSS; it needs{' '}
             <code>hsl(9, 100%, 60%)</code>.
           </li>
           <li>
-            Assuming RGB and RGBA are interchangeable — plain RGB has no alpha channel, so pasting
+            Assuming RGB and RGBA are interchangeable - plain RGB has no alpha channel, so pasting
             an RGBA color into an RGB-only field drops its transparency.
           </li>
           <li>Using out-of-range values, like an alpha above 1 or an RGB channel above 255.</li>
@@ -350,14 +350,14 @@ export default function ColorConverter() {
         <div className="faq-item">
           <h3>Can I convert a HEX color with transparency?</h3>
           <p>
-            Yes — use an 8-digit hex code (<code>#RRGGBBAA</code>), where the last two digits are
+            Yes - use an 8-digit hex code (<code>#RRGGBBAA</code>), where the last two digits are
             the alpha channel. This tool reads and writes that format.
           </p>
         </div>
         <div className="faq-item">
           <h3>Why does my color look different after converting?</h3>
           <p>
-            It shouldn't — every format above describes the exact same color, just written
+            It shouldn't - every format above describes the exact same color, just written
             differently. If it looks off, double-check you copied the whole string, including the
             alpha value.
           </p>
@@ -369,7 +369,7 @@ export default function ColorConverter() {
         <div className="faq-item">
           <h3>What's the shorthand HEX format (#RGB)?</h3>
           <p>
-            A 3-digit hex code where each digit is doubled — <code>#f53</code> is shorthand for{' '}
+            A 3-digit hex code where each digit is doubled - <code>#f53</code> is shorthand for{' '}
             <code>#ff5533</code>. It only works when each channel's two hex digits match.
           </p>
         </div>
@@ -377,7 +377,7 @@ export default function ColorConverter() {
         <h2>Related tools</h2>
         <p>
           Browse the rest of the{' '}
-          <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on Toolbox.
+          <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on Rootconverter.
         </p>
       </article>
     </div>

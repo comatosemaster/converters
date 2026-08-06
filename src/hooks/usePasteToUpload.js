@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-// Lets a tool's drop zone also accept a pasted image (Ctrl+V / Cmd+V) —
+// Lets a tool's drop zone also accept a pasted image (Ctrl+V / Cmd+V) -
 // handy for screenshots, since there's often no actual file on disk to
 // drag in.
 //
@@ -18,7 +18,7 @@ export function usePasteToUpload(enabled, onFile) {
       if (!items) return;
 
       // Clipboard paste can contain several "items" (e.g. an image AND a
-      // filename as plain text) — we only care about the first image one.
+      // filename as plain text) - we only care about the first image one.
       for (const item of items) {
         if (item.type.startsWith('image/')) {
           const file = item.getAsFile();
