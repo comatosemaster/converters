@@ -3984,6 +3984,16 @@ details:focus-visible,
   height: 200px;
 }
 
+/* .json-editor-textarea normally sits UNDER a .json-editor-highlight
+   overlay that renders the actually-visible (syntax-colored) text, so
+   the textarea itself is styled color:transparent - only its caret
+   shows (see section 10). This tool's input has no such overlay (a raw
+   token string doesn't need syntax highlighting), so that transparency
+   needs overriding here, or every character typed/pasted is invisible. */
+.jwt-input-wrapper .json-editor-textarea {
+  color: var(--text);
+}
+
 .jwt-status-badge {
   display: inline-flex;
   align-items: center;
