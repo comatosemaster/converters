@@ -12,9 +12,14 @@
      5. Tool page (ToolLayout + shared form controls)
      6. Toggle-button pattern (used by Base64 direction + Image format pickers)
      7. Image tools (converter, compressor, resizer/cropper, favicon) shared bits
-     8. Unsaved-changes confirmation modal
-     9. Accessibility (focus states)
-    10. Responsive / mobile
+     8. OCR tool bits (progress bar, confidence badge)
+     9. Color Converter bits
+    10. JSON Formatter bits (editor, tree view)
+    11. QR Code Generator bits
+    12. Word Counter & Text Analyzer bits
+    13. Unsaved-changes confirmation modal
+    14. Accessibility (focus states)
+    15. Responsive / mobile
    ========================================================================= */
 
 /* === 1. Variables ======================================================= */
@@ -413,13 +418,25 @@ button.mode-button:hover {
   color: var(--color-accent);
 }
 
+/* For an <a> acting as a button — anchors don't support the disabled
+   attribute, so a disabled-looking download link needs this instead. */
+.ghost-button[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 input[type='range'] {
   width: 100%;
   accent-color: var(--color-accent);
 }
 
 select,
-input[type='number'] {
+input[type='number'],
+input[type='text'],
+input[type='email'],
+input[type='tel'] {
+  width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
@@ -739,7 +756,681 @@ input[type='number'] {
   height: 64px;
 }
 
-/* === 8. Unsaved-changes confirmation modal ================================ */
+/* === 8. OCR tool bits ===================================================== */
+
+.ocr-preview-frame {
+  max-width: 320px;
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 0.2s ease;
+}
+
+.confidence-badge {
+  margin-left: 10px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.confidence-badge.confidence-high {
+  color: #1a7f37;
+  background: color-mix(in srgb, #1a7f37 15%, transparent);
+}
+
+.confidence-badge.confidence-medium {
+  color: #9a6700;
+  background: color-mix(in srgb, #9a6700 15%, transparent);
+}
+
+.confidence-badge.confidence-low {
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+}
+
+/* === 9. Color Converter bits =============================================== */
+
+.color-top-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.color-picker {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+}
+
+.color-picker:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Same checkerboard trick used by the image tools, so a transparent color
+   reads as "transparent" instead of looking like an empty box. */
+.color-preview-frame {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background-image: linear-gradient(45deg, var(--color-bg) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-bg) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-bg) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-bg) 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.color-preview-swatch {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.color-preview-large {
+  width: 72px;
+  height: 72px;
+}
+
+.color-preview-small {
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+}
+
+.color-top-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.color-top-info .mode-toggle {
+  margin-bottom: 0;
+}
+
+.color-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.color-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.color-field-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.css-snippet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.css-snippet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+}
+
+.css-snippet-row code {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tool-article {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text);
+  max-width: 70ch;
+}
+
+.tool-article h2 {
+  font-size: 1.2rem;
+  margin: 28px 0 10px;
+}
+
+.tool-article h2:first-child {
+  margin-top: 0;
+}
+
+.tool-article h3 {
+  font-size: 1rem;
+  margin: 0 0 4px;
+}
+
+.tool-article p {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.tool-article ul {
+  margin: 0 0 10px;
+  padding-left: 20px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.tool-article li {
+  margin-bottom: 6px;
+}
+
+.tool-article code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-bg);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.faq-item {
+  margin-bottom: 16px;
+}
+
+/* === 10. JSON Formatter bits ================================================ */
+
+.json-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.json-options-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.json-options-row .field {
+  margin-bottom: 0;
+}
+
+.json-options-row .checkbox-field {
+  margin-bottom: 0;
+}
+
+.json-editor-wrapper {
+  display: flex;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  margin-bottom: 16px;
+  transition: border-color 0.15s ease;
+  /* The whole editor (gutter + text) resizes as one unit — the textarea
+     itself can't own the resize handle since it's stretched to fill
+     .json-editor-body below, not sized by its own content. */
+  height: 420px;
+  min-height: 200px;
+  max-height: 80vh;
+  resize: vertical;
+  overflow: hidden;
+}
+
+.json-editor-wrapper.dragging {
+  border-color: var(--color-accent);
+}
+
+.json-editor-wrapper:focus-within {
+  border-color: var(--color-accent);
+}
+
+.json-editor-gutter {
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+  padding: 12px 0;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  user-select: none;
+}
+
+.json-gutter-line {
+  padding: 0 10px;
+}
+
+.json-gutter-line.error {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.json-editor-body {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}
+
+/* These two stack exactly on top of each other and MUST share identical
+   font/padding/line-height/wrapping so the invisible textarea's cursor
+   and selection line up with the colored text showing through from the
+   <pre> underneath it. */
+.json-editor-highlight,
+.json-editor-textarea {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 12px;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow: auto;
+}
+
+.json-editor-highlight {
+  pointer-events: none;
+  color: var(--color-text);
+  background: transparent;
+}
+
+.json-editor-textarea {
+  resize: none; /* resizing happens on .json-editor-wrapper instead */
+  background: transparent;
+  color: transparent; /* the highlight overlay is what's actually visible */
+  caret-color: var(--color-text);
+}
+
+.json-editor-textarea::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+.json-editor-textarea:focus {
+  outline: none; /* the wrapper's own focus-within style stands in for this */
+}
+
+.json-hl-key {
+  color: var(--json-key);
+  font-weight: 700;
+}
+
+.json-hl-string {
+  color: var(--json-string);
+}
+
+.json-hl-number {
+  color: var(--json-number);
+}
+
+.json-hl-boolean {
+  color: var(--json-boolean);
+  font-weight: 600;
+}
+
+.json-hl-null {
+  color: var(--json-null);
+  font-style: italic;
+}
+
+.json-hl-punctuation {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.json-status {
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.json-status-valid {
+  color: #1a7f37;
+}
+
+.json-status-invalid {
+  color: var(--color-danger);
+}
+
+.json-status-invalid .field-hint {
+  color: var(--color-danger);
+  opacity: 0.8;
+}
+
+.field-warning {
+  color: #9a6700;
+  background: color-mix(in srgb, #9a6700 12%, transparent);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.json-fix-report {
+  color: #1a7f37;
+  background: color-mix(in srgb, #1a7f37 10%, transparent);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.json-fix-report p {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.json-fix-report ul {
+  margin: 0;
+  padding-left: 20px;
+  font-weight: 400;
+}
+
+.json-fix-report li {
+  margin-bottom: 2px;
+}
+
+/* A vivid, per-type color scheme — deliberately more saturated than the
+   rest of the site's muted palette, matching the convention of dedicated
+   JSON viewers (VS Code, browser devtools, JSONHero-style tools) where
+   color is what makes structure scannable at a glance. */
+:root {
+  --json-key: #6d28d9;
+  --json-string: #15803d;
+  --json-number: #1d4ed8;
+  --json-boolean: #be185d;
+  --json-null: #6b7280;
+  --json-punct: var(--color-text-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --json-key: #c4b5fd;
+    --json-string: #4ade80;
+    --json-number: #7dd3fc;
+    --json-boolean: #f9a8d4;
+    --json-null: #9ca3af;
+  }
+}
+
+.json-tree-view {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  padding: 12px;
+}
+
+.json-tree-root {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  max-height: 420px;
+  overflow: auto;
+}
+
+.json-tree-toggle {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--color-text);
+  padding: 1px 4px;
+  margin: 0 -4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.json-tree-toggle:hover {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+.json-tree-row {
+  padding: 1px 4px;
+  margin: 0 -4px;
+  border-radius: 4px;
+}
+
+.json-tree-row:hover {
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+/* Each nested level draws its own connecting guide line down the tree,
+   simply by being a real nested element — no per-node depth math needed. */
+.json-tree-children {
+  margin-left: 9px;
+  padding-left: 12px;
+  border-left: 1px dashed var(--color-border);
+}
+
+.json-tree-arrow {
+  display: inline-block;
+  width: 14px;
+  color: var(--color-accent);
+  transition: transform 0.1s ease;
+}
+
+.json-tree-arrow.expanded {
+  transform: rotate(90deg);
+}
+
+.json-tree-key {
+  color: var(--json-key);
+  font-weight: 700;
+}
+
+.json-tree-punctuation {
+  color: var(--json-punct);
+  font-weight: 700;
+}
+
+.json-tree-bracket {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* The small pill showing a collapsed object/array's item count — colored
+   distinctly by kind so even a fully collapsed tree reads as colorful,
+   not just individual leaf values once expanded. */
+.json-tree-badge {
+  display: inline-block;
+  margin: 0 3px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 0.75em;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.json-tree-badge-object {
+  color: var(--json-key);
+  background: color-mix(in srgb, var(--json-key) 18%, transparent);
+}
+
+.json-tree-badge-array {
+  color: var(--json-number);
+  background: color-mix(in srgb, var(--json-number) 18%, transparent);
+}
+
+.json-tree-string {
+  color: var(--json-string);
+}
+
+.json-tree-number {
+  color: var(--json-number);
+}
+
+.json-tree-boolean {
+  color: var(--json-boolean);
+  font-weight: 700;
+}
+
+.json-tree-null,
+.json-tree-undefined {
+  color: var(--json-null);
+  font-style: italic;
+}
+
+/* === 11. QR Code Generator bits ============================================ */
+
+.qr-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+  margin-top: 20px;
+}
+
+.qr-customization {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.qr-color-row {
+  display: flex;
+  gap: 20px;
+}
+
+.qr-color-row .field {
+  flex: 1;
+}
+
+.qr-preview-column {
+  position: sticky;
+  top: 90px;
+}
+
+/* Same checkerboard trick as the image tools, so a transparent-background
+   QR code doesn't look like it's just missing. */
+.qr-preview-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  background-image: linear-gradient(45deg, var(--color-bg) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-bg) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-bg) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-bg) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.qr-preview-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.qr-payload-details {
+  margin-top: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.qr-payload-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.qr-payload-details .field-header {
+  margin-top: 10px;
+}
+
+.qr-payload-text {
+  margin: 8px 0 0;
+  padding: 10px;
+  background: var(--color-bg);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow: auto;
+}
+
+/* === 12. Word Counter & Text Analyzer bits ================================= */
+
+.word-counter-editor-wrapper {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  transition: border-color 0.15s ease;
+}
+
+.word-counter-editor-wrapper.dragging {
+  border-color: var(--color-accent);
+}
+
+.word-counter-editor {
+  width: 100%;
+  min-height: 280px;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.word-counter-editor:focus {
+  outline: none; /* the wrapper's own focus-within style stands in for this */
+}
+
+.word-counter-editor-wrapper:focus-within {
+  border-color: var(--color-accent);
+}
+
+.limit-exceeded {
+  color: var(--color-danger);
+}
+
+.wc-goal-bar {
+  margin: 10px 0 6px;
+}
+
+/* === 13. Unsaved-changes confirmation modal ================================ */
 
 .modal-overlay {
   position: fixed;
@@ -820,7 +1511,7 @@ input[type='number'] {
   }
 }
 
-/* === 9. Accessibility: visible keyboard focus ============================ */
+/* === 14. Accessibility: visible keyboard focus ============================ */
 
 a:focus-visible,
 button:focus-visible,
@@ -832,7 +1523,18 @@ select:focus-visible,
   outline-offset: 2px;
 }
 
-/* === 10. Responsive / mobile =============================================== */
+.json-editor-wrapper:focus-within,
+.word-counter-editor-wrapper:focus-within {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.json-tree-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* === 15. Responsive / mobile ============================================== */
 
 @media (max-width: 600px) {
   .site-header-inner {
@@ -865,5 +1567,30 @@ select:focus-visible,
   .resize-inputs {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .color-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .json-editor-wrapper {
+    height: 280px;
+  }
+
+  .qr-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-preview-column {
+    position: static;
+  }
+
+  .qr-color-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .word-counter-editor {
+    min-height: 200px;
   }
 }

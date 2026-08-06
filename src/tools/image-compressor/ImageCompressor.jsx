@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
+import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
+import { formatBytes } from '../../utils/formatBytes.js';
 
 // --- Helpers -----------------------------------------------------------------
-
-function formatBytes(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
 
 // Maps an actual output mime type (what the browser really produced) to a
 // file extension for the download name. Keyed by the real blob type rather
@@ -46,6 +44,15 @@ export default function ImageCompressor() {
   const [hasTransparency, setHasTransparency] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  // A pasted image, held here while we wait for the discard confirmation
+  // above — null means "just resetting", not "resetting to load a file".
+  const [pendingFile, setPendingFile] = useState(null);
+
+  useDocumentMeta({
+    title: 'Image Compressor — Shrink File Size in Your Browser | Toolbox',
+    description:
+      'Compress PNG, JPG, and WebP images to reduce file size without uploading them anywhere. Adjustable quality and optional resizing.',
+  });
 
   // 'original' keeps the source file's own format; otherwise this is the
   // exact mime type to hand to canvas.toBlob().
@@ -211,15 +218,27 @@ export default function ImageCompressor() {
     });
   }
 
-  // "Choose a different image" throws away the current file/result — if
-  // there's unsaved work, confirm first instead of silently discarding it.
-  // (This doesn't navigate anywhere, so UnsavedChangesGuard can't catch it
-  // on its own — it only watches for page-to-page navigation.)
+  // "Choose a different image" and pasting a new image both throw away the
+  // current file/result — if there's unsaved work, confirm first instead of
+  // silently discarding it. (Neither of these navigates anywhere, so
+  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // page-to-page navigation.) `pendingFile` remembers a pasted image while
+  // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
     if (hasUnsavedWork) {
+      setPendingFile(null);
       setShowResetConfirm(true);
     } else {
       handleReset();
+    }
+  }
+
+  function handlePastedFile(newFile) {
+    if (hasUnsavedWork) {
+      setPendingFile(newFile);
+      setShowResetConfirm(true);
+    } else {
+      handleFile(newFile);
     }
   }
 
@@ -241,6 +260,10 @@ export default function ImageCompressor() {
   // yet or the current result isn't the one that's been downloaded.
   const hasUnsavedWork = Boolean(file) && (!outputBlob || outputBlob !== downloadedBlob);
   useUnsavedChangesWarning(hasUnsavedWork);
+  // Always listening (not just while the drop zone is empty) — pasting a
+  // new image over an existing one is allowed, it just goes through the
+  // same discard confirmation as "Choose a different image" when needed.
+  usePasteToUpload(true, handlePastedFile);
 
   return (
     <div className="image-compressor">
@@ -265,7 +288,7 @@ export default function ImageCompressor() {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
         >
-          <p className="drop-zone-title">Drag & drop an image here, or click to browse</p>
+          <p className="drop-zone-title">Drag &amp; drop, paste, or click to browse</p>
           <p className="drop-zone-hint">Shrinks PNG, JPG, WebP, and more</p>
           <input
             ref={fileInputRef}
@@ -286,12 +309,24 @@ export default function ImageCompressor() {
           {showResetConfirm && (
             <ConfirmDialog
               title="Discard this image?"
-              message="You have unsaved work on this image. Choosing a different one will discard it."
-              confirmLabel="Discard and choose another"
-              onCancel={() => setShowResetConfirm(false)}
+              message={
+                pendingFile
+                  ? 'You have unsaved work on this image. Pasting a new one will discard it.'
+                  : 'You have unsaved work on this image. Choosing a different one will discard it.'
+              }
+              confirmLabel={pendingFile ? 'Discard and load pasted image' : 'Discard and choose another'}
+              onCancel={() => {
+                setShowResetConfirm(false);
+                setPendingFile(null);
+              }}
               onConfirm={() => {
                 setShowResetConfirm(false);
-                handleReset();
+                if (pendingFile) {
+                  handleFile(pendingFile);
+                  setPendingFile(null);
+                } else {
+                  handleReset();
+                }
               }}
             />
           )}
@@ -448,6 +483,74 @@ export default function ImageCompressor() {
           </div>
         </>
       )}
+
+      <article className="tool-article">
+        <p>
+          A photo straight from a phone or camera is often far larger than a web page actually
+          needs. This tool shrinks image file size — by lowering quality, resizing, or both —
+          entirely in your browser, so you can see exactly how much you're saving before you
+          download anything.
+        </p>
+
+        <h2>How it works</h2>
+        <p>
+          Your image is drawn onto an off-screen canvas at whatever size you choose, then
+          re-exported through <code>canvas.toBlob()</code> at the quality you set. Lossy formats
+          (JPG, WebP) trade a little visual detail for a smaller file; PNG is lossless, so its
+          size only changes if you resize the image, not the quality slider.
+        </p>
+
+        <h2>Quality vs resizing — which saves more?</h2>
+        <p>
+          Resizing is usually the bigger win. Halving both dimensions cuts the pixel count — and
+          roughly the file size — to a quarter, before quality even comes into it. Lowering
+          quality helps too, but there are diminishing returns: going from 100% to 80% quality
+          often looks identical while saving a lot of space, but pushing much lower starts to
+          visibly degrade the image.
+        </p>
+
+        <h2>When to use it</h2>
+        <ul>
+          <li>Shrinking photos before attaching them to an email or upload form with a size limit.</li>
+          <li>Preparing web images so pages load faster.</li>
+          <li>Reducing storage space for a large batch of photos (one at a time).</li>
+        </ul>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Compressing an already heavily-compressed JPG repeatedly — quality loss compounds each time you re-save.</li>
+          <li>Choosing PNG output for a photo when trying to shrink it — PNG's lossless nature means the quality slider won't help; WebP or JPG will compress much further.</li>
+          <li>Compressing to JPG without noticing the image had transparency — JPG has no alpha channel, so transparent areas fill with a solid color.</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+        <div className="faq-item">
+          <h3>Why doesn't the quality slider change anything?</h3>
+          <p>You likely have PNG selected as the output — PNG is lossless, so quality has no effect on it. Switch to WebP or JPEG for real savings.</p>
+        </div>
+        <div className="faq-item">
+          <h3>What's the best quality setting?</h3>
+          <p>80–90% is a common sweet spot — visually close to the original but meaningfully smaller. Drop lower only if file size matters more than appearance.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Will compressing reduce the image dimensions?</h3>
+          <p>Only if you set a max width/height — quality alone changes file size, not pixel dimensions.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Which format compresses best?</h3>
+          <p>WebP generally produces the smallest file at a given visual quality, followed by JPEG. PNG is best reserved for graphics that need to stay lossless.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Is my image uploaded anywhere?</h3>
+          <p>No — compression happens entirely in your browser using the Canvas API.</p>
+        </div>
+
+        <h2>Related tools</h2>
+        <p>
+          Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
+          Toolbox.
+        </p>
+      </article>
     </div>
   );
 }

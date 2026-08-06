@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
+import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
+import { formatBytes } from '../../utils/formatBytes.js';
 
 // --- Helpers -----------------------------------------------------------------
-
-function formatBytes(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
 
 // Maps an actual output mime type (what the browser really produced) to a
 // file extension for the download name — keyed by the real blob type,
@@ -112,6 +110,15 @@ export default function ImageResizer() {
   const [hasTransparency, setHasTransparency] = useState(false);
   const [isDragging, setIsDragging] = useState(false); // dropzone drag-over state
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  // A pasted image, held here while we wait for the discard confirmation
+  // above — null means "just resetting", not "resetting to load a file".
+  const [pendingFile, setPendingFile] = useState(null);
+
+  useDocumentMeta({
+    title: 'Image Resizer & Cropper — Free & Client-Side | Toolbox',
+    description:
+      'Resize or crop images to exact dimensions entirely in your browser. Lock aspect ratio, use scale presets, or drag a crop selection — no upload required.',
+  });
 
   const [mode, setMode] = useState('resize'); // 'resize' | 'crop'
   const [format, setFormat] = useState('image/png');
@@ -279,15 +286,27 @@ export default function ImageResizer() {
     clearOutput();
   }
 
-  // "Choose a different image" throws away the current file/result — if
-  // there's unsaved work, confirm first instead of silently discarding it.
-  // (This doesn't navigate anywhere, so UnsavedChangesGuard can't catch it
-  // on its own — it only watches for page-to-page navigation.)
+  // "Choose a different image" and pasting a new image both throw away the
+  // current file/result — if there's unsaved work, confirm first instead of
+  // silently discarding it. (Neither of these navigates anywhere, so
+  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // page-to-page navigation.) `pendingFile` remembers a pasted image while
+  // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
     if (hasUnsavedWork) {
+      setPendingFile(null);
       setShowResetConfirm(true);
     } else {
       handleReset();
+    }
+  }
+
+  function handlePastedFile(newFile) {
+    if (hasUnsavedWork) {
+      setPendingFile(newFile);
+      setShowResetConfirm(true);
+    } else {
+      handleFile(newFile);
     }
   }
 
@@ -428,6 +447,10 @@ export default function ImageResizer() {
   // covers both modes the same way, since they share the same output state.
   const hasUnsavedWork = Boolean(file) && (!outputBlob || outputBlob !== downloadedBlob);
   useUnsavedChangesWarning(hasUnsavedWork);
+  // Always listening (not just while the drop zone is empty) — pasting a
+  // new image over an existing one is allowed, it just goes through the
+  // same discard confirmation as "Choose a different image" when needed.
+  usePasteToUpload(true, handlePastedFile);
 
   return (
     <div className="image-resizer">
@@ -452,7 +475,7 @@ export default function ImageResizer() {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
         >
-          <p className="drop-zone-title">Drag & drop an image here, or click to browse</p>
+          <p className="drop-zone-title">Drag &amp; drop, paste, or click to browse</p>
           <p className="drop-zone-hint">Resize or crop it, then download the result</p>
           <input
             ref={fileInputRef}
@@ -473,12 +496,24 @@ export default function ImageResizer() {
           {showResetConfirm && (
             <ConfirmDialog
               title="Discard this image?"
-              message="You have unsaved work on this image. Choosing a different one will discard it."
-              confirmLabel="Discard and choose another"
-              onCancel={() => setShowResetConfirm(false)}
+              message={
+                pendingFile
+                  ? 'You have unsaved work on this image. Pasting a new one will discard it.'
+                  : 'You have unsaved work on this image. Choosing a different one will discard it.'
+              }
+              confirmLabel={pendingFile ? 'Discard and load pasted image' : 'Discard and choose another'}
+              onCancel={() => {
+                setShowResetConfirm(false);
+                setPendingFile(null);
+              }}
               onConfirm={() => {
                 setShowResetConfirm(false);
-                handleReset();
+                if (pendingFile) {
+                  handleFile(pendingFile);
+                  setPendingFile(null);
+                } else {
+                  handleReset();
+                }
               }}
             />
           )}
@@ -714,6 +749,79 @@ export default function ImageResizer() {
           )}
         </>
       )}
+
+      <article className="tool-article">
+        <p>
+          Resizing changes an image's overall dimensions; cropping cuts out just a rectangular
+          region of it. This tool does both, entirely in your browser, using the same canvas
+          technique under the hood — pick whichever mode matches what you actually need to change.
+        </p>
+
+        <h2>How it works</h2>
+        <p>
+          Both modes use the Canvas API's 9-argument <code>drawImage()</code>, which lets you map
+          a source rectangle onto a destination rectangle of a different size or position.
+          Resizing maps the whole source image onto a destination canvas sized to your new
+          width/height; cropping maps just the selected region onto a destination the same size
+          as that selection.
+        </p>
+
+        <h2>Resize vs crop — which do you need?</h2>
+        <ul>
+          <li>
+            <strong>Resize</strong> when the whole image is right but it needs to be a different
+            size — e.g. shrinking a photo to fit a website's layout.
+          </li>
+          <li>
+            <strong>Crop</strong> when only part of the image is what you want — e.g. cutting a
+            square profile picture out of a wider photo.
+          </li>
+        </ul>
+
+        <h2>Understanding aspect ratio</h2>
+        <p>
+          Aspect ratio is the relationship between width and height (e.g. 16:9, 1:1). With "Lock
+          aspect ratio" on, changing one resize dimension automatically adjusts the other to keep
+          the image looking the same, just bigger or smaller — turning it off lets you set both
+          independently, which will stretch or squash the image if they don't match the original
+          ratio.
+        </p>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Enlarging an image far beyond its original size expecting it to look sharp — upscaling can't invent detail that wasn't captured in the first place.</li>
+          <li>Unlocking aspect ratio and setting mismatched dimensions unintentionally, which visibly distorts the image.</li>
+          <li>Cropping a tiny selection from a large photo and expecting a large, detailed result — the crop's resolution is limited by the pixels available in that region.</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+        <div className="faq-item">
+          <h3>Will resizing up add more detail to my image?</h3>
+          <p>No — enlarging stretches existing pixels rather than inventing new detail, so very large upscales tend to look soft or blurry.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Can I crop to an exact aspect ratio like 1:1 or 16:9?</h3>
+          <p>Yes — the crop mode's aspect presets constrain the selection box to that ratio while you drag it.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Does cropping reduce file size?</h3>
+          <p>Usually, since there are fewer pixels to store — but for maximum size savings after cropping, run the result through the <Link to="/tool/image-compressor">Image Compressor</Link>.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Why did my transparent image turn white?</h3>
+          <p>You likely selected JPEG as the output format — JPEG has no transparency channel. Choose PNG or WebP to keep transparency.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Is my image uploaded anywhere?</h3>
+          <p>No — both resizing and cropping happen entirely in your browser using the Canvas API.</p>
+        </div>
+
+        <h2>Related tools</h2>
+        <p>
+          Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
+          Toolbox.
+        </p>
+      </article>
     </div>
   );
 }

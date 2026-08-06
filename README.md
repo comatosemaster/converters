@@ -203,6 +203,75 @@ compare their *current* result to whatever was last saved/downloaded — an obje
 reference match means "already safe," any difference means "new work since then." Reuse that
 same idea for your tool rather than inventing a new shape.
 
+### Paste-to-upload
+
+Every tool should also accept a pasted image (Ctrl+V / Cmd+V) at any time — not just while the
+drop zone is empty — handy for screenshots, since there's often no file on disk to drag in. This
+is another shared hook, `src/hooks/usePasteToUpload.js`, called once alongside the others:
+
+```js
+import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
+
+// ... inside your component, listening at all times:
+usePasteToUpload(true, handlePastedFile);
+```
+
+Pasting is always listening (the first argument is only there in case a tool needs to disable it
+for some reason). Because it's always on, pasting a new image can throw away unsaved work just
+like "Choose a different image" can — so route it through the **same discard confirmation**
+rather than calling `handleFile` directly. The established shape (see any existing tool) is:
+
+```js
+const [pendingFile, setPendingFile] = useState(null); // holds a paste while confirming
+
+function handlePastedFile(newFile) {
+  if (hasUnsavedWork) {
+    setPendingFile(newFile);
+    setShowResetConfirm(true);
+  } else {
+    handleFile(newFile);
+  }
+}
+
+// In the ConfirmDialog's onConfirm: if (pendingFile) { handleFile(pendingFile); setPendingFile(null); } else { handleReset(); }
+```
+
+For a tool that accepts multiple files at once (like HEIC to JPG, whose drop zone never hides and
+where adding a file isn't destructive), there's nothing to discard — just adapt the callback to
+its `handleFiles` function: `usePasteToUpload(true, (file) => handleFiles([file]))`.
+
+Remember to update the drop zone's own text (`.drop-zone-title`) to mention pasting, so it's
+actually discoverable — every existing tool's says "Drag & drop, paste, or click to browse".
+
+### Undo/redo for one-click transforms
+
+Any tool with buttons that rewrite the whole editor at once (case conversion, "sort lines",
+"remove duplicates," ...) should let the user undo one of those clicks — a `<textarea>`'s own
+native Ctrl+Z doesn't help here, since it only tracks real typed keystrokes, not programmatic
+`setState` calls. `src/hooks/useUndoRedo.js` wraps a piece of state with a small undo/redo
+snapshot stack for exactly this:
+
+```js
+import { useUndoRedo } from '../../hooks/useUndoRedo.js';
+
+// `set` records history (use it from buttons); `setWithoutHistory` doesn't
+// (use it for the textarea's own onChange, so plain typing still relies on
+// the browser's native undo instead of filling your stack one keystroke
+// at a time).
+const { value: text, set: applyChange, setWithoutHistory: setText, undo, redo, canUndo, canRedo } =
+  useUndoRedo('');
+
+// <textarea value={text} onChange={(e) => setText(e.target.value)} />
+// <button onClick={() => applyChange(someTransform(text))}>Do a thing</button>
+// <button onClick={undo} disabled={!canUndo}>Undo</button>
+```
+
+If you also want Ctrl+Z/Ctrl+Y to trigger it, wire a scoped `onKeyDown` on the textarea itself
+(not a global `window` listener) that only calls `undo()`/`redo()` — and only calls
+`event.preventDefault()` — when `canUndo`/`canRedo` is true; otherwise let the key press fall
+through untouched so native typing-undo still works when there's nothing of yours to undo. See
+`WordCounterTextAnalyzer.jsx` for the exact pattern.
+
 ## Deploying to Cloudflare Pages
 
 - Build command: `npm run build`

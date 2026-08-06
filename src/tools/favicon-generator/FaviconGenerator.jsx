@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
+import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
+import { formatBytes } from '../../utils/formatBytes.js';
 
 // --- Canvas helpers ----------------------------------------------------------
-
-function formatBytes(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
 
 function canvasToPngBlob(canvas) {
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
@@ -149,6 +147,15 @@ export default function FaviconGenerator() {
   const [wasPadded, setWasPadded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  // A pasted image, held here while we wait for the discard confirmation
+  // above — null means "just resetting", not "resetting to load a file".
+  const [pendingFile, setPendingFile] = useState(null);
+
+  useDocumentMeta({
+    title: 'Favicon Generator — Full Icon Package, Client-Side | Toolbox',
+    description:
+      'Generate a complete favicon package (ICO, PNG sizes, web manifest, and HTML tags) from any image, entirely in your browser.',
+  });
 
   const [addBackground, setAddBackground] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState('#ffffff');
@@ -279,15 +286,27 @@ export default function FaviconGenerator() {
     setError('');
   }
 
-  // "Choose a different image" throws away the current package — if there's
-  // unsaved work, confirm first instead of silently discarding it. (This
-  // doesn't navigate anywhere, so UnsavedChangesGuard can't catch it on its
-  // own — it only watches for page-to-page navigation.)
+  // "Choose a different image" and pasting a new image both throw away the
+  // current package — if there's unsaved work, confirm first instead of
+  // silently discarding it. (Neither of these navigates anywhere, so
+  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // page-to-page navigation.) `pendingFile` remembers a pasted image while
+  // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
     if (hasUnsavedWork) {
+      setPendingFile(null);
       setShowResetConfirm(true);
     } else {
       handleReset();
+    }
+  }
+
+  function handlePastedFile(newFile) {
+    if (hasUnsavedWork) {
+      setPendingFile(newFile);
+      setShowResetConfirm(true);
+    } else {
+      handleFile(newFile);
     }
   }
 
@@ -309,6 +328,10 @@ export default function FaviconGenerator() {
   // yet or the current package isn't the one that's been downloaded.
   const hasUnsavedWork = Boolean(file) && (!zipBlob || zipBlob !== downloadedBlob);
   useUnsavedChangesWarning(hasUnsavedWork);
+  // Always listening (not just while the drop zone is empty) — pasting a
+  // new image over an existing one is allowed, it just goes through the
+  // same discard confirmation as "Choose a different image" when needed.
+  usePasteToUpload(true, handlePastedFile);
 
   return (
     <div className="favicon-generator">
@@ -333,7 +356,7 @@ export default function FaviconGenerator() {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
         >
-          <p className="drop-zone-title">Drag & drop a source image here, or click to browse</p>
+          <p className="drop-zone-title">Drag &amp; drop, paste, or click to browse</p>
           <p className="drop-zone-hint">A large square image (512px+) works best</p>
           <input
             ref={fileInputRef}
@@ -354,12 +377,24 @@ export default function FaviconGenerator() {
           {showResetConfirm && (
             <ConfirmDialog
               title="Discard this favicon package?"
-              message="You have an ungenerated or undownloaded package. Choosing a different image will discard it."
-              confirmLabel="Discard and choose another"
-              onCancel={() => setShowResetConfirm(false)}
+              message={
+                pendingFile
+                  ? "You have an ungenerated or undownloaded package. Pasting a new image will discard it."
+                  : 'You have an ungenerated or undownloaded package. Choosing a different image will discard it.'
+              }
+              confirmLabel={pendingFile ? 'Discard and load pasted image' : 'Discard and choose another'}
+              onCancel={() => {
+                setShowResetConfirm(false);
+                setPendingFile(null);
+              }}
               onConfirm={() => {
                 setShowResetConfirm(false);
-                handleReset();
+                if (pendingFile) {
+                  handleFile(pendingFile);
+                  setPendingFile(null);
+                } else {
+                  handleReset();
+                }
               }}
             />
           )}
@@ -449,6 +484,74 @@ export default function FaviconGenerator() {
           )}
         </>
       )}
+
+      <article className="tool-article">
+        <p>
+          A favicon isn't just one file anymore — modern sites need several sizes for browser
+          tabs, bookmarks, home-screen icons, and a manifest tying it together. This tool
+          generates that entire package from a single source image, entirely in your browser.
+        </p>
+
+        <h2>How it works</h2>
+        <p>
+          Your image is padded to a square (if it isn't already), then redrawn at each required
+          size using the Canvas API. The various PNGs are packed into a proper <code>.ico</code>{' '}
+          file by hand — Canvas can't export ICO directly — and a <code>site.webmanifest</code>{' '}
+          plus the HTML tags to reference everything are generated alongside it, all bundled into
+          one ZIP.
+        </p>
+
+        <h2>What's actually in the package</h2>
+        <ul>
+          <li><code>favicon.ico</code> — a multi-size icon (16/32/48px) most browsers still check for by default.</li>
+          <li><code>favicon-16x16.png</code> / <code>favicon-32x32.png</code> — modern browser tab icons.</li>
+          <li><code>apple-touch-icon.png</code> (180×180) — used when someone adds your site to an iOS home screen.</li>
+          <li><code>android-chrome-192x192.png</code> / <code>-512x512.png</code> — Android home-screen and splash icons.</li>
+          <li><code>site.webmanifest</code> — JSON describing your app's icons, name, and theme color.</li>
+        </ul>
+
+        <h2>When to regenerate your favicon</h2>
+        <p>
+          Any time you change your logo or brand colors — an outdated favicon is a small but
+          common inconsistency. It's also worth double-checking after a redesign, since it's easy
+          to update the visible logo and forget the favicon entirely.
+        </p>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Only providing a <code>favicon.ico</code> and skipping the PNG sizes — modern browsers and devices look for specific sizes the ICO alone doesn't cover.</li>
+          <li>Using a small or detailed source image — fine detail gets lost at 16×16px, so simple, bold designs work best.</li>
+          <li>Forgetting to actually add the generated <code>&lt;link&gt;</code> tags to your site's <code>&lt;head&gt;</code> — generating the files alone doesn't install them.</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+        <div className="faq-item">
+          <h3>Do I really need all these different sizes?</h3>
+          <p>For full compatibility, yes — different browsers and devices each look for specific files and sizes; this package covers the common ones.</p>
+        </div>
+        <div className="faq-item">
+          <h3>My source image isn't square — what happens?</h3>
+          <p>It gets padded to a square (with transparency or a background color you choose) rather than stretched, so nothing gets distorted.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Where do I put these files?</h3>
+          <p>Typically your site's root folder, alongside the HTML tags this tool generates, pasted into your <code>&lt;head&gt;</code>.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Why is the .ico file hand-built instead of using a library?</h3>
+          <p>Most Node-based ICO libraries don't run in a browser. The ICO format is simple enough to pack directly from the generated PNGs, entirely client-side.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Is my image uploaded anywhere?</h3>
+          <p>No — every size is generated locally using the Canvas API, and the ZIP is built in your browser too.</p>
+        </div>
+
+        <h2>Related tools</h2>
+        <p>
+          Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
+          Toolbox.
+        </p>
+      </article>
     </div>
   );
 }

@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
+import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
+import { formatBytes } from '../../utils/formatBytes.js';
 
 // --- Format options ---------------------------------------------------------
 //
@@ -17,12 +21,6 @@ const FORMATS = [
 ];
 
 const FORMAT_BY_MIME = Object.fromEntries(FORMATS.map((f) => [f.mime, f]));
-
-function formatBytes(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-}
 
 // Compares two file sizes and returns a friendly "37% smaller" style label.
 function sizeChangeLabel(originalBytes, newBytes) {
@@ -52,6 +50,15 @@ export default function ImageConverter() {
   const [dimensions, setDimensions] = useState(null); // { width, height } of the original
   const [isDragging, setIsDragging] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  // A pasted image, held here while we wait for the discard confirmation
+  // above — null means "just resetting", not "resetting to load a file".
+  const [pendingFile, setPendingFile] = useState(null);
+
+  useDocumentMeta({
+    title: 'Image Converter — PNG, JPG, WebP, AVIF | Toolbox',
+    description:
+      'Convert images between PNG, JPG, WebP, and AVIF entirely in your browser. Free, fast, and no upload required.',
+  });
 
   const [format, setFormat] = useState('image/webp');
   const [quality, setQuality] = useState(0.85);
@@ -166,15 +173,27 @@ export default function ImageConverter() {
     setError('');
   }
 
-  // "Choose a different image" throws away the current file/result — if
-  // there's unsaved work, confirm first instead of silently discarding it.
-  // (This doesn't navigate anywhere, so UnsavedChangesGuard can't catch it
-  // on its own — it only watches for page-to-page navigation.)
+  // "Choose a different image" and pasting a new image both throw away the
+  // current file/result — if there's unsaved work, confirm first instead of
+  // silently discarding it. (Neither of these navigates anywhere, so
+  // UnsavedChangesGuard can't catch them on its own — it only watches for
+  // page-to-page navigation.) `pendingFile` remembers a pasted image while
+  // we wait for the user to confirm, so we can load it after they do.
   function handleChooseAnotherClick() {
     if (hasUnsavedWork) {
+      setPendingFile(null);
       setShowResetConfirm(true);
     } else {
       handleReset();
+    }
+  }
+
+  function handlePastedFile(newFile) {
+    if (hasUnsavedWork) {
+      setPendingFile(newFile);
+      setShowResetConfirm(true);
+    } else {
+      handleFile(newFile);
     }
   }
 
@@ -192,6 +211,10 @@ export default function ImageConverter() {
   // yet or the current result isn't the one that's been downloaded.
   const hasUnsavedWork = Boolean(file) && (!outputBlob || outputBlob !== downloadedBlob);
   useUnsavedChangesWarning(hasUnsavedWork);
+  // Always listening (not just while the drop zone is empty) — pasting a
+  // new image over an existing one is allowed, it just goes through the
+  // same discard confirmation as "Choose a different image" when needed.
+  usePasteToUpload(true, handlePastedFile);
 
   return (
     <div className="image-converter">
@@ -216,7 +239,7 @@ export default function ImageConverter() {
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
         >
-          <p className="drop-zone-title">Drag & drop an image here, or click to browse</p>
+          <p className="drop-zone-title">Drag &amp; drop, paste, or click to browse</p>
           <p className="drop-zone-hint">Converts to PNG, JPG, WebP, or AVIF</p>
           <input
             ref={fileInputRef}
@@ -237,12 +260,24 @@ export default function ImageConverter() {
           {showResetConfirm && (
             <ConfirmDialog
               title="Discard this image?"
-              message="You have unsaved work on this image. Choosing a different one will discard it."
-              confirmLabel="Discard and choose another"
-              onCancel={() => setShowResetConfirm(false)}
+              message={
+                pendingFile
+                  ? 'You have unsaved work on this image. Pasting a new one will discard it.'
+                  : 'You have unsaved work on this image. Choosing a different one will discard it.'
+              }
+              confirmLabel={pendingFile ? 'Discard and load pasted image' : 'Discard and choose another'}
+              onCancel={() => {
+                setShowResetConfirm(false);
+                setPendingFile(null);
+              }}
               onConfirm={() => {
                 setShowResetConfirm(false);
-                handleReset();
+                if (pendingFile) {
+                  handleFile(pendingFile);
+                  setPendingFile(null);
+                } else {
+                  handleReset();
+                }
               }}
             />
           )}
@@ -350,6 +385,93 @@ export default function ImageConverter() {
           </div>
         </>
       )}
+
+      <article className="tool-article">
+        <p>
+          PNG, JPG, WebP, and AVIF each make different tradeoffs between quality, file size, and
+          browser support. This tool re-encodes any image into whichever of those formats you
+          need, entirely in your browser using the Canvas API — nothing is uploaded to convert it.
+        </p>
+
+        <h2>How it works</h2>
+        <p>
+          Your image is drawn onto an off-screen canvas, then the canvas exports itself as the
+          format you picked via <code>canvas.toBlob()</code>. For lossy formats (JPG, WebP, AVIF)
+          the quality slider controls how much detail that export keeps versus how small the
+          result is; PNG is lossless, so it ignores quality entirely.
+        </p>
+
+        <h2>PNG vs JPG vs WebP vs AVIF</h2>
+        <ul>
+          <li>
+            <strong>PNG</strong> is lossless and supports transparency — best for graphics, logos,
+            and screenshots with sharp edges or text, but larger for photos.
+          </li>
+          <li>
+            <strong>JPG</strong> is lossy with no transparency — a long-standing, universally
+            supported default for photos.
+          </li>
+          <li>
+            <strong>WebP</strong> supports both lossy and lossless compression plus transparency,
+            usually beating JPG and PNG at the same visual quality — supported by all modern
+            browsers.
+          </li>
+          <li>
+            <strong>AVIF</strong> compresses even further than WebP at equivalent quality, but
+            encoding/decoding support is newer and less universal — check the browser
+            compatibility note below.
+          </li>
+        </ul>
+
+        <h2>When to use each format</h2>
+        <ul>
+          <li>Use <strong>PNG</strong> for logos, icons, and anything needing crisp transparency.</li>
+          <li>Use <strong>JPG</strong> for maximum compatibility with photos, including older tools/software.</li>
+          <li>Use <strong>WebP</strong> as a modern general-purpose default for web images.</li>
+          <li>Use <strong>AVIF</strong> when you want the smallest possible file and can confirm your audience's browsers support it.</li>
+        </ul>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Converting a JPG to PNG expecting it to look sharper — JPG's lossy compression already discarded detail that PNG can't bring back.</li>
+          <li>Converting a transparent PNG to JPG and being surprised the transparent areas turned white — JPG has no alpha channel.</li>
+          <li>Re-compressing an already-compressed JPG repeatedly, which compounds quality loss each time.</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+        <div className="faq-item">
+          <h3>Will converting PNG to JPG reduce quality?</h3>
+          <p>Yes, if you use a JPG quality below 100% — JPG is lossy, so some detail is discarded. PNG itself is always lossless.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Why doesn't AVIF work in my browser?</h3>
+          <p>
+            AVIF support varies — if your browser can't produce it, this tool falls back to PNG
+            automatically and tells you so, rather than failing silently.
+          </p>
+        </div>
+        <div className="faq-item">
+          <h3>Does converting formats reduce file size?</h3>
+          <p>
+            Often, but it depends on the image and settings — for size specifically, try the{' '}
+            <Link to="/tool/image-compressor">Image Compressor</Link>, which is built for that.
+          </p>
+        </div>
+        <div className="faq-item">
+          <h3>Can I convert multiple images at once?</h3>
+          <p>Not in this tool — it's built for one image at a time. See <Link to="/tool/heic-to-jpg">HEIC to JPG</Link> for an example of a batch-capable tool.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Is my image uploaded anywhere?</h3>
+          <p>No — the conversion runs entirely in your browser using the Canvas API.</p>
+        </div>
+
+        <h2>Related tools</h2>
+        <p>
+          Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
+          Toolbox.
+        </p>
+      </article>
     </div>
   );
 }

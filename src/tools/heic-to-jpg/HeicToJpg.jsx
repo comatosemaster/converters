@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
+import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 
@@ -47,6 +50,12 @@ export default function HeicToJpg() {
   const [items, setItems] = useState([]); // { id, file, status, outputBlob, outputUrl, error, downloaded }
   const [globalError, setGlobalError] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  useDocumentMeta({
+    title: 'HEIC to JPG Converter — Free & Client-Side | Toolbox',
+    description:
+      'Convert iPhone HEIC/HEIF photos to JPG entirely in your browser, one or many at a time. No upload, no limits, unlike most online converters.',
+  });
 
   // Keeps a live copy of `items` for the unmount cleanup below, without
   // making that effect re-run (and re-attach) every time items changes.
@@ -166,6 +175,10 @@ export default function HeicToJpg() {
   // where everything is either downloaded or errored out, needs no warning.
   const hasUnsavedWork = items.some((item) => item.status !== 'error' && !item.downloaded);
   useUnsavedChangesWarning(hasUnsavedWork);
+  // This drop zone stays visible even after files are added (you can keep
+  // adding more), so paste stays enabled the whole time too — unlike the
+  // single-image tools, there's no "already have one" state to protect.
+  usePasteToUpload(true, (file) => handleFiles([file]));
 
   return (
     <div className="heic-converter">
@@ -206,8 +219,8 @@ export default function HeicToJpg() {
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
       >
-        <p className="drop-zone-title">Drag & drop HEIC/HEIF photos here, or click to browse</p>
-        <p className="drop-zone-hint">You can select more than one at a time</p>
+        <p className="drop-zone-title">Drag &amp; drop, paste, or click to browse</p>
+        <p className="drop-zone-hint">HEIC/HEIF photos only — you can select more than one at a time</p>
         <input
           ref={fileInputRef}
           type="file"
@@ -287,6 +300,65 @@ export default function HeicToJpg() {
           </div>
         </>
       )}
+
+      <article className="tool-article">
+        <p>
+          HEIC (also called HEIF) is the format iPhones save photos in by default. It's an
+          efficient format, but browsers can't display it natively, and it won't open on many
+          Windows PCs, Android devices, or websites — this tool converts it to universally
+          supported JPG, entirely in your browser, with no limit on how many photos you convert.
+        </p>
+
+        <h2>How it works</h2>
+        <p>
+          Since browsers can't decode HEIC on their own, this tool loads a WebAssembly decoder
+          (only when you actually use it, so it doesn't slow down the rest of the site) that
+          reads the HEIC data and re-encodes it as a standard JPEG — all inside your browser tab.
+        </p>
+
+        <h2>Why can't browsers just open HEIC directly?</h2>
+        <p>
+          HEIC uses modern, patent-encumbered compression that most browser vendors haven't
+          built native support for, unlike the older, royalty-free formats (JPEG, PNG) the web
+          standardized on decades ago. Apple's devices support it natively; most everything else
+          doesn't, which is why converting is usually the easiest fix.
+        </p>
+
+        <h2>Common mistakes</h2>
+        <ul>
+          <li>Assuming a HEIC file is corrupted just because it won't open — it's very likely just an unsupported format on that device, not damaged.</li>
+          <li>Not checking photo rotation after converting — EXIF orientation data isn't preserved during decoding, so an occasional photo may come out sideways.</li>
+          <li>Expecting a "Live Photo" HEIC to convert its motion/video component — only the still image is extracted.</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+        <div className="faq-item">
+          <h3>Why won't my iPhone photos open on my PC?</h3>
+          <p>They're likely saved as HEIC, which most non-Apple software doesn't support out of the box. Converting to JPG fixes that instantly.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Can I convert more than one photo at once?</h3>
+          <p>Yes — drop or select multiple HEIC files and each converts independently, with its own download button.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Why does a converted photo look sideways?</h3>
+          <p>The conversion process doesn't preserve the original's rotation metadata, so an occasional photo may need manual rotation afterward.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Does this cost anything or have a conversion limit?</h3>
+          <p>No — unlike many online HEIC converters, this runs entirely in your browser, so there's no server cost driving a paywall or limit.</p>
+        </div>
+        <div className="faq-item">
+          <h3>Are my photos uploaded anywhere?</h3>
+          <p>No — decoding and re-encoding both happen locally in your browser.</p>
+        </div>
+
+        <h2>Related tools</h2>
+        <p>
+          Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
+          Toolbox.
+        </p>
+      </article>
     </div>
   );
 }

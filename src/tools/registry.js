@@ -15,6 +15,12 @@ import ImageCompressor from './image-compressor/ImageCompressor.jsx';
 import ImageResizer from './image-resizer/ImageResizer.jsx';
 import HeicToJpg from './heic-to-jpg/HeicToJpg.jsx';
 import FaviconGenerator from './favicon-generator/FaviconGenerator.jsx';
+import ImageToText from './image-to-text/ImageToText.jsx';
+import ColorConverter from './color-converter/ColorConverter.jsx';
+import ImageToBase64 from './image-to-base64/ImageToBase64.jsx';
+import JsonFormatter from './json-formatter-validator/JsonFormatter.jsx';
+import QrCodeGenerator from './qr-code-generator/QrCodeGenerator.jsx';
+import WordCounterTextAnalyzer from './word-counter-text-analyzer/WordCounterTextAnalyzer.jsx';
 
 // The five fixed categories every tool must belong to. `id` is used in
 // URLs and as a React key, `name` is what gets displayed on screen.
@@ -80,6 +86,58 @@ export const tools = [
     category: 'graphics-media',
     icon: '🌐',
     component: FaviconGenerator,
+  },
+  {
+    id: 'image-to-text',
+    name: 'Image to Text (OCR)',
+    description: 'Extract text from images in your browser using OCR. Files never leave your device.',
+    category: 'text-data',
+    icon: '🔎',
+    component: ImageToText,
+  },
+  {
+    id: 'color-converter',
+    name: 'Color Converter',
+    description:
+      'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA entirely in your browser.',
+    category: 'graphics-media',
+    icon: '🎨',
+    component: ColorConverter,
+  },
+  {
+    id: 'image-to-base64',
+    name: 'Image to Base64',
+    description: 'Convert images to Base64 or Data URI format entirely in your browser. Files never leave your device.',
+    category: 'graphics-media',
+    icon: '📄',
+    component: ImageToBase64,
+  },
+  {
+    id: 'json-formatter-validator',
+    name: 'JSON Formatter, Validator & Fixer',
+    description:
+      'Format, validate, minify, and automatically fix broken JSON instantly in your browser. Your data never leaves your device.',
+    category: 'developer',
+    icon: '{ }',
+    component: JsonFormatter,
+  },
+  {
+    id: 'qr-code-generator',
+    name: 'QR Code Generator',
+    description:
+      'Generate customizable QR codes for URLs, text, WiFi, contacts, email, phone numbers, SMS, and locations entirely in your browser.',
+    category: 'graphics-media',
+    icon: '🔳',
+    component: QrCodeGenerator,
+  },
+  {
+    id: 'word-counter-text-analyzer',
+    name: 'Word Counter & Text Analyzer',
+    description:
+      'Analyze text with live word count, character count, reading time, keyword density, readability metrics, and useful writing tools. Everything runs entirely in your browser.',
+    category: 'developer',
+    icon: '📝',
+    component: WordCounterTextAnalyzer,
   },
 ];
 
