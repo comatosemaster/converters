@@ -22,6 +22,9 @@ import {
   Images,
   Palette,
   QrCode,
+  Receipt,
+  Regex,
+  Ruler,
   ScanText,
   Shrink,
   Smartphone,
@@ -41,6 +44,9 @@ import ImageToBase64 from './image-to-base64/ImageToBase64.jsx';
 import JsonFormatter from './json-formatter-validator/JsonFormatter.jsx';
 import QrCodeGenerator from './qr-code-generator/QrCodeGenerator.jsx';
 import WordCounterTextAnalyzer from './word-counter-text-analyzer/WordCounterTextAnalyzer.jsx';
+import RegexTester from './regex-tester/RegexTester.jsx';
+import UnitConverter from './unit-converter/UnitConverter.jsx';
+import TipCalculator from './tip-calculator/TipCalculator.jsx';
 
 // The five fixed categories every tool must belong to. `id` is used in
 // URLs and as a React key, `name` is what gets displayed on screen,
@@ -220,6 +226,70 @@ export const tools = [
       'case converter',
       'text',
     ],
+  },
+  {
+    id: 'regex-tester',
+    name: 'Regex Tester',
+    description:
+      'Test, validate, and debug regular expressions instantly in your browser with live highlighting and match details.',
+    category: 'developer',
+    icon: Regex,
+    component: RegexTester,
+    keywords: [
+      'regex',
+      'regexp',
+      'regular expression',
+      'pattern',
+      'match',
+      'test',
+      'validate',
+      'debug',
+      'find and replace',
+    ],
+  },
+  {
+    id: 'unit-converter',
+    name: 'Unit Converter',
+    description:
+      'Convert units instantly between length, weight, and temperature directly in your browser.',
+    category: 'everyday',
+    icon: Ruler,
+    component: UnitConverter,
+    keywords: [
+      'unit',
+      'convert',
+      'length',
+      'weight',
+      'mass',
+      'temperature',
+      'meters',
+      'feet',
+      'celsius',
+      'fahrenheit',
+      'kilograms',
+      'pounds',
+    ],
+    popular: true,
+  },
+  {
+    id: 'tip-calculator',
+    name: 'Tip Calculator & Bill Splitter',
+    description:
+      'Calculate tips, split restaurant bills equally or proportionally, and instantly see how much each person should pay.',
+    category: 'business-finance',
+    icon: Receipt,
+    component: TipCalculator,
+    keywords: [
+      'tip',
+      'gratuity',
+      'bill split',
+      'split the bill',
+      'restaurant',
+      'receipt',
+      'group bill',
+      'how much to tip',
+    ],
+    popular: true,
   },
 ];
 

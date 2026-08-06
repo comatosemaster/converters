@@ -17,44 +17,50 @@
     10. JSON Formatter bits (editor, tree view)
     11. QR Code Generator bits
     12. Word Counter & Text Analyzer bits
-    13. Unsaved-changes confirmation modal
-    14. Accessibility (focus states)
-    15. Responsive / mobile
+    13. Regex Tester bits
+    14. Unit Converter bits
+    15. Tip Calculator bits
+    16. Unsaved-changes confirmation modal
+    17. Accessibility (focus states)
+    18. Responsive / mobile
    ========================================================================= */
 
 /* === 1. Design tokens ==================================================== */
-/* Dark is the primary designed theme; light is a full-quality alternative
-   that kicks in automatically for visitors whose OS prefers it.
+/* Light is the default theme; dark is a full-quality alternative applied
+   via [data-theme="dark"] on <html> - see the theme-toggle button in
+   Layout.jsx and the useTheme hook, plus the tiny inline script in
+   index.html that applies a saved preference before first paint (so
+   returning dark-mode visitors never see a flash of the light theme).
    The --color-* names at the bottom of each block are LEGACY ALIASES kept
    so every existing tool's CSS (sections 7-12) keeps working untouched. */
 
 :root {
-  /* --- Surfaces & text (dark) --- */
-  --bg: #08090a;
-  --bg-elevated: #0d0e10;
-  --surface: #121316;
-  --surface-2: #17191c;
-  --surface-hover: #1c1e22;
-  --border: #212429;
-  --border-hover: #30343b;
-  --text: #f7f8f8;
-  --text-secondary: #b1b5bd;
-  --text-muted: #7e8590;
+  /* --- Surfaces & text (light) --- */
+  --bg: #ffffff;
+  --bg-elevated: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f7f7f8;
+  --surface-hover: #f2f2f4;
+  --border: #e6e6e9;
+  --border-hover: #d3d3d8;
+  --text: #09090b;
+  --text-secondary: #52525b;
+  --text-muted: #71717a;
 
   /* --- Accent: used ONLY for interactive elements --- */
-  --accent: #7c6cf6;
-  --accent-hover: #8f81f8;
-  --accent-active: #6a58f0;
+  --accent: #5b3df5;
+  --accent-hover: #4c2ee6;
+  --accent-active: #4326d6;
   --accent-fg: #ffffff;
-  --accent-subtle: rgba(124, 108, 246, 0.14);
-  --accent-border: rgba(124, 108, 246, 0.42);
-  --accent-glow: rgba(124, 108, 246, 0.25);
+  --accent-subtle: rgba(91, 61, 245, 0.08);
+  --accent-border: rgba(91, 61, 245, 0.35);
+  --accent-glow: rgba(91, 61, 245, 0.18);
 
   /* --- Status --- */
-  --success: #3fb950;
-  --warning: #d29922;
-  --danger: #f85149;
-  --danger-subtle: rgba(248, 81, 73, 0.14);
+  --success: #17803d;
+  --warning: #a16207;
+  --danger: #dc2626;
+  --danger-subtle: rgba(220, 38, 38, 0.08);
 
   /* --- Typography --- */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
@@ -93,10 +99,10 @@
   --r-full: 999px;
 
   /* --- Elevation --- */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.28);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px rgba(16, 17, 26, 0.06);
+  --shadow-md: 0 4px 12px rgba(16, 17, 26, 0.08);
+  --shadow-lg: 0 12px 32px rgba(16, 17, 26, 0.1);
+  --shadow-xl: 0 24px 64px rgba(16, 17, 26, 0.14);
 
   /* --- Motion: subtle, 120-240ms --- */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -123,42 +129,42 @@
   --shadow-card: var(--shadow-sm);
   --shadow-card-hover: var(--shadow-md);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #ffffff;
-    --bg-elevated: #fafafa;
-    --surface: #ffffff;
-    --surface-2: #f7f7f8;
-    --surface-hover: #f2f2f4;
-    --border: #e6e6e9;
-    --border-hover: #d3d3d8;
-    --text: #09090b;
-    --text-secondary: #52525b;
-    --text-muted: #71717a;
+/* Dark theme override - applied by adding data-theme="dark" to <html>,
+   toggled by the button in the header (see useTheme.js). */
+:root[data-theme='dark'] {
+  --bg: #08090a;
+  --bg-elevated: #0d0e10;
+  --surface: #121316;
+  --surface-2: #17191c;
+  --surface-hover: #1c1e22;
+  --border: #212429;
+  --border-hover: #30343b;
+  --text: #f7f8f8;
+  --text-secondary: #b1b5bd;
+  --text-muted: #7e8590;
 
-    --accent: #5b3df5;
-    --accent-hover: #4c2ee6;
-    --accent-active: #4326d6;
-    --accent-fg: #ffffff;
-    --accent-subtle: rgba(91, 61, 245, 0.08);
-    --accent-border: rgba(91, 61, 245, 0.35);
-    --accent-glow: rgba(91, 61, 245, 0.18);
+  --accent: #7c6cf6;
+  --accent-hover: #8f81f8;
+  --accent-active: #6a58f0;
+  --accent-fg: #ffffff;
+  --accent-subtle: rgba(124, 108, 246, 0.14);
+  --accent-border: rgba(124, 108, 246, 0.42);
+  --accent-glow: rgba(124, 108, 246, 0.25);
 
-    --success: #17803d;
-    --warning: #a16207;
-    --danger: #dc2626;
-    --danger-subtle: rgba(220, 38, 38, 0.08);
+  --success: #3fb950;
+  --warning: #d29922;
+  --danger: #f85149;
+  --danger-subtle: rgba(248, 81, 73, 0.14);
 
-    --shadow-sm: 0 1px 2px rgba(16, 17, 26, 0.06);
-    --shadow-md: 0 4px 12px rgba(16, 17, 26, 0.08);
-    --shadow-lg: 0 12px 32px rgba(16, 17, 26, 0.1);
-    --shadow-xl: 0 24px 64px rgba(16, 17, 26, 0.14);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.5);
 
-    color-scheme: light;
-  }
+  color-scheme: dark;
 }
 
 /* === 2. Reset & base typography ========================================= */
@@ -436,6 +442,30 @@ button {
   font-size: var(--fs-xs);
   font-weight: 500;
   line-height: 1.4;
+}
+
+/* Same square icon-button shape as .nav-toggle below, but always
+   visible (not just on mobile) since it's useful at every width. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color var(--t) var(--ease), background var(--t) var(--ease), color var(--t) var(--ease);
+}
+
+.theme-toggle:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-hover);
+  color: var(--accent);
 }
 
 .nav-toggle {
@@ -2401,14 +2431,12 @@ button:disabled,
   --json-punct: var(--color-text-muted);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --json-key: #c4b5fd;
-    --json-string: #4ade80;
-    --json-number: #7dd3fc;
-    --json-boolean: #f9a8d4;
-    --json-null: #9ca3af;
-  }
+:root[data-theme='dark'] {
+  --json-key: #c4b5fd;
+  --json-string: #4ade80;
+  --json-number: #7dd3fc;
+  --json-boolean: #f9a8d4;
+  --json-null: #9ca3af;
 }
 
 .json-tree-view {
@@ -2658,7 +2686,339 @@ button:disabled,
   margin: 10px 0 6px;
 }
 
-/* === 13. Unsaved-changes confirmation modal ================================ */
+/* === 13. Regex Tester bits ================================================= */
+
+/* The pattern is code, not prose - monospace makes it easier to spot
+   stray characters. */
+.regex-pattern-input {
+  font-family: var(--font-mono);
+}
+
+.regex-flag-name {
+  margin-left: 4px;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.mode-button.active .regex-flag-name {
+  color: var(--accent-fg);
+  opacity: 0.85;
+}
+
+/* Reuses the .json-hl-* naming convention from the JSON editor overlay -
+   every match gets the base color, the currently-selected one an
+   accent outline so it's easy to spot among many. */
+.regex-hl-match {
+  background: color-mix(in srgb, var(--warning) 35%, transparent);
+  border-radius: 3px;
+}
+
+.regex-hl-match-current {
+  background: var(--accent-subtle);
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* Gives a zero-length match (e.g. from \b) a visible sliver instead of
+   vanishing entirely. */
+.regex-hl-match:empty {
+  display: inline-block;
+  min-width: 2px;
+  min-height: 1em;
+  vertical-align: text-bottom;
+}
+
+.regex-match-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.regex-match-nav-count {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5em;
+  text-align: center;
+}
+
+.regex-match-list {
+  display: grid;
+  gap: var(--sp-3);
+  max-height: 480px;
+  overflow-y: auto;
+  padding: 2px 2px 2px 0; /* room for the focus ring without clipping */
+  margin: 0;
+  list-style: none;
+}
+
+.regex-match-item {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  padding: var(--sp-4);
+  transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+}
+
+.regex-match-item.active {
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+}
+
+.regex-match-item-head {
+  display: block;
+  margin: calc(var(--sp-4) * -1) calc(var(--sp-4) * -1) var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+  width: calc(100% + var(--sp-4) * 2);
+}
+
+.regex-match-item-head:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.regex-match-item.active .regex-match-item-head {
+  color: var(--accent);
+  border-bottom-color: var(--accent-border);
+}
+
+/* Used by both the explanation panel (token -> plain-English phrase) and
+   the cheat sheet (symbol -> what it does) - a two-column definition
+   list with the token in monospace so it reads as code. */
+.regex-explanation-list {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.regex-explanation-list > div {
+  display: grid;
+  grid-template-columns: minmax(90px, max-content) 1fr;
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.regex-explanation-list > div:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.regex-explanation-list dt {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--accent);
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.regex-explanation-list dd {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+.regex-cheatsheet {
+  margin-top: var(--sp-6);
+  margin-bottom: var(--sp-6);
+}
+
+/* === 14. Unit Converter bits ================================================ */
+
+.unit-converter-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.unit-converter-row .field {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+/* Matches the width of a typical two-character symbol button rather than
+   stretching with the row - it shouldn't compete with the From/To
+   selects for space. */
+.unit-swap-field {
+  flex: 0 0 auto;
+}
+
+.unit-swap-button {
+  /* .swap-button's own rule sets margin-left: auto, which only makes
+     sense inside a .mode-toggle row pushing itself to the far right -
+     not appropriate for this row layout, so it's cancelled here. */
+  margin-left: 0;
+  font-size: var(--fs-lg);
+  padding-left: var(--sp-4);
+  padding-right: var(--sp-4);
+}
+
+.unit-result {
+  padding: var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  margin-bottom: var(--sp-5);
+}
+
+.unit-result-value {
+  font-size: var(--fs-3xl);
+  font-weight: 650;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.unit-result-symbol {
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.unit-result-formula {
+  margin: var(--sp-2) 0 var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.unit-result-formula code {
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+.unit-recent-list {
+  display: grid;
+  gap: var(--sp-2);
+  max-height: 320px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 2px 2px 2px 0;
+  list-style: none;
+}
+
+.unit-recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+}
+
+.unit-recent-item:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-hover);
+}
+
+.unit-recent-summary {
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.unit-recent-meta {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+}
+
+/* === 15. Tip Calculator bits ================================================ */
+
+/* Wide content (a table with 7 columns) scrolls inside its own container
+   rather than ever widening the page - the table itself gets a minimum
+   width so its columns don't get uncomfortably cramped first. */
+.tip-people-table-wrap {
+  overflow-x: auto;
+  margin-bottom: var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.tip-people-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.tip-people-table th,
+.tip-people-table td {
+  padding: var(--sp-3) var(--sp-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+.tip-people-table thead th {
+  background: var(--surface);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.tip-people-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tip-people-table td:first-child,
+.tip-people-table td:nth-child(2) {
+  min-width: 140px;
+}
+
+.tip-people-table input {
+  min-width: 100px;
+}
+
+.tip-people-table-total {
+  font-weight: 650;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tip-people-table .field-error {
+  margin-top: var(--sp-1);
+  margin-bottom: 0;
+  padding: var(--sp-1) 0 0;
+  border: none;
+  background: none;
+  font-size: var(--fs-xs);
+}
+
+.tip-each-pays {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-base);
+  color: var(--text-secondary);
+}
+
+.tip-each-pays strong {
+  color: var(--accent);
+  font-size: var(--fs-lg);
+}
+
+/* === 16. Unsaved-changes confirmation modal ================================ */
 
 .modal-overlay {
   position: fixed;
@@ -2717,7 +3077,7 @@ button:disabled,
   }
 }
 
-/* === 14. Accessibility: visible keyboard focus ============================ */
+/* === 17. Accessibility: visible keyboard focus ============================ */
 
 /* One focus treatment everywhere: a 2px accent ring with an offset so it
    reads clearly against both light and dark surfaces. */
@@ -2760,7 +3120,7 @@ details:focus-visible,
   outline-offset: 2px;
 }
 
-/* === 15. Responsive / mobile ============================================== */
+/* === 18. Responsive / mobile ============================================== */
 
 /* --- Tablet / small laptop: collapse the desktop nav into a menu button
        and drop the footer to two columns. --- */
@@ -2907,5 +3267,39 @@ details:focus-visible,
 
   .word-counter-editor {
     min-height: 200px;
+  }
+
+  .regex-match-list {
+    max-height: 320px;
+  }
+
+  .regex-explanation-list > div {
+    grid-template-columns: 1fr;
+    gap: var(--sp-1);
+  }
+
+  .unit-converter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .unit-swap-field {
+    /* No room to sit inline between two full-width stacked selects -
+       drop the empty label spacer above it in that layout. */
+    flex: initial;
+  }
+
+  .unit-swap-field label {
+    display: none;
+  }
+
+  .unit-result-value {
+    font-size: var(--fs-2xl);
+  }
+
+  .unit-recent-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-1);
   }
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Search, Menu, X, Layers } from 'lucide-react';
+import { Search, Menu, X, Layers, Sun, Moon } from 'lucide-react';
 import { CATEGORIES } from '../tools/registry.js';
+import { useTheme } from '../hooks/useTheme.js';
 import CommandPalette from './CommandPalette.jsx';
 
 // The shared frame around every page: a sticky header (brand + category
@@ -16,6 +17,7 @@ export default function Layout() {
   const location = useLocation();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   // ⌘K / Ctrl+K opens search from anywhere on the site.
   useEffect(() => {
@@ -74,6 +76,16 @@ export default function Layout() {
               <span className="kbd-hint">
                 <kbd className="kbd">Ctrl K</kbd>
               </span>
+            </button>
+
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            >
+              {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
             </button>
 
             <button

@@ -5,6 +5,25 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rootconverter</title>
+    <!--
+      Applies a previously-saved dark-theme choice before the page paints,
+      so a returning dark-mode visitor never sees a flash of the light
+      theme (the default) before React mounts and useTheme takes over.
+      Light needs no attribute at all - it's the CSS default - so this
+      only has anything to do when the saved choice is 'dark'.
+    -->
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (error) {
+          // Storage disabled (private browsing, locked-down settings) -
+          // the page still renders fine with the default light theme.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
