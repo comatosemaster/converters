@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
 import { Search, Menu, X, Layers, Sun, Moon } from 'lucide-react';
 import { CATEGORIES } from '../tools/registry.js';
 import { useTheme } from '../hooks/useTheme.js';
@@ -172,6 +172,14 @@ export default function Layout() {
       </footer>
 
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+
+      {/* Scrolls to the top on a normal navigation (clicking a link to
+          another page), while still correctly restoring the previous
+          scroll position on browser back/forward - without this, React
+          Router leaves the scroll position exactly where it was on the
+          old page, so a new page could load already scrolled halfway
+          down. */}
+      <ScrollRestoration />
     </div>
   );
 }
