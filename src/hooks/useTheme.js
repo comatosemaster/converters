@@ -9,14 +9,15 @@ const STORAGE_KEY = 'theme';
 // Guarded for environments with no `document` (e.g. this component
 // rendering under Node during a build/test step, not just a browser).
 function getInitialTheme() {
-  if (typeof document === 'undefined') return 'light';
+  if (typeof document === 'undefined') return 'dark';
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
 }
 
-// Site-wide light/dark theme. Light is the default; dark is remembered
-// in localStorage once chosen, so it persists across visits - see the
-// small inline script in index.html that applies a saved 'dark' choice
-// before first paint.
+// Site-wide light/dark theme. Dark is the default for a first-time
+// visitor; light is still fully available via the toggle and, once
+// explicitly chosen, is remembered in localStorage so it persists
+// across visits - see the small inline script in index.html that
+// applies dark before first paint unless light was explicitly saved.
 export function useTheme() {
   const [theme, setTheme] = useState(getInitialTheme);
 

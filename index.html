@@ -6,21 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rootconverter</title>
     <!--
-      Applies a previously-saved dark-theme choice before the page paints,
-      so a returning dark-mode visitor never sees a flash of the light
-      theme (the default) before React mounts and useTheme takes over.
-      Light needs no attribute at all - it's the CSS default - so this
-      only has anything to do when the saved choice is 'dark'.
+      Applies the dark theme before the page paints, so nobody sees a
+      flash of the light theme (still the CSS default with no attribute
+      at all) before React mounts and useTheme takes over. Dark is now
+      the site's default for a first-time visitor - this only skips
+      applying it when someone has EXPLICITLY chosen light before.
     -->
     <script>
       (function () {
         try {
-          if (localStorage.getItem('theme') === 'dark') {
+          if (localStorage.getItem('theme') !== 'light') {
             document.documentElement.setAttribute('data-theme', 'dark');
           }
         } catch (error) {
           // Storage disabled (private browsing, locked-down settings) -
-          // the page still renders fine with the default light theme.
+          // default to dark anyway for this page load.
+          document.documentElement.setAttribute('data-theme', 'dark');
         }
       })();
     </script>

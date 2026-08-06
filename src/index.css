@@ -23,6 +23,12 @@
     16. Unsaved-changes confirmation modal
     17. Accessibility (focus states)
     18. Responsive / mobile
+    19. Password Generator bits
+    20. Currency Converter bits
+    21. World Clock bits
+    22. Fun tools bits (Dice Roller, Coin Flip, Random Number Generator)
+    23. CSS Gradient Generator bits
+    24. JWT Decoder bits
    ========================================================================= */
 
 /* === 1. Design tokens ==================================================== */
@@ -3302,4 +3308,747 @@ details:focus-visible,
     align-items: flex-start;
     gap: var(--sp-1);
   }
+
+  .password-preview-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* === 19. Password Generator bits ========================================= */
+
+/* Resets the browser's default fieldset chrome (an inset border + extra
+   padding) so the character-type checkboxes sit flush with every other
+   .field on the page, while keeping <fieldset>/<legend> for the free
+   screen-reader grouping they provide. */
+.password-options-fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 var(--sp-5) 0;
+}
+
+.password-options-fieldset legend {
+  padding: 0;
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.password-options-fieldset .checkbox-field {
+  display: flex;
+  margin-bottom: var(--sp-2);
+}
+
+.password-actions {
+  margin-top: var(--sp-2);
+}
+
+.password-preview-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.password-preview-input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  letter-spacing: 0.02em;
+}
+
+.password-reveal-toggle {
+  flex-shrink: 0;
+  padding: var(--sp-2);
+  min-width: 40px;
+}
+
+.password-strength-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.password-strength-label {
+  font-weight: 600;
+}
+
+.password-strength-label.password-strength-weak {
+  color: var(--danger);
+}
+
+.password-strength-label.password-strength-medium {
+  color: var(--warning);
+}
+
+.password-strength-label.password-strength-strong {
+  color: var(--success);
+}
+
+.progress-bar-fill.password-strength-fill-weak {
+  background: var(--danger);
+}
+
+.progress-bar-fill.password-strength-fill-medium {
+  background: var(--warning);
+}
+
+.progress-bar-fill.password-strength-fill-strong {
+  background: var(--success);
+}
+
+/* === 20. Currency Converter bits ========================================= */
+
+/* --- Searchable currency dropdown (CurrencySelect.jsx) ---
+   A .field-shaped trigger button that opens a small panel styled like a
+   scaled-down version of the command palette (same search + listbox +
+   active-row pattern - see .palette above). */
+
+.currency-select {
+  position: relative;
+}
+
+.currency-select-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+}
+
+.currency-select-trigger:hover:not(:disabled) {
+  border-color: var(--border-hover);
+  background: var(--surface-hover);
+}
+
+.currency-select-code {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.currency-select-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.currency-select-chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.currency-select-panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + var(--sp-2));
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.currency-select-search {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.currency-select-search input[type='text'] {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+.currency-select-search input[type='text']:focus {
+  outline: none;
+}
+
+.currency-select-list {
+  overflow-y: auto;
+  padding: var(--sp-2);
+  margin: 0;
+  list-style: none;
+}
+
+.currency-select-option {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  border: none;
+  border-radius: var(--r-md);
+  background: none;
+  color: var(--text);
+  text-align: left;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+.currency-select-option:hover,
+.currency-select-option.active {
+  background: var(--surface-hover);
+}
+
+.currency-select-option[aria-selected='true'] {
+  color: var(--accent);
+}
+
+.currency-select-option-code {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.currency-select-option-name {
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.currency-select-empty {
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* --- Historical rate chart --- */
+
+.currency-chart {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+  padding: var(--sp-4);
+}
+
+.currency-chart-svg {
+  display: block;
+  width: 100%;
+  height: 200px;
+}
+
+.currency-chart-area {
+  fill: var(--accent-subtle);
+  stroke: none;
+}
+
+.currency-chart-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.currency-chart-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+}
+
+/* === 21. World Clock bits ================================================= */
+
+/* Offset badge inside TimeZoneSelect's trigger button and option rows -
+   ".currency-select-*" (see section 20) supplies everything else this
+   component reuses. */
+.timezone-select-offset {
+  flex-shrink: 0;
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-full);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.currency-select-option .timezone-select-offset {
+  background: var(--bg);
+}
+
+/* --- Live current-time badges (From / To) --- */
+
+.timezone-current-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+
+.timezone-current-item {
+  padding: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+
+.timezone-current-value {
+  margin: var(--sp-1) 0;
+  font-size: var(--fs-2xl);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.timezone-current-offset {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* --- DST / day-difference badges - reused wherever a converted or live
+   time is shown (current-time badges, the result panel, clock cards) --- */
+
+.timezone-dst-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--sp-2);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-full);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.timezone-day-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--sp-2);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.timezone-day-badge-previous {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+.timezone-day-badge-next {
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
+}
+
+/* --- Multiple world clocks --- */
+
+.timezone-clocks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.timezone-clock-card {
+  padding: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.timezone-clock-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.timezone-clock-city {
+  font-weight: 600;
+  font-size: var(--fs-base);
+}
+
+.timezone-clock-time {
+  margin: var(--sp-1) 0;
+  font-size: var(--fs-xl);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* === 22. Fun tools bits (Dice Roller, Coin Flip, Random Number Generator) === */
+
+.dice-actions {
+  margin-top: var(--sp-2);
+}
+
+/* --- Shared tray: a responsive grid of result tiles - dice pips, coin
+   faces, and rolling numbers all reuse this same layout. --- */
+.dice-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.dice-face,
+.coin-face,
+.rng-face {
+  display: grid;
+  place-items: center;
+  min-width: 56px;
+  height: 56px;
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+  font-size: var(--fs-lg);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.coin-face {
+  border-radius: var(--r-full);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.rng-face {
+  min-width: 64px;
+  font-size: var(--fs-base);
+}
+
+/* Dice: a quick shake + rotate + scale wobble - two iterations of a
+   400ms keyframe covers the ~800ms this tool's spec calls for. */
+@keyframes dice-shake {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  20% {
+    transform: rotate(-14deg) scale(1.08);
+  }
+  40% {
+    transform: rotate(10deg) scale(0.94);
+  }
+  60% {
+    transform: rotate(-8deg) scale(1.06);
+  }
+  80% {
+    transform: rotate(6deg) scale(0.97);
+  }
+}
+
+.dice-face.is-rolling {
+  animation: dice-shake 0.4s ease-in-out 2;
+  border-color: var(--accent-border);
+}
+
+/* Coin: a 3D flip around the Y axis - one 1s keyframe matches this
+   tool's ~1s spec exactly. */
+@keyframes coin-flip-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(1800deg);
+  }
+}
+
+.coin-face.is-flipping {
+  animation: coin-flip-spin 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Random Number Generator: a subtle pulse (no rotation - these are
+   meant to read as "counting up" quickly, not spinning). */
+@keyframes rng-count {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.75;
+  }
+}
+
+.rng-face.is-counting {
+  animation: rng-count 0.14s ease-in-out infinite;
+  border-color: var(--accent-border);
+}
+
+/* Motion-sensitive visitors get an instant reveal instead - the final
+   values still appear the same way, just without the animated build-up. */
+@media (prefers-reduced-motion: reduce) {
+  .dice-face.is-rolling,
+  .coin-face.is-flipping,
+  .rng-face.is-counting {
+    animation: none;
+  }
+}
+
+/* === 23. CSS Gradient Generator bits ====================================== */
+
+.gradient-preview-frame {
+  width: 100%;
+  height: 200px;
+  margin-bottom: var(--sp-4);
+}
+
+/* --- The draggable bar (GradientBar.jsx) --- */
+
+.gradient-bar {
+  position: relative;
+  height: 48px;
+  margin-bottom: var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  /* Handles hang off the top/bottom edge slightly - room for that. */
+  overflow: visible;
+}
+
+.gradient-bar-handle {
+  position: absolute;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--surface);
+  border-radius: var(--r-full);
+  box-shadow: 0 1px 3px rgba(16, 17, 26, 0.35), 0 0 0 1px var(--border);
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  /* Prevents the browser's own touch-scroll gesture from fighting a
+     touchscreen drag on this handle. */
+  touch-action: none;
+}
+
+.gradient-bar-handle.is-dragging {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.15);
+  box-shadow: 0 2px 6px rgba(16, 17, 26, 0.45), 0 0 0 2px var(--accent);
+}
+
+.gradient-bar-handle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- Angle controls --- */
+
+.gradient-angle-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.gradient-angle-row input[type='range'] {
+  flex: 1;
+}
+
+.gradient-angle-number {
+  width: 76px;
+  flex-shrink: 0;
+}
+
+/* --- Per-stop editor rows --- */
+
+.gradient-stops-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.gradient-stop-row {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.gradient-stop-picker {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.gradient-stop-field {
+  flex: 1 1 110px;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.gradient-stop-position {
+  flex: 0 1 90px;
+}
+
+/* --- Presets --- */
+
+.gradient-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--sp-3);
+}
+
+.gradient-preset-swatch {
+  display: flex;
+  align-items: flex-end;
+  height: 64px;
+  padding: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: transform var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+
+.gradient-preset-swatch:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
+}
+
+.gradient-preset-swatch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.gradient-preset-name {
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-sm);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+/* --- CSS output block --- */
+
+.gradient-css-block {
+  margin: 0;
+  padding: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  overflow-x: auto;
+}
+
+.gradient-css-block code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* === 24. JWT Decoder bits ================================================ */
+
+/* The two-column layout itself reuses .qr-layout (grid, responsive
+   stacking already defined there) - nothing new needed for that part. */
+
+.jwt-input-wrapper {
+  height: 200px;
+}
+
+.jwt-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-full);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.jwt-status-valid {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+.jwt-status-expired,
+.jwt-status-invalid {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+.jwt-status-not-yet-valid {
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
+}
+
+.jwt-claims-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--sp-4);
+}
+
+.jwt-claim-card {
+  padding: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+
+.jwt-claim-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-1);
+}
+
+.jwt-claim-label {
+  font-weight: 600;
+}
+
+.jwt-claim-key {
+  padding: 1px var(--sp-2);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.jwt-claim-value {
+  margin-top: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  word-break: break-word;
+}
+
+.jwt-signature-block code {
+  word-break: break-all;
 }

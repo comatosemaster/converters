@@ -11,22 +11,31 @@
 
 import {
   Binary,
+  Blend,
   Braces,
   Calculator,
+  Clock,
   Code,
+  Coins,
   Crop,
+  Dices,
+  Disc,
   FileImage,
+  FileKey,
   FileText,
   Globe,
   Image,
   Images,
+  KeyRound,
   Palette,
+  PartyPopper,
   QrCode,
   Receipt,
   Regex,
   Ruler,
   ScanText,
   Shrink,
+  Shuffle,
   Smartphone,
   Type,
   Wrench,
@@ -47,8 +56,16 @@ import WordCounterTextAnalyzer from './word-counter-text-analyzer/WordCounterTex
 import RegexTester from './regex-tester/RegexTester.jsx';
 import UnitConverter from './unit-converter/UnitConverter.jsx';
 import TipCalculator from './tip-calculator/TipCalculator.jsx';
+import PasswordGenerator from './password-generator/PasswordGenerator.jsx';
+import CurrencyConverter from './currency-converter/CurrencyConverter.jsx';
+import WorldClockConverter from './world-clock-time-zone-converter/WorldClockConverter.jsx';
+import DiceRoller from './dice-roller/DiceRoller.jsx';
+import CoinFlip from './coin-flip/CoinFlip.jsx';
+import RandomNumberGenerator from './random-number-generator/RandomNumberGenerator.jsx';
+import GradientGenerator from './css-gradient-generator/GradientGenerator.jsx';
+import JwtDecoder from './jwt-decoder/JwtDecoder.jsx';
 
-// The five fixed categories every tool must belong to. `id` is used in
+// The fixed categories every tool must belong to. `id` is used in
 // URLs and as a React key, `name` is what gets displayed on screen,
 // `icon` is a lucide-react component, and `tagline` is the one-line
 // summary shown on category pages.
@@ -82,6 +99,12 @@ export const CATEGORIES = [
     name: 'Everyday',
     icon: Wrench,
     tagline: 'Small utilities for the things that come up all the time.',
+  },
+  {
+    id: 'fun',
+    name: 'Fun',
+    icon: PartyPopper,
+    tagline: 'Dice, coins, and other small randomness tools - just for fun.',
   },
 ];
 
@@ -289,6 +312,121 @@ export const tools = [
       'group bill',
       'how much to tip',
     ],
+    popular: true,
+  },
+  {
+    id: 'password-generator',
+    name: 'Password Generator',
+    description: 'Generate secure random passwords instantly in your browser.',
+    category: 'developer',
+    icon: KeyRound,
+    component: PasswordGenerator,
+    keywords: [
+      'password',
+      'generator',
+      'random',
+      'secure',
+      'passphrase',
+      'strength',
+      'crypto',
+    ],
+    popular: true,
+  },
+  {
+    id: 'currency-converter',
+    name: 'Currency Converter',
+    description: 'Convert between world currencies using live exchange rates with a simple historical chart.',
+    category: 'business-finance',
+    icon: Coins,
+    component: CurrencyConverter,
+    keywords: [
+      'currency',
+      'exchange rate',
+      'forex',
+      'money',
+      'usd',
+      'eur',
+      'gbp',
+      'convert',
+      'historical rates',
+    ],
+    popular: true,
+  },
+  {
+    id: 'world-clock-time-zone-converter',
+    name: 'World Clock & Time Zone Converter',
+    description: 'Compare current times around the world and convert dates and times between different time zones.',
+    category: 'everyday',
+    icon: Clock,
+    component: WorldClockConverter,
+    keywords: [
+      'time zone',
+      'world clock',
+      'utc',
+      'gmt',
+      'dst',
+      'daylight saving',
+      'convert time',
+      'timezone converter',
+    ],
+    popular: true,
+  },
+  {
+    id: 'dice-roller',
+    name: 'Dice Roller',
+    description: 'Roll one or multiple virtual dice with smooth animations.',
+    category: 'fun',
+    icon: Dices,
+    component: DiceRoller,
+    keywords: ['dice', 'roll', 'd4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100', 'tabletop', 'rpg', 'random'],
+    popular: true,
+  },
+  {
+    id: 'coin-flip',
+    name: 'Coin Flip',
+    description: 'Flip one or multiple virtual coins with realistic animations.',
+    category: 'fun',
+    icon: Disc,
+    component: CoinFlip,
+    keywords: ['coin', 'flip', 'heads', 'tails', 'toss', 'random', 'decision'],
+    popular: true,
+  },
+  {
+    id: 'random-number-generator',
+    name: 'Random Number Generator',
+    description: 'Generate random numbers instantly with customizable ranges.',
+    category: 'fun',
+    icon: Shuffle,
+    component: RandomNumberGenerator,
+    keywords: ['random number', 'rng', 'generator', 'range', 'lottery', 'raffle', 'pick a number'],
+    popular: true,
+  },
+  {
+    id: 'css-gradient-generator',
+    name: 'CSS Gradient Generator',
+    description: 'Create beautiful CSS gradients visually and copy the generated CSS instantly.',
+    category: 'developer',
+    icon: Blend,
+    component: GradientGenerator,
+    keywords: [
+      'css',
+      'gradient',
+      'linear gradient',
+      'radial gradient',
+      'color stops',
+      'background',
+      'generator',
+    ],
+    popular: true,
+  },
+  {
+    id: 'jwt-decoder',
+    name: 'JWT Decoder & Inspector',
+    description: 'Decode and inspect JSON Web Tokens (JWT) instantly in your browser without sending data to any server.',
+    category: 'developer',
+    icon: FileKey,
+    component: JwtDecoder,
+    keywords: ['jwt', 'json web token', 'decode', 'token', 'auth', 'bearer token', 'claims', 'base64url'],
     popular: true,
   },
 ];
