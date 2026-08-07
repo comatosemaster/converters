@@ -29,6 +29,9 @@
     22. Fun tools bits (Dice Roller, Coin Flip, Random Number Generator)
     23. CSS Gradient Generator bits
     24. JWT Decoder bits
+    25. BMI Calculator bits
+    26. SQL Formatter bits
+    27. URL Encoder / Decoder bits
    ========================================================================= */
 
 /* === 1. Design tokens ==================================================== */
@@ -4061,4 +4064,153 @@ details:focus-visible,
 
 .jwt-signature-block code {
   word-break: break-all;
+}
+
+/* === 25. BMI Calculator bits =============================================== */
+
+.bmi-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: var(--sp-2);
+  padding: 3px var(--sp-3);
+  border-radius: var(--r-full);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.bmi-badge-underweight {
+  background: color-mix(in srgb, #3b82f6 15%, transparent);
+  color: #3b82f6;
+}
+
+.bmi-badge-normal {
+  background: color-mix(in srgb, var(--success) 15%, transparent);
+  color: var(--success);
+}
+
+.bmi-badge-overweight {
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
+  color: var(--warning);
+}
+
+.bmi-badge-obese-1,
+.bmi-badge-obese-2,
+.bmi-badge-obese-3 {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+/* --- The horizontal scale + live indicator --- */
+
+.bmi-scale {
+  margin-top: var(--sp-5);
+}
+
+.bmi-scale-bar {
+  position: relative;
+  display: flex;
+  height: 40px;
+  border-radius: var(--r-md);
+  overflow: visible;
+}
+
+.bmi-scale-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: #fff;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bmi-scale-section:first-child {
+  border-top-left-radius: var(--r-md);
+  border-bottom-left-radius: var(--r-md);
+}
+
+.bmi-scale-section:last-child {
+  border-top-right-radius: var(--r-md);
+  border-bottom-right-radius: var(--r-md);
+}
+
+.bmi-scale-section-underweight {
+  background: #3b82f6;
+}
+
+.bmi-scale-section-normal {
+  background: var(--success);
+}
+
+.bmi-scale-section-overweight {
+  background: var(--warning);
+}
+
+.bmi-scale-section-obese {
+  background: var(--danger);
+}
+
+/* A small pointer straddling the bar's top edge, at whatever percentage
+   getScaleIndicatorPercent() computed - transitions smoothly so it
+   visibly slides as the entered height/weight changes. */
+.bmi-scale-indicator {
+  position: absolute;
+  top: -6px;
+  width: 4px;
+  height: 52px;
+  background: var(--text);
+  border-radius: var(--r-full);
+  box-shadow: 0 0 0 2px var(--surface);
+  transform: translateX(-50%);
+  transition: left var(--t) var(--ease);
+  pointer-events: none;
+}
+
+/* === 26. SQL Formatter bits ================================================ */
+
+/* The two-column layout reuses .qr-layout (see section 11) - nothing new
+   needed for that part. */
+
+.sql-editor-wrapper {
+  height: 320px;
+}
+
+.sql-output-block {
+  height: 320px;
+  overflow: auto;
+}
+
+.sql-output-block code {
+  white-space: pre;
+}
+
+/* SQL comments (line or block) aren't a JSON concept, so unlike every
+   other SQL token, they get a class of their own instead of reusing one
+   of the .json-hl-* colors. */
+.sql-hl-comment {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* === 27. URL Encoder / Decoder bits ======================================== */
+
+/* The two-column layout reuses .qr-layout (see section 11) - nothing new
+   needed for that part. */
+
+.url-encode-wrapper {
+  height: 260px;
+}
+
+/* .json-editor-textarea is styled color:transparent by design (it
+   normally sits under a .json-editor-highlight overlay that renders the
+   actually-visible syntax-colored text - see section 10). Neither this
+   tool's input nor its output needs syntax highlighting, so - same fix
+   as the JWT Decoder's input needed (section 24) - that transparency
+   has to be overridden here, or every character would be invisible. */
+.url-encode-textarea {
+  color: var(--text);
 }

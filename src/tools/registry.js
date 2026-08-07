@@ -18,6 +18,7 @@ import {
   Code,
   Coins,
   Crop,
+  Database,
   Dices,
   Disc,
   FileImage,
@@ -27,12 +28,14 @@ import {
   Image,
   Images,
   KeyRound,
+  Link2,
   Palette,
   PartyPopper,
   QrCode,
   Receipt,
   Regex,
   Ruler,
+  Scale,
   ScanText,
   Shrink,
   Shuffle,
@@ -64,6 +67,9 @@ import CoinFlip from './coin-flip/CoinFlip.jsx';
 import RandomNumberGenerator from './random-number-generator/RandomNumberGenerator.jsx';
 import GradientGenerator from './css-gradient-generator/GradientGenerator.jsx';
 import JwtDecoder from './jwt-decoder/JwtDecoder.jsx';
+import BmiCalculator from './bmi-calculator/BmiCalculator.jsx';
+import SqlFormatter from './sql-formatter/SqlFormatter.jsx';
+import UrlEncoderDecoder from './url-encoder-decoder/UrlEncoderDecoder.jsx';
 
 // The fixed categories every tool must belong to. `id` is used in
 // URLs and as a React key, `name` is what gets displayed on screen,
@@ -427,6 +433,36 @@ export const tools = [
     icon: FileKey,
     component: JwtDecoder,
     keywords: ['jwt', 'json web token', 'decode', 'token', 'auth', 'bearer token', 'claims', 'base64url'],
+    popular: true,
+  },
+  {
+    id: 'bmi-calculator',
+    name: 'BMI Calculator',
+    description: 'Calculate your Body Mass Index (BMI) instantly using either metric or imperial units.',
+    category: 'everyday',
+    icon: Scale,
+    component: BmiCalculator,
+    keywords: ['bmi', 'body mass index', 'weight', 'height', 'healthy weight', 'obesity', 'underweight'],
+    popular: true,
+  },
+  {
+    id: 'sql-formatter',
+    name: 'SQL Formatter',
+    description: 'Format, beautify, and validate SQL queries directly in your browser.',
+    category: 'developer',
+    icon: Database,
+    component: SqlFormatter,
+    keywords: ['sql', 'format', 'beautify', 'mysql', 'postgresql', 'sqlite', 'sql server', 'query', 'pretty print'],
+    popular: true,
+  },
+  {
+    id: 'url-encoder-decoder',
+    name: 'URL Encoder / Decoder',
+    description: 'Encode and decode URLs and text using standard percent encoding directly in your browser.',
+    category: 'developer',
+    icon: Link2,
+    component: UrlEncoderDecoder,
+    keywords: ['url', 'encode', 'decode', 'percent encoding', 'uri', 'query string', 'encodeuricomponent'],
     popular: true,
   },
 ];
