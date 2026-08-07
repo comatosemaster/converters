@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "job.schema.json",
+  "title": "Pipeline job",
+  "description": "One article moving through the pipeline. Persisted as data/jobs/<id>/job.json. This is the ONLY mutable state; artifacts are append-only, and events.jsonl is the audit trail.",
+  "type": "object",
+  "required": ["id", "state", "contentType", "createdAt", "updatedAt"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "state": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "researched",
+        "outlined",
+        "drafted",
+        "edited",
+        "reviewed",
+        "revising",
+        "assembled",
+        "staged",
+        "published",
+        "quarantined",
+        "abandoned"
+      ]
+    },
+    "contentType": {
+      "type": "string",
+      "enum": ["article"],
+      "description": "Extension point: future types (tool-comparison, glossary, changelog) select different prompt sets and assemblers without changing the pipeline."
+    },
+    "locale": { "type": "string", "default": "en" },
+    "slug": { "type": "string" },
+    "title": { "type": "string" },
+    "source": {
+      "type": "string",
+      "enum": ["manual", "scout"],
+      "description": "manual = a human-written file was ingested. scout = the pipeline picked the topic itself (phase 4)."
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "revisions": {
+      "type": "object",
+      "description": "Revision counters, per gate and total. Enforces the bounded-revision budget that stops the improve-loop from running forever.",
+      "additionalProperties": { "type": "integer", "minimum": 0 },
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "lastVerdict": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "verdict": { "type": "string", "enum": ["pass", "revise", "reject"] },
+        "at": { "type": "string", "format": "date-time" },
+        "failedGates": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "quarantine": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "reason": { "type": "string" },
+        "at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "publish": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "branch": { "type": "string" },
+        "prUrl": { "type": "string" },
+        "at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "costUsd": { "type": "number", "minimum": 0 },
+    "artifacts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Artifact filenames written so far, in order. Append-only."
+    }
+  }
+}

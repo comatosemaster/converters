@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
-import { Search, Menu, X, Layers, Sun, Moon } from 'lucide-react';
+import { BookOpen, Search, Menu, X, Layers, Sun, Moon } from 'lucide-react';
 import { CATEGORIES } from '../tools/registry.js';
 import { useTheme } from '../hooks/useTheme.js';
 import CommandPalette from './CommandPalette.jsx';
@@ -52,7 +52,10 @@ export default function Layout() {
             Rootconverter
           </Link>
 
-          <nav className="category-nav" aria-label="Tool categories">
+          <nav className="category-nav" aria-label="Primary navigation">
+            <NavLink to="/blog" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+              Blog
+            </NavLink>
             {CATEGORIES.map((category) => (
               <NavLink
                 key={category.id}
@@ -102,8 +105,12 @@ export default function Layout() {
 
         <nav
           className={mobileNavOpen ? 'mobile-nav open' : 'mobile-nav'}
-          aria-label="Tool categories (mobile)"
+          aria-label="Primary navigation (mobile)"
         >
+          <NavLink to="/blog" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+            <BookOpen size={16} aria-hidden="true" />
+            Blog
+          </NavLink>
           {CATEGORIES.map((category) => {
             const CategoryIcon = category.icon;
             return (
@@ -155,6 +162,9 @@ export default function Layout() {
             <ul>
               <li>
                 <Link to="/">All tools</Link>
+              </li>
+              <li>
+                <Link to="/blog">Blog</Link>
               </li>
               <li>
                 <button type="button" className="link-button" onClick={() => setPaletteOpen(true)}>

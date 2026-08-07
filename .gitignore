@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Secrets (the content pipeline reads API keys/tokens from here)
+.env
+.env.*
+!.env.example
+
+# Content pipeline runtime state - jobs, artifacts, caches, staged drafts.
+# Regenerable, machine-written, and often large; only the code and prompts
+# belong in git.
+content-pipeline/data/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

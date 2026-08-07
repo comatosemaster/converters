@@ -3,6 +3,9 @@ import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
 import CategoryPage from './pages/CategoryPage.jsx';
 import ToolPage from './pages/ToolPage.jsx';
+import BlogHome from './pages/BlogHome.jsx';
+import BlogCategoryPage from './pages/BlogCategoryPage.jsx';
+import BlogArticlePage from './pages/BlogArticlePage.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 // Top-level routing. Layout wraps every page (header/nav/footer). Routes:
@@ -23,6 +26,9 @@ const router = createBrowserRouter([
       { path: '/', element: <Home /> },
       { path: '/category/:categoryId', element: <CategoryPage /> },
       { path: '/tool/:id', element: <ToolPage /> },
+      { path: '/blog', element: <BlogHome /> },
+      { path: '/blog/category/:categoryId', element: <BlogCategoryPage /> },
+      { path: '/blog/:slug', element: <BlogArticlePage /> },
       { path: '*', element: <NotFound /> },
     ],
   },

@@ -23,7 +23,9 @@ import {
   Disc,
   FileImage,
   FileKey,
+  FileOutput,
   FileText,
+  FlipHorizontal,
   Globe,
   Image,
   Images,
@@ -70,6 +72,8 @@ import JwtDecoder from './jwt-decoder/JwtDecoder.jsx';
 import BmiCalculator from './bmi-calculator/BmiCalculator.jsx';
 import SqlFormatter from './sql-formatter/SqlFormatter.jsx';
 import UrlEncoderDecoder from './url-encoder-decoder/UrlEncoderDecoder.jsx';
+import ImageFlipper from './image-flipper/ImageFlipper.jsx';
+import ImageToPdf from './image-to-pdf/ImageToPdf.jsx';
 
 // The fixed categories every tool must belong to. `id` is used in
 // URLs and as a React key, `name` is what gets displayed on screen,
@@ -167,6 +171,25 @@ export const tools = [
     icon: Crop,
     component: ImageResizer,
     keywords: ['resize', 'crop', 'scale', 'dimensions', 'aspect ratio', 'image'],
+  },
+  {
+    id: 'image-flipper',
+    name: 'Image Flipper',
+    description: 'Flip images horizontally or vertically directly in your browser.',
+    category: 'graphics-media',
+    icon: FlipHorizontal,
+    component: ImageFlipper,
+    keywords: ['flip', 'mirror', 'horizontal', 'vertical', 'reverse', 'image'],
+  },
+  {
+    id: 'image-to-pdf',
+    name: 'Image to PDF',
+    description: 'Convert one or multiple images into a high-quality PDF directly in your browser.',
+    category: 'text-data',
+    icon: FileOutput,
+    component: ImageToPdf,
+    keywords: ['image', 'pdf', 'convert', 'combine', 'merge', 'jpg to pdf', 'png to pdf', 'photos'],
+    popular: true,
   },
   {
     id: 'heic-to-jpg',

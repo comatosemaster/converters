@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
 import Breadcrumbs from './Breadcrumbs.jsx';
 import ToolGrid from './ToolGrid.jsx';
+import ArticleGrid from './blog/ArticleGrid.jsx';
+import { getArticlesForTool } from '../blog/blogUtils.js';
 
 // The standard frame every tool page shares: breadcrumbs, an icon + title
 // + description header, the tool's own UI in a card, a privacy note, and
@@ -14,6 +16,11 @@ import ToolGrid from './ToolGrid.jsx';
 
 export default function ToolLayout({ tool, category, relatedTools = [], children }) {
   const ToolIcon = tool.icon;
+  // Reverse lookup: finds every article whose OWN `relatedTools`
+  // frontmatter lists this tool - the relationship lives entirely in the
+  // article's metadata (see blogUtils.js), so this tool page never needs
+  // to know which articles exist, let alone list them itself.
+  const relatedArticles = getArticlesForTool(tool.id);
 
   return (
     <article className="tool">
@@ -51,6 +58,13 @@ export default function ToolLayout({ tool, category, relatedTools = [], children
               Or browse all <Link to={`/category/${category.id}`}>{category.name}</Link> tools.
             </p>
           )}
+        </section>
+      )}
+
+      {relatedArticles.length > 0 && (
+        <section className="related-tools">
+          <h2>Related articles</h2>
+          <ArticleGrid articles={relatedArticles} />
         </section>
       )}
     </article>

@@ -3,17 +3,24 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "content-pipeline"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "pipeline": "node content-pipeline/src/cli.js"
   },
   "dependencies": {
     "heic2any": "^0.0.4",
     "jsonrepair": "^3.15.0",
+    "jspdf": "^4.2.1",
     "jszip": "^3.10.1",
     "lucide-react": "^1.29.0",
+    "marked": "^18.0.9",
+    "prismjs": "^1.30.0",
     "qrcode": "^1.5.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

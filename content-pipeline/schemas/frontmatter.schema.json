@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "frontmatter.schema.json",
+  "title": "Blog article frontmatter",
+  "description": "The publish contract. Mirrors what src/blog/blogUtils.js buildArticle() consumes. Structural rules live here; anything requiring knowledge of the live site (does this category exist? does this tool id resolve?) is enforced by the gates instead, because it depends on repo state rather than on the shape of the data.",
+  "type": "object",
+  "required": ["title", "category", "description", "excerpt", "publishDate"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional stable identifier. Defaults to slug."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 120
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 3,
+      "maxLength": 80,
+      "description": "URL segment. Lowercase kebab-case only; becomes /blog/<slug>."
+    },
+    "category": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Must match a CATEGORIES id in src/tools/registry.js - verified by the frontmatter gate."
+    },
+    "description": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 300
+    },
+    "excerpt": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 300,
+      "description": "Card preview text. Clamped to 3 lines in the UI."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 2, "maxLength": 40 },
+      "maxItems": 12,
+      "uniqueItems": true
+    },
+    "author": { "type": "string", "minLength": 2, "maxLength": 80 },
+    "publishDate": {
+      "type": "string",
+      "format": "date",
+      "description": "YYYY-MM-DD."
+    },
+    "updatedDate": { "type": "string", "format": "date" },
+    "featured": { "type": "boolean" },
+    "difficulty": {
+      "type": "string",
+      "enum": ["beginner", "intermediate", "advanced"]
+    },
+    "readingTime": { "type": "integer", "minimum": 1, "maximum": 90 },
+    "coverImage": {
+      "type": "string",
+      "pattern": "^/",
+      "description": "Site-absolute path, resolved against public/ - verified by the links gate."
+    },
+    "seoTitle": { "type": "string", "minLength": 10, "maxLength": 120 },
+    "metaDescription": { "type": "string", "minLength": 40, "maxLength": 200 },
+    "relatedTools": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+      "maxItems": 8,
+      "uniqueItems": true,
+      "description": "Tool ids from src/tools/registry.js - existence verified by the links gate."
+    },
+    "relatedArticles": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+      "maxItems": 8,
+      "uniqueItems": true,
+      "description": "Slugs of other articles - existence verified by the links gate."
+    }
+  }
+}

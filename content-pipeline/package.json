@@ -1,0 +1,19 @@
+{
+  "name": "content-pipeline",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Autonomous content production pipeline for Rootconverter. Phase 1: deterministic validation, staging, build verification, and PR-gated publishing.",
+  "bin": {
+    "pipeline": "./src/cli.js"
+  },
+  "scripts": {
+    "pipeline": "node src/cli.js"
+  },
+  "dependencies": {
+    "acorn": "^8.15.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "marked": "^18.0.9"
+  }
+}
