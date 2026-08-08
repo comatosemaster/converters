@@ -22,7 +22,9 @@ export function organizationSchema() {
     '@id': ORGANIZATION_ID,
     name: SITE_NAME,
     url: SITE_URL,
-    logo: absoluteUrl('/favicon.svg'),
+    // Google wants a real raster logo here (>=112x112); the 512px square
+    // mark serves both this and the header.
+    logo: absoluteUrl('/logo.png'),
     description: SITE_DESCRIPTION,
   };
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
-import { BookOpen, Search, Menu, X, Layers, Sun, Moon } from 'lucide-react';
+import { BookOpen, Search, Menu, X, Sun, Moon } from 'lucide-react';
 import { CATEGORIES } from '../tools/registry.js';
 import { useTheme } from '../hooks/useTheme.js';
 import CommandPalette from './CommandPalette.jsx';
@@ -56,10 +56,14 @@ export default function Layout() {
       <header className="site-header">
         <div className="site-header-inner">
           <Link to="/" className="site-name">
-            <span className="site-logo" aria-hidden="true">
-              <Layers size={17} strokeWidth={2.25} />
+            {/* Decorative: the wordmark beside it already names the site,
+                so alt="" keeps screen readers from announcing it twice. */}
+            <img src="/logo.png" alt="" className="site-logo" width="34" height="34" />
+            {/* Two-tone wordmark. No whitespace between the spans - JSX
+                would render it as a visible space inside the word. */}
+            <span>
+              Root<span className="site-name-accent">converter</span>
             </span>
-            Rootconverter
           </Link>
 
           <nav className="category-nav" aria-label="Tool categories">
@@ -149,10 +153,10 @@ export default function Layout() {
         <div className="site-footer-inner">
           <div className="footer-brand">
             <Link to="/" className="site-name">
-              <span className="site-logo" aria-hidden="true">
-                <Layers size={17} strokeWidth={2.25} />
+              <img src="/logo.png" alt="" className="site-logo" width="34" height="34" />
+              <span>
+                Root<span className="site-name-accent">converter</span>
               </span>
-              Rootconverter
             </Link>
             <p>
               Free, fast, browser-based tools. Every conversion runs on your own device - nothing

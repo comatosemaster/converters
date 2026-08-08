@@ -421,15 +421,24 @@ button {
   color: var(--text);
 }
 
+/* "Root" keeps the normal text colour (near-black on light, near-white on
+   dark) and "converter" picks up the brand purple, matching the mark. */
+.site-name-accent {
+  color: var(--accent);
+}
+
+/* The mark is rendered directly rather than inside the gradient tile this
+   used to be: it already carries its own colour and glow, so boxing it in
+   a second purple square read as a logo inside a logo. */
+/* 34px rather than the 30px tile it replaces: the mark is taller than it is
+   wide, so it only fills about 77% of its square and reads smaller than the
+   old solid tile did at the same box size. */
 .site-logo {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--r-md);
-  background: linear-gradient(140deg, var(--accent), var(--accent-active));
-  color: var(--accent-fg);
+  display: block;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
+  object-fit: contain;
 }
 
 /* The middle grid track. When it's hidden below 1320px the track collapses

@@ -2,7 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Two raster sizes rather than one scaled file: a 512px source
+         resampled down to a 16px tab icon by the browser loses the mark's
+         inner detail, so each size is generated from the source separately. -->
+    <!-- Two raster sizes rather than one scaled file: a 512px source
+         resampled down to a 16px tab icon by the browser loses the mark's
+         inner detail, so each size is generated from the source separately.
+         The ?v= is a cache-buster - browsers hold on to a favicon far more
+         stubbornly than any other asset, and without it the previous mark
+         survives a hard refresh. Bump it whenever the icon changes. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=2" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rootconverter - Free Online Tools &amp; Converters</title>
 
@@ -60,7 +70,7 @@
     <meta name="twitter:image" content="https://rootconverter.com/og-default.png" />
 
     <meta name="theme-color" content="#5b3df5" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
     <!--
       Applies the dark theme before the page paints, so nobody sees a
       flash of the light theme (still the CSS default with no attribute
