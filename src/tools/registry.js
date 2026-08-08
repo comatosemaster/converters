@@ -24,6 +24,7 @@ import {
   Database,
   Dices,
   Disc,
+  Eraser,
   FileImage,
   FileKey,
   FileOutput,
@@ -166,6 +167,17 @@ export const tools = [
     icon: FlipHorizontal,
     component: lazy(() => import('./image-flipper/ImageFlipper.jsx')),
     keywords: ['flip', 'mirror', 'horizontal', 'vertical', 'reverse', 'image'],
+  },
+  {
+    id: 'watermark-remover',
+    name: 'Watermark Remover',
+    description: 'Remove simple text, logos, and unwanted areas from images directly in your browser.',
+    category: 'graphics-media',
+    metaDescription:
+      'Paint over a watermark, logo, or unwanted area and remove it from your image entirely in your browser. Nothing is ever uploaded - works on PNG, JPG, and WebP.',
+    icon: Eraser,
+    component: lazy(() => import('./watermark-remover/WatermarkRemover.jsx')),
+    keywords: ['watermark', 'remove watermark', 'logo removal', 'object removal', 'inpaint', 'image', 'edit'],
   },
   {
     id: 'image-to-pdf',

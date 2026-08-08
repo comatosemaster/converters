@@ -5328,3 +5328,117 @@ details:focus-visible,
   padding-top: var(--sp-5);
   border-top: 1px solid var(--border);
 }
+
+/* === 33. Watermark Remover bits ============================================= */
+/* .drop-zone, .converter-toolbar, .ghost-button, .btn-primary, .field,
+   .field-hint, .field-error, .download-button, and .mode-toggle are all
+   reused as-is from elsewhere on the site - nothing new needed for those. */
+
+.watermark-brush-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-4);
+}
+
+.watermark-brush-toolbar .mode-toggle {
+  margin-bottom: 0;
+}
+
+/* The base image and its paintable selection overlay are two same-sized
+   canvases stacked exactly on top of each other - the wrapper's
+   aspect-ratio (set inline from the image's real dimensions) is what
+   gives them a height before either one has painted anything. */
+.watermark-canvas-stack {
+  position: relative;
+  width: 100%;
+  margin-bottom: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background-image: linear-gradient(45deg, var(--surface-2) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--surface-2) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--surface-2) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--surface-2) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.watermark-canvas-stack canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.watermark-mask-canvas {
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.watermark-mask-canvas:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.watermark-compare-section {
+  margin: var(--sp-6) 0;
+}
+
+.watermark-compare-section h3 {
+  font-size: var(--fs-md);
+  margin-bottom: var(--sp-3);
+}
+
+/* The slider below drives comparePercent. Both images are stacked at
+   full size via position: absolute; the "result" image on top is
+   revealed with clip-path (set inline, since it's driven by React state)
+   rather than a width-clipped wrapper - clip-path crops the image in
+   place without needing to know the rendered pixel width of anything,
+   so it stays correct at any viewport size with zero JS measurement. */
+.watermark-compare {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background-image: linear-gradient(45deg, var(--surface-2) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--surface-2) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--surface-2) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--surface-2) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+.watermark-compare-image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.watermark-compare-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  pointer-events: none;
+  transform: translateX(-1px);
+}
+
+.watermark-compare-slider {
+  width: 100%;
+  margin-top: var(--sp-3);
+}
+
+.watermark-compare-toggle {
+  margin-top: var(--sp-3);
+  margin-bottom: 0;
+  justify-content: center;
+}

@@ -31,6 +31,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://rootconverter.com/tool/watermark-remover</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://rootconverter.com/tool/image-to-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -197,10 +202,22 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://rootconverter.com/blog/category/graphics-media</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://rootconverter.com/blog/category/developer</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://rootconverter.com/blog/hex-vs-rgb-vs-hsl</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://rootconverter.com/blog/json-comments-alternatives</loc>
@@ -210,6 +227,12 @@
   </url>
   <url>
     <loc>https://rootconverter.com/blog/jwt-explained</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://rootconverter.com/blog/what-is-json</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
