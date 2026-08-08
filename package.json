@@ -10,7 +10,7 @@
     "dev": "vite",
     "sitemap": "node scripts/generate-sitemap.js",
     "prebuild": "node scripts/generate-sitemap.js",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.js",
     "lint": "oxlint",
     "preview": "vite preview",
     "pipeline": "node content-pipeline/src/cli.js"

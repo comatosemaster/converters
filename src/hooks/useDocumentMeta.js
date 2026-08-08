@@ -80,6 +80,25 @@ export function useDocumentMeta({
     upsertMeta('name', 'twitter:title', title);
     upsertMeta('name', 'twitter:description', description);
 
+    // A page that declares no canonical must not inherit one. Since
+    // prerendering, unmatched URLs are served the prerendered homepage
+    // shell, which carries the homepage's canonical - so the not-found
+    // view would otherwise claim to BE the homepage while also asking not
+    // to be indexed. Removing it makes this hook authoritative.
+    if (!canonical) {
+      const stale = document.querySelector('link[rel="canonical"]');
+      if (stale) {
+        const staleHref = stale.getAttribute('href');
+        stale.remove();
+        cleanups.push(() => {
+          const link = document.createElement('link');
+          link.setAttribute('rel', 'canonical');
+          link.setAttribute('href', staleHref);
+          document.head.appendChild(link);
+        });
+      }
+    }
+
     if (canonical) {
       // Resolved against the PRODUCTION origin, never window.location.
       //
