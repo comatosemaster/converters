@@ -52,10 +52,7 @@ export default function Layout() {
             Rootconverter
           </Link>
 
-          <nav className="category-nav" aria-label="Primary navigation">
-            <NavLink to="/blog" className={({ isActive }) => (isActive ? 'active' : undefined)}>
-              Blog
-            </NavLink>
+          <nav className="category-nav" aria-label="Tool categories">
             {CATEGORIES.map((category) => (
               <NavLink
                 key={category.id}
@@ -68,6 +65,21 @@ export default function Layout() {
           </nav>
 
           <div className="header-actions">
+            {/* Deliberately outside .category-nav: the categories filter
+                TOOLS, while this is a separate destination. Grouping it
+                with them made it read as a seventh tool category. */}
+            <NavLink
+              to="/blog"
+              className={({ isActive }) => (isActive ? 'nav-blog-link active' : 'nav-blog-link')}
+              // The visible label is hidden on narrow screens, leaving only
+              // a decorative icon - so the accessible name has to come from
+              // here or the link becomes unnamed for screen readers.
+              aria-label="Blog"
+            >
+              <BookOpen size={15} aria-hidden="true" />
+              <span className="nav-blog-label">Blog</span>
+            </NavLink>
+
             <button
               type="button"
               className="header-search-trigger"
@@ -103,14 +115,13 @@ export default function Layout() {
           </div>
         </div>
 
+        {/* No Blog entry here: the accent pill in the header stays visible
+            at every width, so repeating it in the menu would be a second
+            link to the same place. */}
         <nav
           className={mobileNavOpen ? 'mobile-nav open' : 'mobile-nav'}
-          aria-label="Primary navigation (mobile)"
+          aria-label="Tool categories (mobile)"
         >
-          <NavLink to="/blog" className={({ isActive }) => (isActive ? 'active' : undefined)}>
-            <BookOpen size={16} aria-hidden="true" />
-            Blog
-          </NavLink>
           {CATEGORIES.map((category) => {
             const CategoryIcon = category.icon;
             return (
