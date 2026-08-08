@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import { parseColor, rgbToHex } from '../color-converter/colorConversions.js';
 import GradientBar from './GradientBar.jsx';
@@ -51,12 +50,6 @@ export default function GradientGenerator() {
   const [gradient, setGradient] = useState(defaultGradient);
   const [copiedCss, setCopiedCss] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
-
-  useDocumentMeta({
-    title: 'CSS Gradient Generator - Free & Client-Side | Rootconverter',
-    description:
-      'Create linear and radial CSS gradients visually - draggable color stops, alpha transparency, built-in presets, and a random gradient generator - then copy or download the generated CSS. Nothing is ever uploaded.',
-  });
 
   const cssGradient = generateGradient(gradient);
   const cssDeclaration = generateCssDeclaration(gradient);

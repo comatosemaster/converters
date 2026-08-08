@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import {
@@ -67,12 +66,6 @@ export default function RegexTester() {
   const [copiedRegex, setCopiedRegex] = useState(false);
   const [copiedMatches, setCopiedMatches] = useState(false);
   const [copiedReplaced, setCopiedReplaced] = useState(false);
-
-  useDocumentMeta({
-    title: 'Regex Tester - Test & Debug Regular Expressions | Rootconverter',
-    description:
-      'Test, debug, and understand regular expressions live in your browser - match highlighting, capture groups, a find-and-replace preview, a plain-English explanation, and a full regex cheat sheet. Nothing you type is ever uploaded.',
-  });
 
   // Re-parses and re-matches on every change - simple, and matches how
   // the other text tools on this site work (no debouncing).

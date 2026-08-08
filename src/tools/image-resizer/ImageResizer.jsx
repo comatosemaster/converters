@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { formatBytes } from '../../utils/formatBytes.js';
@@ -113,12 +112,6 @@ export default function ImageResizer() {
   // A pasted image, held here while we wait for the discard confirmation
   // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
-
-  useDocumentMeta({
-    title: 'Image Resizer & Cropper - Free & Client-Side | Rootconverter',
-    description:
-      'Resize or crop images to exact dimensions entirely in your browser. Lock aspect ratio, use scale presets, or drag a crop selection - no upload required.',
-  });
 
   const [mode, setMode] = useState('resize'); // 'resize' | 'crop'
   const [format, setFormat] = useState('image/png');

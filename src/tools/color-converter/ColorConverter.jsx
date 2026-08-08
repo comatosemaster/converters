@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import {
   parseColor,
@@ -50,12 +49,6 @@ export default function ColorConverter() {
   const [copiedField, setCopiedField] = useState(null);
   const [copiedAll, setCopiedAll] = useState(false);
   const [copiedSnippet, setCopiedSnippet] = useState(null);
-
-  useDocumentMeta({
-    title: 'Color Converter - HEX, RGB, HSL & More | Rootconverter',
-    description:
-      'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA. Free, fast, and 100% client-side - nothing you enter ever leaves your browser.',
-  });
 
   // Whenever the canonical color changes, refresh every field's text EXCEPT
   // whichever one the user is currently typing in.

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RotateCw } from 'lucide-react';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import CurrencySelect from './CurrencySelect.jsx';
 import { fetchCurrencies, fetchExchangeRate, fetchHistoricalRates } from './currencyApi.js';
@@ -61,12 +60,6 @@ export default function CurrencyConverter() {
 
   const [recentConversions, setRecentConversions] = useState([]);
   const [copied, setCopied] = useState(false);
-
-  useDocumentMeta({
-    title: 'Currency Converter - Live Exchange Rates | Rootconverter',
-    description:
-      'Convert between world currencies using live exchange rates, with a historical rate chart going back up to a year. Free, fast, and always current - powered by the Frankfurter API.',
-  });
 
   // Popular currencies are only ever shown once they're confirmed to
   // exist in the fetched list - Frankfurter's ECB-sourced data doesn't

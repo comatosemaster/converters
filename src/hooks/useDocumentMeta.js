@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { absoluteUrl } from '../seo/siteConfig.js';
 
 // Sets the page's <head> tags while a component is mounted, restoring
 // whatever was there before on unmount - so navigating to another page
@@ -25,6 +26,10 @@ export function useDocumentMeta({
   image,
   type = 'website',
   siteName = 'Rootconverter',
+  // e.g. 'noindex, follow' for the not-found view. A static host serving
+  // an SPA shell returns 200 for every unmatched path, so this tag is the
+  // only way to keep invented URLs out of the index.
+  robots,
   jsonLd,
 }) {
   // Non-primitive props (jsonLd) can't be compared by identity in the
@@ -34,6 +39,13 @@ export function useDocumentMeta({
   const jsonLdKey = jsonLd ? JSON.stringify(jsonLd) : '';
 
   useEffect(() => {
+    // A page that has nothing to say must say nothing. Pages that render a
+    // fallback (ToolPage with an unknown id, say) still have to call this
+    // hook unconditionally, but the child fallback owns the real metadata -
+    // without this guard the parent would go on to emit og:type and
+    // twitter:card for a page it isn't describing.
+    if (!title && !description && !canonical && !jsonLd) return undefined;
+
     const previousTitle = document.title;
     if (title) document.title = title;
 
@@ -59,6 +71,7 @@ export function useDocumentMeta({
     }
 
     upsertMeta('name', 'description', description);
+    upsertMeta('name', 'robots', robots);
     upsertMeta('property', 'og:title', title);
     upsertMeta('property', 'og:description', description);
     upsertMeta('property', 'og:type', type);
@@ -68,8 +81,15 @@ export function useDocumentMeta({
     upsertMeta('name', 'twitter:description', description);
 
     if (canonical) {
-      const absoluteUrl = new URL(canonical, window.location.origin).href;
-      upsertMeta('property', 'og:url', absoluteUrl);
+      // Resolved against the PRODUCTION origin, never window.location.
+      //
+      // Using the current origin would make every canonical on a
+      // *.workers.dev preview declare that preview canonical - which is
+      // the exact duplicate-content problem canonicals exist to prevent.
+      // On localhost this correctly emits the production URL, which is
+      // harmless and keeps dev honest about what will ship.
+      const absolute = absoluteUrl(canonical);
+      upsertMeta('property', 'og:url', absolute);
 
       let link = document.querySelector('link[rel="canonical"]');
       const isNewLink = !link;
@@ -79,7 +99,7 @@ export function useDocumentMeta({
         link.setAttribute('rel', 'canonical');
         document.head.appendChild(link);
       }
-      link.setAttribute('href', absoluteUrl);
+      link.setAttribute('href', absolute);
       cleanups.push(() => {
         if (isNewLink) link.remove();
         else if (previousHref !== null) link.setAttribute('href', previousHref);
@@ -87,7 +107,10 @@ export function useDocumentMeta({
     }
 
     if (image) {
-      const absoluteImage = new URL(image, window.location.origin).href;
+      // Same rule as the canonical: social images must point at the
+      // production host, or a scraper hitting a preview deploy caches an
+      // image URL that dies with the preview.
+      const absoluteImage = absoluteUrl(image);
       upsertMeta('property', 'og:image', absoluteImage);
       upsertMeta('name', 'twitter:image', absoluteImage);
     }
@@ -109,5 +132,5 @@ export function useDocumentMeta({
       cleanups.forEach((cleanup) => cleanup());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- jsonLdKey (a stringified snapshot) is the intentional dependency, not jsonLd itself
-  }, [title, description, canonical, image, type, siteName, jsonLdKey]);
+  }, [title, description, canonical, image, type, siteName, robots, jsonLdKey]);
 }

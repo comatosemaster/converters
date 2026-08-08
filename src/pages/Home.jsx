@@ -9,6 +9,8 @@ import {
   tools,
 } from '../tools/registry.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
+import { homeMeta } from '../seo/buildMeta.js';
+import { organizationSchema, websiteSchema } from '../seo/structuredData.js';
 import ToolGrid from '../components/ToolGrid.jsx';
 
 // The homepage: hero + search, popular tools, then every tool grouped by
@@ -41,10 +43,12 @@ const FAQS = [
 export default function Home() {
   const [query, setQuery] = useState('');
 
+  // Homepage metadata and the site-level structured data both live here.
+  // WebSite + Organization are emitted once, on the homepage only -
+  // repeating them on every page adds nothing and just inflates payloads.
   useDocumentMeta({
-    title: 'Rootconverter - Free Browser-Based Converters & Tools',
-    description:
-      'A collection of fast, free, privacy-first online tools. Convert images, format JSON, generate QR codes, run OCR, and more - 100% in your browser, with no uploads.',
+    ...homeMeta({ toolCount: tools.length }),
+    jsonLd: [websiteSchema(), organizationSchema()],
   });
 
   const categories = useMemo(() => getToolsByCategory(), []);

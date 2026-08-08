@@ -1,0 +1,16 @@
+# Rootconverter — https://rootconverter.com
+#
+# Everything here is public and worth crawling. Nothing is disallowed:
+# JS, CSS and images must stay crawlable so search engines can render the
+# app and judge the page the way a visitor sees it. Blocking them is the
+# classic way to make a JavaScript site look broken to a crawler.
+#
+# Pages that should not be indexed (the 404 view) say so with a robots
+# meta tag instead. robots.txt cannot express "don't index" — a
+# disallowed URL can still be indexed without its content, which is worse
+# than allowing the crawl and letting the noindex do its job.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://rootconverter.com/sitemap.xml

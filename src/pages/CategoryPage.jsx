@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { getCategoryById, getToolsByCategory } from '../tools/registry.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
+import { categoryMeta } from '../seo/buildMeta.js';
+import { breadcrumbSchema, collectionSchema } from '../seo/structuredData.js';
 import ToolGrid from '../components/ToolGrid.jsx';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import NotFound from './NotFound.jsx';
@@ -13,24 +15,44 @@ export default function CategoryPage() {
   const { categoryId } = useParams();
   const category = getCategoryById(categoryId);
 
-  // Hooks must run on every render, so this is computed before the early
-  // return below - with safe fallbacks for an unknown category id.
-  useDocumentMeta({
-    title: category ? `${category.name} Tools | Rootconverter` : 'Not found | Rootconverter',
-    description: category?.tagline,
-  });
+  // getToolsByCategory() groups every category's tools; pick out this one.
+  // Resolved before the early return because the metadata below needs the
+  // count, and hooks must run unconditionally.
+  const group = category ? getToolsByCategory().find((entry) => entry.id === categoryId) : null;
+  const tools = group?.tools ?? [];
+
+  const breadcrumbs = category ? [{ label: 'Home', to: '/' }, { label: category.name }] : [];
+
+  // An unknown id renders NotFound, which owns its own metadata (including
+  // noindex) - so this passes nothing rather than describing a page that
+  // doesn't exist.
+  useDocumentMeta(
+    category
+      ? {
+          ...categoryMeta(category, tools.length),
+          jsonLd: [
+            collectionSchema({
+              name: `${category.name} Tools`,
+              description: category.tagline,
+              path: `/category/${category.id}`,
+              // Mirrors the tool cards actually rendered below, in order.
+              items: tools.map((tool) => ({ name: tool.name, path: `/tool/${tool.id}` })),
+            }),
+            breadcrumbSchema(breadcrumbs),
+          ],
+        }
+      : {},
+  );
 
   if (!category) {
     return <NotFound />;
   }
 
-  // getToolsByCategory() groups every category's tools; pick out this one.
-  const { tools } = getToolsByCategory().find((entry) => entry.id === categoryId);
   const CategoryIcon = category.icon;
 
   return (
     <div className="category-page">
-      <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: category.name }]} />
+      <Breadcrumbs items={breadcrumbs} />
 
       <header className="page-header">
         <div className="page-header-row">

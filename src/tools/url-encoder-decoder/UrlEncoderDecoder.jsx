@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { validateTestTextFile, readTestTextFile } from '../regex-tester/regexUtils.js';
@@ -32,12 +31,6 @@ export default function UrlEncoderDecoder() {
   const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
   const [pendingContent, setPendingContent] = useState(null);
   const [copied, setCopied] = useState(false);
-
-  useDocumentMeta({
-    title: 'URL Encoder / Decoder - Free & Client-Side | Rootconverter',
-    description:
-      'Encode and decode URLs and text using standard percent encoding, instantly in your browser using native JavaScript APIs. Nothing is ever uploaded.',
-  });
 
   // Re-processes on every keystroke - simple, and matches how the other
   // text tools on this site work.

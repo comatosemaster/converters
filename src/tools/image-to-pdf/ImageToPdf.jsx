@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { formatBytes } from '../../utils/formatBytes.js';
@@ -47,12 +46,6 @@ export default function ImageToPdf() {
   const [fileErrors, setFileErrors] = useState([]); // per-file rejection messages from the last batch
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [pendingReplaceFiles, setPendingReplaceFiles] = useState(null);
-
-  useDocumentMeta({
-    title: 'Image to PDF Converter - Free & Client-Side | Rootconverter',
-    description:
-      'Combine one or more images into a single PDF entirely in your browser. Choose page size, layout, and quality - nothing is ever uploaded.',
-  });
 
   const [pageSizeId, setPageSizeId] = useState('a4');
   const [orientationId, setOrientationId] = useState('auto');

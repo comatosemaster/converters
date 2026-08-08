@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { readTestTextFile } from '../regex-tester/regexUtils.js';
@@ -55,12 +54,6 @@ export default function SqlFormatter() {
 
   const [copied, setCopied] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState('');
-
-  useDocumentMeta({
-    title: 'SQL Formatter - Free & Client-Side | Rootconverter',
-    description:
-      'Format, beautify, and validate SQL queries in your browser - Generic SQL, MySQL, PostgreSQL, SQLite, and SQL Server dialects, with syntax highlighting and adjustable style options. Nothing is ever uploaded.',
-  });
 
   const hasFormattedOnce = outputSql !== '' || formatError !== '';
   const hasUnsavedWork = sqlInput.trim() !== '' || JSON.stringify(options) !== JSON.stringify(DEFAULT_OPTIONS);

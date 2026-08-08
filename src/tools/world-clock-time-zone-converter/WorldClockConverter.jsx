@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import TimeZoneSelect from './TimeZoneSelect.jsx';
 import {
@@ -76,12 +75,6 @@ export default function WorldClockConverter() {
 
   const [clocks, setClocks] = useState([]);
   const [copied, setCopied] = useState(false);
-
-  useDocumentMeta({
-    title: 'World Clock & Time Zone Converter - Free & Client-Side | Rootconverter',
-    description:
-      'Compare current times around the world and convert dates and times between time zones, entirely in your browser using the Intl API - live clocks, DST status, and day-difference indicators. Nothing is ever uploaded.',
-  });
 
   // Re-validates and re-converts on every change - simple, and matches
   // how the other converter tools on this site work (no debouncing,

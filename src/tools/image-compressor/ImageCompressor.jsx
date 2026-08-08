@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { formatBytes } from '../../utils/formatBytes.js';
@@ -47,12 +46,6 @@ export default function ImageCompressor() {
   // A pasted image, held here while we wait for the discard confirmation
   // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
-
-  useDocumentMeta({
-    title: 'Image Compressor - Shrink File Size in Your Browser | Rootconverter',
-    description:
-      'Compress PNG, JPG, and WebP images to reduce file size without uploading them anywhere. Adjustable quality and optional resizing.',
-  });
 
   // 'original' keeps the source file's own format; otherwise this is the
   // exact mime type to hand to canvas.toBlob().

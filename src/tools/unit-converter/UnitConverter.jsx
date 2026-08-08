@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import {
   CATEGORIES,
@@ -49,12 +48,6 @@ export default function UnitConverter() {
   const [precision, setPrecision] = useState('auto');
   const [recentConversions, setRecentConversions] = useState([]);
   const [copied, setCopied] = useState(false);
-
-  useDocumentMeta({
-    title: 'Unit Converter - Length, Weight & Temperature | Rootconverter',
-    description:
-      'Convert units instantly between length, weight, and temperature in your browser - live results, adjustable precision, conversion formulas, and a running history. Nothing is uploaded.',
-  });
 
   const category = getCategoryById(categoryId);
   const fromUnitObj = getUnitById(categoryId, fromUnit);

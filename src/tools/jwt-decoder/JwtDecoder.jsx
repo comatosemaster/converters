@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { formatJson } from '../json-formatter-validator/jsonUtils.js';
@@ -49,12 +48,6 @@ export default function JwtDecoder() {
   const [copiedHeader, setCopiedHeader] = useState(false);
   const [copiedPayload, setCopiedPayload] = useState(false);
   const [copiedToken, setCopiedToken] = useState(false);
-
-  useDocumentMeta({
-    title: 'JWT Decoder & Inspector - Free & Client-Side | Rootconverter',
-    description:
-      'Decode and inspect JSON Web Tokens (JWT) instantly in your browser - header, payload, standard claims with plain-English explanations, expiration status, and timestamp conversion. Nothing is ever uploaded.',
-  });
 
   const hasUnsavedWork = jwtInput.trim() !== '';
   useUnsavedChangesWarning(hasUnsavedWork);

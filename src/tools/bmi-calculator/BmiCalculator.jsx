@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import {
   UNIT_SYSTEMS,
@@ -42,12 +41,6 @@ export default function BmiCalculator() {
   const [heightIn, setHeightIn] = useState('');
   const [weightLb, setWeightLb] = useState('');
   const [copied, setCopied] = useState(false);
-
-  useDocumentMeta({
-    title: 'BMI Calculator - Metric & Imperial | Rootconverter',
-    description:
-      'Calculate your Body Mass Index (BMI) instantly in your browser using metric or imperial units - live category badge, healthy weight range, and a visual BMI scale. Nothing is ever uploaded.',
-  });
 
   // Re-validates and re-calculates on every change - simple, and matches
   // how the other converter tools on this site work.

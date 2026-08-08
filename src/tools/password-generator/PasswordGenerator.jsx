@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import {
   CHARACTER_SETS,
@@ -35,12 +34,6 @@ export default function PasswordGenerator() {
   const [password, setPassword] = useState('');
   const [revealed, setRevealed] = useState(true);
   const [copied, setCopied] = useState(false);
-
-  useDocumentMeta({
-    title: 'Password Generator - Free & Client-Side | Rootconverter',
-    description:
-      'Generate secure random passwords instantly in your browser using the Web Crypto API - adjustable length, character types, similar-character exclusion, and a live strength indicator. Nothing is ever uploaded.',
-  });
 
   const validation = validateOptions(options);
   const strength = estimateStrength(password);

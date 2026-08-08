@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { formatBytes } from '../../utils/formatBytes.js';
@@ -43,12 +42,6 @@ export default function ImageToBase64() {
   const [copiedDataUri, setCopiedDataUri] = useState(false);
   const [base64BlobUrl, setBase64BlobUrl] = useState('');
   const [dataUriBlobUrl, setDataUriBlobUrl] = useState('');
-
-  useDocumentMeta({
-    title: 'Image to Base64 Converter - Free & Client-Side | Rootconverter',
-    description:
-      'Convert PNG, JPG, WebP, GIF, BMP, or SVG images to Base64 or a Data URI entirely in your browser. No upload, no backend.',
-  });
 
   // Builds downloadable .txt files for both outputs whenever the image
   // changes. It's plain text, so this is cheap enough to just rebuild from

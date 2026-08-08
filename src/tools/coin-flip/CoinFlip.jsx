@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import {
   DEFAULT_COIN_COUNT,
@@ -50,12 +49,6 @@ export default function CoinFlip() {
       clearTimeout(flipTimeoutRef.current);
     };
   }, []);
-
-  useDocumentMeta({
-    title: 'Coin Flip - Free & Client-Side | Rootconverter',
-    description:
-      'Flip one or up to 100 virtual coins in your browser, with a smooth spinning animation, heads/tails totals, percentage split, and flip history. Nothing is ever uploaded.',
-  });
 
   const validation = validateCoinCount(coinCountInput);
 

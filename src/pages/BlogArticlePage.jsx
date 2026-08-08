@@ -9,6 +9,9 @@ import {
   getRelatedToolsForArticle,
 } from '../blog/blogUtils.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
+import { articleMeta } from '../seo/buildMeta.js';
+import { absoluteUrl } from '../seo/siteConfig.js';
+import { articleSchema, breadcrumbSchema } from '../seo/structuredData.js';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import ToolGrid from '../components/ToolGrid.jsx';
 import ArticleGrid from '../components/blog/ArticleGrid.jsx';
@@ -30,47 +33,40 @@ export default function BlogArticlePage() {
   const article = getArticleBySlug(slug);
   const category = article ? getCategoryById(article.category) : null;
 
-  const canonicalPath = article ? `/blog/${article.slug}` : undefined;
-  const absoluteUrl =
-    article && typeof window !== 'undefined' ? new URL(canonicalPath, window.location.origin).href : undefined;
+  // Built once, used twice: rendered as the visible trail below, and
+  // marked up as BreadcrumbList - so the structured data always matches
+  // what a visitor actually sees.
+  const breadcrumbs = article
+    ? [
+        { label: 'Home', to: '/' },
+        { label: 'Blog', to: '/blog' },
+        ...(category ? [{ label: category.name, to: `/blog/category/${category.id}` }] : []),
+        { label: article.title },
+      ]
+    : [];
 
-  // Hooks must run on every render, so this (and the metadata above) is
-  // computed before the early "not found" return below.
-  useDocumentMeta({
-    title: article ? `${article.seoTitle} | Rootconverter Blog` : 'Not found | Rootconverter',
-    description: article?.metaDescription,
-    canonical: canonicalPath,
-    image: article?.coverImage ?? undefined,
-    type: 'article',
-    jsonLd: article
-      ? [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'Article',
-            headline: article.seoTitle,
-            description: article.metaDescription,
-            datePublished: article.publishDate.toISOString(),
-            dateModified: (article.updatedDate ?? article.publishDate).toISOString(),
-            author: { '@type': 'Organization', name: article.author },
-            ...(article.coverImage ? { image: article.coverImage } : {}),
-            mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl },
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', window.location.origin).href },
-              { '@type': 'ListItem', position: 2, name: 'Blog', item: new URL('/blog', window.location.origin).href },
-              { '@type': 'ListItem', position: 3, name: article.title, item: absoluteUrl },
-            ],
-          },
-        ]
-      : undefined,
-  });
+  // Hooks must run on every render, so this is computed before the early
+  // "not found" return. Absolute URLs come from siteConfig rather than
+  // window.location - the site is also served from a workers.dev origin,
+  // and deriving them from the current host would emit canonicals and
+  // schema pointing at the wrong domain.
+  useDocumentMeta(
+    article
+      ? {
+          ...articleMeta(article),
+          jsonLd: [
+            articleSchema(article, { url: absoluteUrl(`/blog/${article.slug}`) }),
+            breadcrumbSchema(breadcrumbs),
+          ],
+        }
+      : {},
+  );
 
   if (!article) {
     return <NotFound />;
   }
+
+  const canonicalPath = `/blog/${article.slug}`;
 
   const relatedTools = getRelatedToolsForArticle(article);
   const relatedArticles = getRelatedArticles(article.slug);
@@ -78,14 +74,7 @@ export default function BlogArticlePage() {
 
   return (
     <article className="article-page">
-      <Breadcrumbs
-        items={[
-          { label: 'Home', to: '/' },
-          { label: 'Blog', to: '/blog' },
-          ...(category ? [{ label: category.name, to: `/blog/category/${category.id}` }] : []),
-          { label: article.title },
-        ]}
-      />
+      <Breadcrumbs items={breadcrumbs} />
 
       <header className="article-header">
         {category && (

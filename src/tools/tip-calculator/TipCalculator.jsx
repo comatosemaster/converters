@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import {
   TIP_PRESETS,
@@ -61,12 +60,6 @@ export default function TipCalculator() {
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [copiedPerPerson, setCopiedPerPerson] = useState(false);
   const [receiptBlobUrl, setReceiptBlobUrl] = useState('');
-
-  useDocumentMeta({
-    title: 'Tip Calculator & Bill Splitter - Free & Client-Side | Rootconverter',
-    description:
-      'Calculate tips and split restaurant bills equally or proportionally in your browser - live totals, per-person breakdowns, rounding options, multiple currencies, and a downloadable receipt. Nothing is uploaded.',
-  });
 
   const currencySymbol =
     currencyId === 'custom' ? customCurrencySymbol.trim() || '$' : CURRENCY_OPTIONS.find((c) => c.id === currencyId).symbol;

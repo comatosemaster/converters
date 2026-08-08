@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import {
   DICE_TYPES,
@@ -50,12 +49,6 @@ export default function DiceRoller() {
       clearTimeout(rollTimeoutRef.current);
     };
   }, []);
-
-  useDocumentMeta({
-    title: 'Dice Roller - Free & Client-Side | Rootconverter',
-    description:
-      'Roll one or multiple virtual dice (D4 through D100) in your browser, with a smooth shake-and-reveal animation, running total and average, and roll history. Nothing is ever uploaded.',
-  });
 
   const diceType = getDiceTypeById(diceTypeId);
   const validation = validateDiceCount(diceCountInput);

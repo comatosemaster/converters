@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 
@@ -50,12 +49,6 @@ export default function HeicToJpg() {
   const [items, setItems] = useState([]); // { id, file, status, outputBlob, outputUrl, error, downloaded }
   const [globalError, setGlobalError] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
-
-  useDocumentMeta({
-    title: 'HEIC to JPG Converter - Free & Client-Side | Rootconverter',
-    description:
-      'Convert iPhone HEIC/HEIF photos to JPG entirely in your browser, one or many at a time. No upload, no limits, unlike most online converters.',
-  });
 
   // Keeps a live copy of `items` for the unmount cleanup below, without
   // making that effect re-run (and re-attach) every time items changes.

@@ -4,7 +4,63 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rootconverter</title>
+    <title>Rootconverter - Free Online Tools &amp; Converters</title>
+
+    <!--
+      SITE-WIDE DEFAULTS.
+
+      Per-page titles, descriptions, canonicals and structured data are set
+      by React after mount (see src/hooks/useDocumentMeta.js), and Googlebot
+      renders JavaScript, so it sees those final values.
+
+      Social scrapers mostly do NOT run JavaScript. Slack, Discord,
+      WhatsApp, iMessage and LinkedIn read this static HTML and nothing
+      else - so without these tags every shared link on the site rendered
+      as a bare "Rootconverter" with no description and no image.
+
+      These are deliberately generic: they describe the site, and are
+      overridden per page for any crawler that does execute JS. Anything
+      page-specific here would be a lie on 99% of URLs.
+    -->
+    <meta
+      name="description"
+      content="Free online tools and converters that run entirely in your browser. Convert images, format JSON, generate QR codes, decode tokens and more - no uploads, no sign-up."
+    />
+    <!--
+      Deliberately NO static <link rel="canonical"> here.
+
+      A default canonical is worse than none. Pages set their own after
+      mount, but anything that doesn't (the not-found view) would inherit
+      this one and declare itself the homepage - and if a crawler ever
+      failed to render the JS on a tool page, that page would consolidate
+      itself into the homepage and drop out of the index entirely.
+
+      With no tag, a non-rendering crawler simply treats the URL as its own
+      canonical, which is the correct default.
+    -->
+
+    <meta property="og:site_name" content="Rootconverter" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rootconverter.com/" />
+    <meta property="og:title" content="Rootconverter - Free Online Tools &amp; Converters" />
+    <meta
+      property="og:description"
+      content="Free online tools and converters that run entirely in your browser. No uploads, no sign-up, no limits."
+    />
+    <meta property="og:image" content="https://rootconverter.com/og-default.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Rootconverter - Free Online Tools &amp; Converters" />
+    <meta
+      name="twitter:description"
+      content="Free online tools and converters that run entirely in your browser. No uploads, no sign-up, no limits."
+    />
+    <meta name="twitter:image" content="https://rootconverter.com/og-default.png" />
+
+    <meta name="theme-color" content="#5b3df5" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <!--
       Applies the dark theme before the page paints, so nobody sees a
       flash of the light theme (still the CSS default with no attribute

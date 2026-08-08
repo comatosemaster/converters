@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { formatBytes } from '../../utils/formatBytes.js';
@@ -52,12 +51,6 @@ export default function JsonFormatter() {
   const [isFixing, setIsFixing] = useState(false);
   const [fixReport, setFixReport] = useState(null); // array of strings, or null
   const [fixError, setFixError] = useState('');
-
-  useDocumentMeta({
-    title: 'JSON Formatter, Validator & Fixer - Free & Client-Side | Rootconverter',
-    description:
-      'Format, validate, minify, and automatically fix broken JSON instantly in your browser. One-click repair for missing commas/brackets, line/column error locations, a colorful tree view, and stats - no upload required.',
-  });
 
   // Re-parses on every change - simple, and matches how the other text
   // tools on this site work (no debouncing). Fine for anything up to a

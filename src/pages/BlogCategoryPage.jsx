@@ -2,6 +2,8 @@ import { useParams } from 'react-router-dom';
 import { getCategoryById } from '../tools/registry.js';
 import { getArticlesByCategory } from '../blog/blogUtils.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
+import { blogCategoryMeta } from '../seo/buildMeta.js';
+import { breadcrumbSchema, collectionSchema } from '../seo/structuredData.js';
 import ArticleGrid from '../components/blog/ArticleGrid.jsx';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import NotFound from './NotFound.jsx';
@@ -15,24 +17,46 @@ export default function BlogCategoryPage() {
   const { categoryId } = useParams();
   const category = getCategoryById(categoryId);
 
-  // Hooks must run on every render, so this is computed before the early
-  // return below - with safe fallbacks for an unknown category id.
-  useDocumentMeta({
-    title: category ? `${category.name} Articles | Rootconverter Blog` : 'Not found | Rootconverter',
-    description: category?.tagline,
-    canonical: category ? `/blog/category/${category.id}` : undefined,
-  });
+  const categoryArticles = category ? getArticlesByCategory(categoryId) : [];
+
+  const breadcrumbs = category
+    ? [{ label: 'Home', to: '/' }, { label: 'Blog', to: '/blog' }, { label: category.name }]
+    : [];
+
+  // The description here is deliberately different from the tool category
+  // page's. Both used to fall back to `category.tagline`, which meant
+  // /category/developer and /blog/category/developer shipped identical
+  // meta descriptions - a duplicate-content signal repeated across all six
+  // categories.
+  useDocumentMeta(
+    category
+      ? {
+          ...blogCategoryMeta(category, categoryArticles.length),
+          jsonLd: [
+            collectionSchema({
+              name: `${category.name} Articles`,
+              description: `Guides and explainers on ${category.name.toLowerCase()} topics.`,
+              path: `/blog/category/${category.id}`,
+              items: categoryArticles.map((article) => ({
+                name: article.title,
+                path: `/blog/${article.slug}`,
+              })),
+            }),
+            breadcrumbSchema(breadcrumbs),
+          ],
+        }
+      : {},
+  );
 
   if (!category) {
     return <NotFound />;
   }
 
-  const categoryArticles = getArticlesByCategory(categoryId);
   const CategoryIcon = category.icon;
 
   return (
     <div className="category-page">
-      <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: 'Blog', to: '/blog' }, { label: category.name }]} />
+      <Breadcrumbs items={breadcrumbs} />
 
       <header className="page-header">
         <div className="page-header-row">

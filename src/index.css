@@ -409,6 +409,47 @@ button {
   gap: var(--sp-2);
 }
 
+/* The Blog link sits in the actions group rather than the category nav,
+   because it's a destination rather than a tool filter - next to it, it
+   read as a seventh category. Accent-tinted so it's clearly a different
+   kind of thing, and matched to the 40px height of the search trigger and
+   theme toggle so the group still lines up. */
+.nav-blog-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 40px;
+  padding: 0 var(--sp-4);
+  flex-shrink: 0;
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r-md);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-size: var(--fs-base);
+  font-weight: 550;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--t) var(--ease), border-color var(--t) var(--ease), color var(--t) var(--ease);
+}
+
+.nav-blog-link:hover {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+/* Solid when you're in the blog - the strongest "you are here" signal in
+   the header, since this is the only nav item that leaves the tools. */
+.nav-blog-link.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+.nav-blog-link svg {
+  flex-shrink: 0;
+}
+
 /* The ⌘K affordance in the header - looks like a search field, acts as a
    button that opens the command palette. */
 .header-search-trigger {
@@ -3153,6 +3194,17 @@ details:focus-visible,
   }
 
   .header-search-trigger .label {
+    display: none;
+  }
+
+  /* Collapses to an icon-only pill - it stays visible (unlike the
+     category nav, which moves into the menu) because the blog is a
+     top-level destination worth reaching in one tap. */
+  .nav-blog-link {
+    padding: 0 var(--sp-3);
+  }
+
+  .nav-blog-link .nav-blog-label {
     display: none;
   }
 

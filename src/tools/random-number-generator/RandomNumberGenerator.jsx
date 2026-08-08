@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import {
   DEFAULT_MIN,
@@ -58,12 +57,6 @@ export default function RandomNumberGenerator() {
       clearTimeout(generateTimeoutRef.current);
     };
   }, []);
-
-  useDocumentMeta({
-    title: 'Random Number Generator - Free & Client-Side | Rootconverter',
-    description:
-      'Generate random numbers instantly in your browser with a custom range, quantity, duplicate control, and sorting - a quick counting animation, lowest/highest stats, and generation history. Nothing is ever uploaded.',
-  });
 
   const validation = validateRange(minInput, maxInput, quantityInput, options);
 

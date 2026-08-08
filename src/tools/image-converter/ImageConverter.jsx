@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { formatBytes } from '../../utils/formatBytes.js';
@@ -53,12 +52,6 @@ export default function ImageConverter() {
   // A pasted image, held here while we wait for the discard confirmation
   // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
-
-  useDocumentMeta({
-    title: 'Image Converter - PNG, JPG, WebP, AVIF | Rootconverter',
-    description:
-      'Convert images between PNG, JPG, WebP, and AVIF entirely in your browser. Free, fast, and no upload required.',
-  });
 
   const [format, setFormat] = useState('image/webp');
   const [quality, setQuality] = useState(0.85);

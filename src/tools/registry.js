@@ -139,6 +139,8 @@ export const tools = [
     name: 'Base64 Encoder / Decoder',
     description: 'Encode plain text into Base64, or decode Base64 back into readable text.',
     category: 'text-data',
+    metaDescription:
+      'Encode text to Base64 or decode Base64 back to readable text, instantly and entirely in your browser. No upload, no tracking.',
     icon: Binary,
     component: Base64Tool,
     keywords: ['base64', 'encode', 'decode', 'btoa', 'atob', 'text'],
@@ -148,6 +150,8 @@ export const tools = [
     name: 'Image Converter',
     description: 'Convert images between PNG, JPG, WebP, and AVIF - right in your browser.',
     category: 'graphics-media',
+    metaDescription:
+      'Convert images between PNG, JPG, WebP, and AVIF entirely in your browser. Free, fast, and no upload required.',
     icon: Images,
     component: ImageConverter,
     keywords: ['png', 'jpg', 'jpeg', 'webp', 'avif', 'convert', 'format', 'image'],
@@ -158,6 +162,8 @@ export const tools = [
     name: 'Image Compressor',
     description: 'Shrink image file size in your browser. Files never leave your device.',
     category: 'graphics-media',
+    metaDescription:
+      'Compress PNG, JPG, and WebP images to reduce file size without uploading them anywhere. Adjustable quality and optional resizing.',
     icon: Shrink,
     component: ImageCompressor,
     keywords: ['compress', 'shrink', 'optimize', 'reduce', 'size', 'image', 'photo'],
@@ -168,6 +174,8 @@ export const tools = [
     name: 'Image Resizer & Cropper',
     description: 'Resize or crop images in your browser. Files never leave your device.',
     category: 'graphics-media',
+    metaDescription:
+      'Resize or crop images to exact dimensions entirely in your browser. Lock aspect ratio, use scale presets, or drag a crop selection - no upload required.',
     icon: Crop,
     component: ImageResizer,
     keywords: ['resize', 'crop', 'scale', 'dimensions', 'aspect ratio', 'image'],
@@ -177,6 +185,8 @@ export const tools = [
     name: 'Image Flipper',
     description: 'Flip images horizontally or vertically directly in your browser.',
     category: 'graphics-media',
+    metaDescription:
+      'Flip images horizontally or vertically entirely in your browser using the Canvas API. Transparency preserved, no upload required.',
     icon: FlipHorizontal,
     component: ImageFlipper,
     keywords: ['flip', 'mirror', 'horizontal', 'vertical', 'reverse', 'image'],
@@ -186,6 +196,8 @@ export const tools = [
     name: 'Image to PDF',
     description: 'Convert one or multiple images into a high-quality PDF directly in your browser.',
     category: 'text-data',
+    metaDescription:
+      'Combine one or more images into a single PDF entirely in your browser. Choose page size, layout, and quality - nothing is ever uploaded.',
     icon: FileOutput,
     component: ImageToPdf,
     keywords: ['image', 'pdf', 'convert', 'combine', 'merge', 'jpg to pdf', 'png to pdf', 'photos'],
@@ -196,6 +208,8 @@ export const tools = [
     name: 'HEIC to JPG Converter',
     description: 'Convert iPhone HEIC photos to JPG in your browser. Files never leave your device.',
     category: 'graphics-media',
+    metaDescription:
+      'Convert iPhone HEIC/HEIF photos to JPG entirely in your browser, one or many at a time. No upload, no limits, unlike most online converters.',
     icon: Smartphone,
     component: HeicToJpg,
     keywords: ['heic', 'heif', 'iphone', 'apple', 'jpg', 'jpeg', 'photo', 'convert'],
@@ -206,6 +220,8 @@ export const tools = [
     name: 'Favicon Generator',
     description: 'Turn any image into a complete favicon package in your browser. Files never leave your device.',
     category: 'graphics-media',
+    metaDescription:
+      'Generate a complete favicon package (ICO, PNG sizes, web manifest, and HTML tags) from any image, entirely in your browser.',
     icon: Globe,
     component: FaviconGenerator,
     keywords: ['favicon', 'ico', 'icon', 'apple touch', 'manifest', 'website'],
@@ -215,6 +231,8 @@ export const tools = [
     name: 'Image to Text (OCR)',
     description: 'Extract text from images in your browser using OCR. Files never leave your device.',
     category: 'text-data',
+    metaDescription:
+      'Extract text from images using OCR entirely in your browser, in English, Georgian, and more. No upload, no limits.',
     icon: ScanText,
     component: ImageToText,
     keywords: ['ocr', 'extract', 'scan', 'text', 'recognize', 'screenshot', 'georgian'],
@@ -226,6 +244,8 @@ export const tools = [
     description:
       'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA entirely in your browser.',
     category: 'graphics-media',
+    metaDescription:
+      'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA. Free, fast, and 100% client-side - nothing you enter ever leaves your browser.',
     icon: Palette,
     component: ColorConverter,
     keywords: ['color', 'hex', 'rgb', 'rgba', 'hsl', 'hsla', 'picker', 'css'],
@@ -235,6 +255,8 @@ export const tools = [
     name: 'Image to Base64',
     description: 'Convert images to Base64 or Data URI format entirely in your browser. Files never leave your device.',
     category: 'graphics-media',
+    metaDescription:
+      'Convert PNG, JPG, WebP, GIF, BMP, or SVG images to Base64 or a Data URI entirely in your browser. No upload, no backend.',
     icon: FileImage,
     component: ImageToBase64,
     keywords: ['base64', 'data uri', 'inline', 'embed', 'image', 'css', 'html'],
@@ -245,6 +267,8 @@ export const tools = [
     description:
       'Format, validate, minify, and automatically fix broken JSON instantly in your browser. Your data never leaves your device.',
     category: 'developer',
+    metaDescription:
+      'Format, validate, minify, and automatically fix broken JSON instantly in your browser. One-click repair for missing commas/brackets, line/column error locations, a colorful tree view, and stats - no upload required.',
     icon: Braces,
     component: JsonFormatter,
     keywords: ['json', 'format', 'beautify', 'pretty print', 'minify', 'validate', 'fix', 'repair'],
@@ -256,6 +280,8 @@ export const tools = [
     description:
       'Generate customizable QR codes for URLs, text, WiFi, contacts, email, phone numbers, SMS, and locations entirely in your browser.',
     category: 'graphics-media',
+    metaDescription:
+      'Generate customizable QR codes for URLs, text, email, phone, SMS, WiFi, contacts, and locations entirely in your browser. PNG and SVG export, no upload required.',
     icon: QrCode,
     component: QrCodeGenerator,
     keywords: ['qr', 'qr code', 'barcode', 'wifi', 'vcard', 'url', 'contact', 'generate'],
@@ -267,6 +293,8 @@ export const tools = [
     description:
       'Analyze text with live word count, character count, reading time, keyword density, readability metrics, and useful writing tools. Everything runs entirely in your browser.',
     category: 'developer',
+    metaDescription:
+      'Live word count, character count, reading time, keyword density, readability scores, and text cleanup tools - entirely in your browser.',
     icon: Type,
     component: WordCounterTextAnalyzer,
     keywords: [
@@ -285,6 +313,8 @@ export const tools = [
     description:
       'Test, validate, and debug regular expressions instantly in your browser with live highlighting and match details.',
     category: 'developer',
+    metaDescription:
+      'Test, debug, and understand regular expressions live in your browser - match highlighting, capture groups, a find-and-replace preview, a plain-English explanation, and a full regex cheat sheet. Nothing you type is ever uploaded.',
     icon: Regex,
     component: RegexTester,
     keywords: [
@@ -305,6 +335,8 @@ export const tools = [
     description:
       'Convert units instantly between length, weight, and temperature directly in your browser.',
     category: 'everyday',
+    metaDescription:
+      'Convert units instantly between length, weight, and temperature in your browser - live results, adjustable precision, conversion formulas, and a running history. Nothing is uploaded.',
     icon: Ruler,
     component: UnitConverter,
     keywords: [
@@ -329,6 +361,8 @@ export const tools = [
     description:
       'Calculate tips, split restaurant bills equally or proportionally, and instantly see how much each person should pay.',
     category: 'business-finance',
+    metaDescription:
+      'Calculate tips and split restaurant bills equally or proportionally in your browser - live totals, per-person breakdowns, rounding options, multiple currencies, and a downloadable receipt. Nothing is uploaded.',
     icon: Receipt,
     component: TipCalculator,
     keywords: [
@@ -348,6 +382,8 @@ export const tools = [
     name: 'Password Generator',
     description: 'Generate secure random passwords instantly in your browser.',
     category: 'developer',
+    metaDescription:
+      'Generate secure random passwords instantly in your browser using the Web Crypto API - adjustable length, character types, similar-character exclusion, and a live strength indicator. Nothing is ever uploaded.',
     icon: KeyRound,
     component: PasswordGenerator,
     keywords: [
@@ -366,6 +402,8 @@ export const tools = [
     name: 'Currency Converter',
     description: 'Convert between world currencies using live exchange rates with a simple historical chart.',
     category: 'business-finance',
+    metaDescription:
+      'Convert between world currencies using live exchange rates, with a historical rate chart going back up to a year. Free, fast, and always current - powered by the Frankfurter API.',
     icon: Coins,
     component: CurrencyConverter,
     keywords: [
@@ -386,6 +424,8 @@ export const tools = [
     name: 'World Clock & Time Zone Converter',
     description: 'Compare current times around the world and convert dates and times between different time zones.',
     category: 'everyday',
+    metaDescription:
+      'Compare current times around the world and convert dates and times between time zones, entirely in your browser using the Intl API - live clocks, DST status, and day-difference indicators. Nothing is ever uploaded.',
     icon: Clock,
     component: WorldClockConverter,
     keywords: [
@@ -405,6 +445,8 @@ export const tools = [
     name: 'Dice Roller',
     description: 'Roll one or multiple virtual dice with smooth animations.',
     category: 'fun',
+    metaDescription:
+      'Roll one or multiple virtual dice (D4 through D100) in your browser, with a smooth shake-and-reveal animation, running total and average, and roll history. Nothing is ever uploaded.',
     icon: Dices,
     component: DiceRoller,
     keywords: ['dice', 'roll', 'd4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100', 'tabletop', 'rpg', 'random'],
@@ -415,6 +457,8 @@ export const tools = [
     name: 'Coin Flip',
     description: 'Flip one or multiple virtual coins with realistic animations.',
     category: 'fun',
+    metaDescription:
+      'Flip one or up to 100 virtual coins in your browser, with a smooth spinning animation, heads/tails totals, percentage split, and flip history. Nothing is ever uploaded.',
     icon: Disc,
     component: CoinFlip,
     keywords: ['coin', 'flip', 'heads', 'tails', 'toss', 'random', 'decision'],
@@ -425,6 +469,8 @@ export const tools = [
     name: 'Random Number Generator',
     description: 'Generate random numbers instantly with customizable ranges.',
     category: 'fun',
+    metaDescription:
+      'Generate random numbers instantly in your browser with a custom range, quantity, duplicate control, and sorting - a quick counting animation, lowest/highest stats, and generation history. Nothing is ever uploaded.',
     icon: Shuffle,
     component: RandomNumberGenerator,
     keywords: ['random number', 'rng', 'generator', 'range', 'lottery', 'raffle', 'pick a number'],
@@ -435,6 +481,8 @@ export const tools = [
     name: 'CSS Gradient Generator',
     description: 'Create beautiful CSS gradients visually and copy the generated CSS instantly.',
     category: 'developer',
+    metaDescription:
+      'Create linear and radial CSS gradients visually - draggable color stops, alpha transparency, built-in presets, and a random gradient generator - then copy or download the generated CSS. Nothing is ever uploaded.',
     icon: Blend,
     component: GradientGenerator,
     keywords: [
@@ -453,6 +501,8 @@ export const tools = [
     name: 'JWT Decoder & Inspector',
     description: 'Decode and inspect JSON Web Tokens (JWT) instantly in your browser without sending data to any server.',
     category: 'developer',
+    metaDescription:
+      'Decode and inspect JSON Web Tokens (JWT) instantly in your browser - header, payload, standard claims with plain-English explanations, expiration status, and timestamp conversion. Nothing is ever uploaded.',
     icon: FileKey,
     component: JwtDecoder,
     keywords: ['jwt', 'json web token', 'decode', 'token', 'auth', 'bearer token', 'claims', 'base64url'],
@@ -463,6 +513,8 @@ export const tools = [
     name: 'BMI Calculator',
     description: 'Calculate your Body Mass Index (BMI) instantly using either metric or imperial units.',
     category: 'everyday',
+    metaDescription:
+      'Calculate your Body Mass Index (BMI) instantly in your browser using metric or imperial units - live category badge, healthy weight range, and a visual BMI scale. Nothing is ever uploaded.',
     icon: Scale,
     component: BmiCalculator,
     keywords: ['bmi', 'body mass index', 'weight', 'height', 'healthy weight', 'obesity', 'underweight'],
@@ -473,6 +525,8 @@ export const tools = [
     name: 'SQL Formatter',
     description: 'Format, beautify, and validate SQL queries directly in your browser.',
     category: 'developer',
+    metaDescription:
+      'Format, beautify, and validate SQL queries in your browser - Generic SQL, MySQL, PostgreSQL, SQLite, and SQL Server dialects, with syntax highlighting and adjustable style options. Nothing is ever uploaded.',
     icon: Database,
     component: SqlFormatter,
     keywords: ['sql', 'format', 'beautify', 'mysql', 'postgresql', 'sqlite', 'sql server', 'query', 'pretty print'],
@@ -483,6 +537,8 @@ export const tools = [
     name: 'URL Encoder / Decoder',
     description: 'Encode and decode URLs and text using standard percent encoding directly in your browser.',
     category: 'developer',
+    metaDescription:
+      'Encode and decode URLs and text using standard percent encoding, instantly in your browser using native JavaScript APIs. Nothing is ever uploaded.',
     icon: Link2,
     component: UrlEncoderDecoder,
     keywords: ['url', 'encode', 'decode', 'percent encoding', 'uri', 'query string', 'encodeuricomponent'],

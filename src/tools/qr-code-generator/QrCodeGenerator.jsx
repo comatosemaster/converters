@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import { buildQrPayload, isTypeEmpty } from './qrPayloads.js';
 
@@ -94,12 +93,6 @@ export default function QrCodeGenerator() {
   const [copiedImage, setCopiedImage] = useState(false);
   const [copiedSvg, setCopiedSvg] = useState(false);
   const [copiedPayload, setCopiedPayload] = useState(false);
-
-  useDocumentMeta({
-    title: 'QR Code Generator - URL, WiFi, vCard & More | Rootconverter',
-    description:
-      'Generate customizable QR codes for URLs, text, email, phone, SMS, WiFi, contacts, and locations entirely in your browser. PNG and SVG export, no upload required.',
-  });
 
   function updateField(key, value) {
     setFields((prev) => ({ ...prev, [key]: value }));

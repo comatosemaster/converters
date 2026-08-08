@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 
 // --- Encode/decode helpers -------------------------------------------------
@@ -42,12 +41,6 @@ export default function Base64Tool() {
   // Remembers the exact input text at the moment it was last copied, so we
   // can tell "already copied this" apart from "changed since copying".
   const [savedInput, setSavedInput] = useState(null);
-
-  useDocumentMeta({
-    title: 'Base64 Encoder / Decoder - Free & Client-Side | Rootconverter',
-    description:
-      'Encode text to Base64 or decode Base64 back to readable text, instantly and entirely in your browser. No upload, no tracking.',
-  });
 
   // Compute the output fresh every render - simple and always in sync.
   let output = '';

@@ -8,6 +8,8 @@ import {
   searchArticles,
 } from '../blog/blogUtils.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
+import { blogHomeMeta } from '../seo/buildMeta.js';
+import { blogSchema } from '../seo/structuredData.js';
 import ArticleGrid from '../components/blog/ArticleGrid.jsx';
 
 // The blog homepage: hero + search, featured articles, categories (reusing
@@ -19,12 +21,7 @@ import ArticleGrid from '../components/blog/ArticleGrid.jsx';
 export default function BlogHome() {
   const [query, setQuery] = useState('');
 
-  useDocumentMeta({
-    title: 'Blog - Guides & Explainers | Rootconverter',
-    description:
-      "Plain-English guides on file formats, encoding, and the tools that work with them - written to help you understand what you're converting, not just do it.",
-    canonical: '/blog',
-  });
+  useDocumentMeta({ ...blogHomeMeta(), jsonLd: blogSchema() });
 
   const featured = useMemo(() => getFeaturedArticles(), []);
   const latest = useMemo(() => getLatestArticles(9), []);

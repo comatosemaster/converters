@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 
@@ -47,12 +46,6 @@ export default function ImageToText() {
   // A pasted image, held here while we wait for the discard confirmation
   // above - null means "just resetting", not "resetting to load a file".
   const [pendingFile, setPendingFile] = useState(null);
-
-  useDocumentMeta({
-    title: 'Image to Text (OCR) - Free & Client-Side | Rootconverter',
-    description:
-      'Extract text from images using OCR entirely in your browser, in English, Georgian, and more. No upload, no limits.',
-  });
 
   const [lang, setLang] = useState('eng');
   const [isProcessing, setIsProcessing] = useState(false);

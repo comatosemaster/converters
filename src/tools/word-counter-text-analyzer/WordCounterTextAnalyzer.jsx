@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import { useUndoRedo } from '../../hooks/useUndoRedo.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
@@ -79,12 +78,6 @@ export default function WordCounterTextAnalyzer() {
 
   const [ignoreStopWords, setIgnoreStopWords] = useState(true);
   const [targetWordCount, setTargetWordCount] = useState('');
-
-  useDocumentMeta({
-    title: 'Word Counter & Text Analyzer - Free & Client-Side | Rootconverter',
-    description:
-      'Live word count, character count, reading time, keyword density, readability scores, and text cleanup tools - entirely in your browser.',
-  });
 
   // Builds a downloadable .txt file whenever the text changes.
   useEffect(() => {
