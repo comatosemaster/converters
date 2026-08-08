@@ -1399,6 +1399,45 @@ button {
   flex-shrink: 0;
 }
 
+/* --- Lazy-loaded tool placeholder --- */
+/* Every tool is its own chunk (see registry.js), so there is a brief
+   moment before its UI exists. This reserves height so the page doesn't
+   shift when it arrives. */
+
+.tool-loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-height: 220px;
+  padding: var(--sp-2) 0;
+}
+
+.tool-loading-bar {
+  height: 44px;
+  border-radius: var(--r-md);
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--surface-hover) 37%,
+    var(--surface-2) 63%
+  );
+  background-size: 400% 100%;
+  animation: tool-loading-shimmer 1.4s ease infinite;
+}
+
+.tool-loading-bar.short {
+  width: 40%;
+}
+
+@keyframes tool-loading-shimmer {
+  from {
+    background-position: 100% 50%;
+  }
+  to {
+    background-position: 0 50%;
+  }
+}
+
 /* --- Related tools (bottom of every tool page) --- */
 
 .related-tools {

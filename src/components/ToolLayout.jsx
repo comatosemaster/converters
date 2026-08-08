@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
 import Breadcrumbs from './Breadcrumbs.jsx';
@@ -13,6 +14,21 @@ import { getArticlesForTool } from '../blog/blogUtils.js';
 // is being shown, so individual tool files (like Base64Tool.jsx) never
 // need to import or think about this - they just focus on their own
 // inputs/outputs/logic.
+
+// Shown while a tool's chunk downloads. Deliberately a fixed-height block
+// rather than a spinner: it reserves roughly the space the tool will
+// occupy, so the page doesn't jump when the real UI arrives. Layout shift
+// is a Core Web Vitals input, and a jumping page is worse than a still one.
+function ToolLoading() {
+  return (
+    <div className="tool-loading" role="status" aria-live="polite">
+      <span className="visually-hidden">Loading tool…</span>
+      <span className="tool-loading-bar" aria-hidden="true" />
+      <span className="tool-loading-bar" aria-hidden="true" />
+      <span className="tool-loading-bar short" aria-hidden="true" />
+    </div>
+  );
+}
 
 export default function ToolLayout({ tool, category, relatedTools = [], breadcrumbs, children }) {
   const ToolIcon = tool.icon;
@@ -47,7 +63,16 @@ export default function ToolLayout({ tool, category, relatedTools = [], breadcru
         {tool.description && <p className="tool-description">{tool.description}</p>}
       </header>
 
-      <div className="tool-content">{children}</div>
+      {/* The Suspense boundary wraps ONLY the tool itself, not the page.
+          Every tool is a lazily-loaded chunk now, and putting the boundary
+          here means the breadcrumbs, h1, description and related tools all
+          render on the first paint - so a crawler (and a reader) gets the
+          page's text and links immediately, and only the interactive part
+          arrives a moment later. A boundary further up would blank the
+          whole page while a chunk downloads. */}
+      <div className="tool-content">
+        <Suspense fallback={<ToolLoading />}>{children}</Suspense>
+      </div>
 
       <p className="tool-privacy-note">
         <ShieldCheck size={15} aria-hidden="true" />

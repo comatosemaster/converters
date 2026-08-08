@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 // -----------------------------------------------------------------------
 // THE TOOL REGISTRY
 // -----------------------------------------------------------------------
@@ -45,35 +47,6 @@ import {
   Type,
   Wrench,
 } from 'lucide-react';
-
-import Base64Tool from './base64/Base64Tool.jsx';
-import ImageConverter from './image-converter/ImageConverter.jsx';
-import ImageCompressor from './image-compressor/ImageCompressor.jsx';
-import ImageResizer from './image-resizer/ImageResizer.jsx';
-import HeicToJpg from './heic-to-jpg/HeicToJpg.jsx';
-import FaviconGenerator from './favicon-generator/FaviconGenerator.jsx';
-import ImageToText from './image-to-text/ImageToText.jsx';
-import ColorConverter from './color-converter/ColorConverter.jsx';
-import ImageToBase64 from './image-to-base64/ImageToBase64.jsx';
-import JsonFormatter from './json-formatter-validator/JsonFormatter.jsx';
-import QrCodeGenerator from './qr-code-generator/QrCodeGenerator.jsx';
-import WordCounterTextAnalyzer from './word-counter-text-analyzer/WordCounterTextAnalyzer.jsx';
-import RegexTester from './regex-tester/RegexTester.jsx';
-import UnitConverter from './unit-converter/UnitConverter.jsx';
-import TipCalculator from './tip-calculator/TipCalculator.jsx';
-import PasswordGenerator from './password-generator/PasswordGenerator.jsx';
-import CurrencyConverter from './currency-converter/CurrencyConverter.jsx';
-import WorldClockConverter from './world-clock-time-zone-converter/WorldClockConverter.jsx';
-import DiceRoller from './dice-roller/DiceRoller.jsx';
-import CoinFlip from './coin-flip/CoinFlip.jsx';
-import RandomNumberGenerator from './random-number-generator/RandomNumberGenerator.jsx';
-import GradientGenerator from './css-gradient-generator/GradientGenerator.jsx';
-import JwtDecoder from './jwt-decoder/JwtDecoder.jsx';
-import BmiCalculator from './bmi-calculator/BmiCalculator.jsx';
-import SqlFormatter from './sql-formatter/SqlFormatter.jsx';
-import UrlEncoderDecoder from './url-encoder-decoder/UrlEncoderDecoder.jsx';
-import ImageFlipper from './image-flipper/ImageFlipper.jsx';
-import ImageToPdf from './image-to-pdf/ImageToPdf.jsx';
 
 // The fixed categories every tool must belong to. `id` is used in
 // URLs and as a React key, `name` is what gets displayed on screen,
@@ -142,7 +115,7 @@ export const tools = [
     metaDescription:
       'Encode text to Base64 or decode Base64 back to readable text, instantly and entirely in your browser. No upload, no tracking.',
     icon: Binary,
-    component: Base64Tool,
+    component: lazy(() => import('./base64/Base64Tool.jsx')),
     keywords: ['base64', 'encode', 'decode', 'btoa', 'atob', 'text'],
   },
   {
@@ -153,7 +126,7 @@ export const tools = [
     metaDescription:
       'Convert images between PNG, JPG, WebP, and AVIF entirely in your browser. Free, fast, and no upload required.',
     icon: Images,
-    component: ImageConverter,
+    component: lazy(() => import('./image-converter/ImageConverter.jsx')),
     keywords: ['png', 'jpg', 'jpeg', 'webp', 'avif', 'convert', 'format', 'image'],
     popular: true,
   },
@@ -165,7 +138,7 @@ export const tools = [
     metaDescription:
       'Compress PNG, JPG, and WebP images to reduce file size without uploading them anywhere. Adjustable quality and optional resizing.',
     icon: Shrink,
-    component: ImageCompressor,
+    component: lazy(() => import('./image-compressor/ImageCompressor.jsx')),
     keywords: ['compress', 'shrink', 'optimize', 'reduce', 'size', 'image', 'photo'],
     popular: true,
   },
@@ -177,7 +150,7 @@ export const tools = [
     metaDescription:
       'Resize or crop images to exact dimensions entirely in your browser. Lock aspect ratio, use scale presets, or drag a crop selection - no upload required.',
     icon: Crop,
-    component: ImageResizer,
+    component: lazy(() => import('./image-resizer/ImageResizer.jsx')),
     keywords: ['resize', 'crop', 'scale', 'dimensions', 'aspect ratio', 'image'],
   },
   {
@@ -188,7 +161,7 @@ export const tools = [
     metaDescription:
       'Flip images horizontally or vertically entirely in your browser using the Canvas API. Transparency preserved, no upload required.',
     icon: FlipHorizontal,
-    component: ImageFlipper,
+    component: lazy(() => import('./image-flipper/ImageFlipper.jsx')),
     keywords: ['flip', 'mirror', 'horizontal', 'vertical', 'reverse', 'image'],
   },
   {
@@ -199,7 +172,7 @@ export const tools = [
     metaDescription:
       'Combine one or more images into a single PDF entirely in your browser. Choose page size, layout, and quality - nothing is ever uploaded.',
     icon: FileOutput,
-    component: ImageToPdf,
+    component: lazy(() => import('./image-to-pdf/ImageToPdf.jsx')),
     keywords: ['image', 'pdf', 'convert', 'combine', 'merge', 'jpg to pdf', 'png to pdf', 'photos'],
     popular: true,
   },
@@ -211,7 +184,7 @@ export const tools = [
     metaDescription:
       'Convert iPhone HEIC/HEIF photos to JPG entirely in your browser, one or many at a time. No upload, no limits, unlike most online converters.',
     icon: Smartphone,
-    component: HeicToJpg,
+    component: lazy(() => import('./heic-to-jpg/HeicToJpg.jsx')),
     keywords: ['heic', 'heif', 'iphone', 'apple', 'jpg', 'jpeg', 'photo', 'convert'],
     popular: true,
   },
@@ -223,7 +196,7 @@ export const tools = [
     metaDescription:
       'Generate a complete favicon package (ICO, PNG sizes, web manifest, and HTML tags) from any image, entirely in your browser.',
     icon: Globe,
-    component: FaviconGenerator,
+    component: lazy(() => import('./favicon-generator/FaviconGenerator.jsx')),
     keywords: ['favicon', 'ico', 'icon', 'apple touch', 'manifest', 'website'],
   },
   {
@@ -234,7 +207,7 @@ export const tools = [
     metaDescription:
       'Extract text from images using OCR entirely in your browser, in English, Georgian, and more. No upload, no limits.',
     icon: ScanText,
-    component: ImageToText,
+    component: lazy(() => import('./image-to-text/ImageToText.jsx')),
     keywords: ['ocr', 'extract', 'scan', 'text', 'recognize', 'screenshot', 'georgian'],
     popular: true,
   },
@@ -247,7 +220,7 @@ export const tools = [
     metaDescription:
       'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA. Free, fast, and 100% client-side - nothing you enter ever leaves your browser.',
     icon: Palette,
-    component: ColorConverter,
+    component: lazy(() => import('./color-converter/ColorConverter.jsx')),
     keywords: ['color', 'hex', 'rgb', 'rgba', 'hsl', 'hsla', 'picker', 'css'],
   },
   {
@@ -258,7 +231,7 @@ export const tools = [
     metaDescription:
       'Convert PNG, JPG, WebP, GIF, BMP, or SVG images to Base64 or a Data URI entirely in your browser. No upload, no backend.',
     icon: FileImage,
-    component: ImageToBase64,
+    component: lazy(() => import('./image-to-base64/ImageToBase64.jsx')),
     keywords: ['base64', 'data uri', 'inline', 'embed', 'image', 'css', 'html'],
   },
   {
@@ -270,7 +243,7 @@ export const tools = [
     metaDescription:
       'Format, validate, minify, and automatically fix broken JSON instantly in your browser. One-click repair for missing commas/brackets, line/column error locations, a colorful tree view, and stats - no upload required.',
     icon: Braces,
-    component: JsonFormatter,
+    component: lazy(() => import('./json-formatter-validator/JsonFormatter.jsx')),
     keywords: ['json', 'format', 'beautify', 'pretty print', 'minify', 'validate', 'fix', 'repair'],
     popular: true,
   },
@@ -283,7 +256,7 @@ export const tools = [
     metaDescription:
       'Generate customizable QR codes for URLs, text, email, phone, SMS, WiFi, contacts, and locations entirely in your browser. PNG and SVG export, no upload required.',
     icon: QrCode,
-    component: QrCodeGenerator,
+    component: lazy(() => import('./qr-code-generator/QrCodeGenerator.jsx')),
     keywords: ['qr', 'qr code', 'barcode', 'wifi', 'vcard', 'url', 'contact', 'generate'],
     popular: true,
   },
@@ -296,7 +269,7 @@ export const tools = [
     metaDescription:
       'Live word count, character count, reading time, keyword density, readability scores, and text cleanup tools - entirely in your browser.',
     icon: Type,
-    component: WordCounterTextAnalyzer,
+    component: lazy(() => import('./word-counter-text-analyzer/WordCounterTextAnalyzer.jsx')),
     keywords: [
       'word count',
       'character count',
@@ -316,7 +289,7 @@ export const tools = [
     metaDescription:
       'Test, debug, and understand regular expressions live in your browser - match highlighting, capture groups, a find-and-replace preview, a plain-English explanation, and a full regex cheat sheet. Nothing you type is ever uploaded.',
     icon: Regex,
-    component: RegexTester,
+    component: lazy(() => import('./regex-tester/RegexTester.jsx')),
     keywords: [
       'regex',
       'regexp',
@@ -338,7 +311,7 @@ export const tools = [
     metaDescription:
       'Convert units instantly between length, weight, and temperature in your browser - live results, adjustable precision, conversion formulas, and a running history. Nothing is uploaded.',
     icon: Ruler,
-    component: UnitConverter,
+    component: lazy(() => import('./unit-converter/UnitConverter.jsx')),
     keywords: [
       'unit',
       'convert',
@@ -364,7 +337,7 @@ export const tools = [
     metaDescription:
       'Calculate tips and split restaurant bills equally or proportionally in your browser - live totals, per-person breakdowns, rounding options, multiple currencies, and a downloadable receipt. Nothing is uploaded.',
     icon: Receipt,
-    component: TipCalculator,
+    component: lazy(() => import('./tip-calculator/TipCalculator.jsx')),
     keywords: [
       'tip',
       'gratuity',
@@ -385,7 +358,7 @@ export const tools = [
     metaDescription:
       'Generate secure random passwords instantly in your browser using the Web Crypto API - adjustable length, character types, similar-character exclusion, and a live strength indicator. Nothing is ever uploaded.',
     icon: KeyRound,
-    component: PasswordGenerator,
+    component: lazy(() => import('./password-generator/PasswordGenerator.jsx')),
     keywords: [
       'password',
       'generator',
@@ -405,7 +378,7 @@ export const tools = [
     metaDescription:
       'Convert between world currencies using live exchange rates, with a historical rate chart going back up to a year. Free, fast, and always current - powered by the Frankfurter API.',
     icon: Coins,
-    component: CurrencyConverter,
+    component: lazy(() => import('./currency-converter/CurrencyConverter.jsx')),
     keywords: [
       'currency',
       'exchange rate',
@@ -427,7 +400,7 @@ export const tools = [
     metaDescription:
       'Compare current times around the world and convert dates and times between time zones, entirely in your browser using the Intl API - live clocks, DST status, and day-difference indicators. Nothing is ever uploaded.',
     icon: Clock,
-    component: WorldClockConverter,
+    component: lazy(() => import('./world-clock-time-zone-converter/WorldClockConverter.jsx')),
     keywords: [
       'time zone',
       'world clock',
@@ -448,7 +421,7 @@ export const tools = [
     metaDescription:
       'Roll one or multiple virtual dice (D4 through D100) in your browser, with a smooth shake-and-reveal animation, running total and average, and roll history. Nothing is ever uploaded.',
     icon: Dices,
-    component: DiceRoller,
+    component: lazy(() => import('./dice-roller/DiceRoller.jsx')),
     keywords: ['dice', 'roll', 'd4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100', 'tabletop', 'rpg', 'random'],
     popular: true,
   },
@@ -460,7 +433,7 @@ export const tools = [
     metaDescription:
       'Flip one or up to 100 virtual coins in your browser, with a smooth spinning animation, heads/tails totals, percentage split, and flip history. Nothing is ever uploaded.',
     icon: Disc,
-    component: CoinFlip,
+    component: lazy(() => import('./coin-flip/CoinFlip.jsx')),
     keywords: ['coin', 'flip', 'heads', 'tails', 'toss', 'random', 'decision'],
     popular: true,
   },
@@ -472,7 +445,7 @@ export const tools = [
     metaDescription:
       'Generate random numbers instantly in your browser with a custom range, quantity, duplicate control, and sorting - a quick counting animation, lowest/highest stats, and generation history. Nothing is ever uploaded.',
     icon: Shuffle,
-    component: RandomNumberGenerator,
+    component: lazy(() => import('./random-number-generator/RandomNumberGenerator.jsx')),
     keywords: ['random number', 'rng', 'generator', 'range', 'lottery', 'raffle', 'pick a number'],
     popular: true,
   },
@@ -484,7 +457,7 @@ export const tools = [
     metaDescription:
       'Create linear and radial CSS gradients visually - draggable color stops, alpha transparency, built-in presets, and a random gradient generator - then copy or download the generated CSS. Nothing is ever uploaded.',
     icon: Blend,
-    component: GradientGenerator,
+    component: lazy(() => import('./css-gradient-generator/GradientGenerator.jsx')),
     keywords: [
       'css',
       'gradient',
@@ -504,7 +477,7 @@ export const tools = [
     metaDescription:
       'Decode and inspect JSON Web Tokens (JWT) instantly in your browser - header, payload, standard claims with plain-English explanations, expiration status, and timestamp conversion. Nothing is ever uploaded.',
     icon: FileKey,
-    component: JwtDecoder,
+    component: lazy(() => import('./jwt-decoder/JwtDecoder.jsx')),
     keywords: ['jwt', 'json web token', 'decode', 'token', 'auth', 'bearer token', 'claims', 'base64url'],
     popular: true,
   },
@@ -516,7 +489,7 @@ export const tools = [
     metaDescription:
       'Calculate your Body Mass Index (BMI) instantly in your browser using metric or imperial units - live category badge, healthy weight range, and a visual BMI scale. Nothing is ever uploaded.',
     icon: Scale,
-    component: BmiCalculator,
+    component: lazy(() => import('./bmi-calculator/BmiCalculator.jsx')),
     keywords: ['bmi', 'body mass index', 'weight', 'height', 'healthy weight', 'obesity', 'underweight'],
     popular: true,
   },
@@ -528,7 +501,7 @@ export const tools = [
     metaDescription:
       'Format, beautify, and validate SQL queries in your browser - Generic SQL, MySQL, PostgreSQL, SQLite, and SQL Server dialects, with syntax highlighting and adjustable style options. Nothing is ever uploaded.',
     icon: Database,
-    component: SqlFormatter,
+    component: lazy(() => import('./sql-formatter/SqlFormatter.jsx')),
     keywords: ['sql', 'format', 'beautify', 'mysql', 'postgresql', 'sqlite', 'sql server', 'query', 'pretty print'],
     popular: true,
   },
@@ -540,7 +513,7 @@ export const tools = [
     metaDescription:
       'Encode and decode URLs and text using standard percent encoding, instantly in your browser using native JavaScript APIs. Nothing is ever uploaded.',
     icon: Link2,
-    component: UrlEncoderDecoder,
+    component: lazy(() => import('./url-encoder-decoder/UrlEncoderDecoder.jsx')),
     keywords: ['url', 'encode', 'decode', 'percent encoding', 'uri', 'query string', 'encodeuricomponent'],
     popular: true,
   },
