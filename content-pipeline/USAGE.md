@@ -67,10 +67,10 @@ cp content-pipeline/.env.example .env
 ```
 
 Open `.env` (at the **repo root**, not inside `content-pipeline/`) and add your
-key from [console.anthropic.com](https://console.anthropic.com/settings/keys):
+key from [platform.openai.com/api-keys](https://platform.openai.com/api-keys):
 
 ```
-ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
 ```
 
 Check it:
@@ -80,15 +80,38 @@ npm run pipeline -- doctor
 ```
 
 ```
-Configuration
+Model tiers
 
-  provider           anthropic
-  ANTHROPIC_API_KEY  set
-  tool registry      28 tools, 6 categories
-  published          0 articles
+  fast      openai     gpt-5-nano       key set
+  standard  openai     gpt-5-mini       key set
+  frontier  openai     gpt-5            key set
+
+Site
+
+  tool registry   28 tools, 6 categories
+  published       0 articles
 ```
 
-`.env` is gitignored. Don't commit it.
+Then confirm those model ids actually exist on your account — model names
+change often, and the ones in config are a starting point, not gospel:
+
+```bash
+npm run pipeline -- models
+```
+
+```
+openai
+  ● gpt-5
+  ● gpt-5-mini
+  ● gpt-5-nano
+    gpt-4.1
+    ...
+
+  12 shown of 68. ● = configured in config/models.js.
+```
+
+Anything marked ● that your account can't see needs correcting in
+`config/models.js`. `.env` is gitignored — don't commit it.
 
 ---
 
@@ -103,13 +126,15 @@ The run does this, stopping if anything fails:
 
 | Step | What happens | Model |
 | --- | --- | --- |
-| `outline` | Topic → structure, sections, target keywords, which tools to link | standard |
-| `draft` | Outline → the actual article | frontier |
+| `outline` | Topic → structure, sections, target keywords, which tools to link | `gpt-5-mini` |
+| `draft` | Outline → the actual article | `gpt-5` |
 | `review` | Five deterministic gates | none |
-| `revise` | Fixes whatever the gates flagged, then re-reviews | standard |
+| `revise` | Fixes whatever the gates flagged, then re-reviews | `gpt-5-mini` |
 | `assemble` | Structured data → the final `.md` | none |
 | `stage` | Writes into `src/content/blog/`, runs the **real site build** | none |
 | `publish` | Branch, commit, open a pull request | none |
+
+Only the drafting call uses the flagship model, and only once per article.
 
 Then **you merge the PR**, which is what actually deploys it. Nothing reaches
 the live site without that.
@@ -249,10 +274,26 @@ The model invented a tool. This is the most common real failure, and it's why
 the links gate exists — every id is checked against `src/tools/registry.js`.
 The reviser normally fixes it on the first pass.
 
-### "ANTHROPIC_API_KEY is not set"
+### "OPENAI_API_KEY is not set"
 
 `.env` goes at the **repo root**, not in `content-pipeline/`. Check with
 `doctor`. Or use `--mock`.
+
+### "The model `gpt-5` does not exist or you do not have access to it"
+
+Model ids change. List what your account can actually use and correct
+`config/models.js`:
+
+```bash
+npm run pipeline -- models --all
+```
+
+### Wrong model, or want to switch provider
+
+`config/models.js` sets provider and model per tier. To move only the expensive
+drafting call to a different model, change the `frontier` tier. To switch a tier
+to Anthropic, set `provider: 'anthropic'` and use one of the ids listed in that
+file as `ANTHROPIC_MODELS` — then add `ANTHROPIC_API_KEY` to `.env`.
 
 ### "The GitHub CLI (`gh`) is required"
 

@@ -24,8 +24,10 @@ import { isTerminal, route, STATES } from './core/machine.js';
 import { IMPLEMENTED, LLM_STEPS, getStep } from './steps/index.js';
 import * as ingestStep from './steps/ingest.js';
 import * as topicStep from './steps/topic.js';
-import { loadEnv, hasApiKey } from './core/env.js';
-import { activeProvider } from './llm/client.js';
+import { loadEnv, hasApiKey, keyEnvFor, keyStatus } from './core/env.js';
+import { activeProvider, listAvailableModels } from './llm/client.js';
+import { TIERS, providersInUse } from '../config/models.js';
+import { readRegistry, readAllArticles } from './adapters/site.js';
 import { runTotal } from './core/budget.js';
 import { formatUsd } from './llm/cost.js';
 import { runGates, listGates } from './gates/index.js';
@@ -58,7 +60,8 @@ ${color.bold('Jobs')}
 ${color.bold('Info')}
   gates                        List the configured quality gates.
   states                       Show the pipeline state graph.
-  doctor                       Check API key, provider, and tool registry.
+  doctor                       Check model tiers, API keys, and tool registry.
+  models [provider] [--all]    List models your account can actually use.
 
 ${color.bold('Flags')}
   --mock                       Use the built-in mock model: no network, no cost.
@@ -153,33 +156,85 @@ async function commandTopic(topic, flags) {
 // found before a run rather than three steps into one.
 
 async function commandDoctor() {
-  console.log(`\n${color.bold('Configuration')}\n`);
+  console.log(`\n${color.bold('Model tiers')}\n`);
 
-  const provider = activeProvider();
-  const key = hasApiKey();
+  const label = {
+    set: color.green('key set'),
+    missing: (provider) => color.red(`${keyEnvFor(provider)} missing`),
+    placeholder: color.red('key is still the example placeholder'),
+  };
 
-  console.log(`  provider        ${provider === 'mock' ? color.yellow('mock (no network, no cost)') : 'anthropic'}`);
-  console.log(`  ANTHROPIC_API_KEY  ${key ? color.green('set') : color.red('not set')}`);
+  for (const [name, tier] of Object.entries(TIERS)) {
+    const status = keyStatus(tier.provider);
+    const keyState = status === 'missing' ? label.missing(tier.provider) : label[status];
+    console.log(`  ${name.padEnd(9)} ${tier.provider.padEnd(10)} ${tier.model.padEnd(28)} ${keyState}`);
+  }
 
-  if (!key && provider !== 'mock') {
+  const placeholders = providersInUse().filter((provider) => keyStatus(provider) === 'placeholder');
+  const absent = providersInUse().filter((provider) => keyStatus(provider) === 'missing');
+
+  if (placeholders.length > 0) {
+    console.log(
+      color.yellow(
+        `\n  ${placeholders.map(keyEnvFor).join(' and ')} still contains the placeholder from .env.example.`,
+      ),
+    );
+    console.log(color.gray(`  Open .env at the repo root and paste your real key over it.`));
+  }
+  if (absent.length > 0) {
     console.log(
       color.gray(
-        '\n  Add it to a .env at the repo root (see content-pipeline/.env.example),\n  or pass --mock to run without a model.',
+        `\n  Add ${absent.map(keyEnvFor).join(' and ')} to a .env at the REPO ROOT\n  (see content-pipeline/.env.example), or pass --mock to run without a model.`,
       ),
     );
   }
 
+  console.log(`\n${color.bold('Site')}\n`);
   try {
-    const { readRegistry } = await import('./adapters/site.js');
     const registry = await readRegistry();
     console.log(`  tool registry   ${color.green(`${registry.tools.length} tools, ${registry.categories.length} categories`)}`);
   } catch (error) {
     console.log(`  tool registry   ${color.red(`FAILED — ${error.message}`)}`);
   }
 
-  const { readAllArticles } = await import('./adapters/site.js');
   const articles = await readAllArticles();
   console.log(`  published       ${articles.length} article${articles.length === 1 ? '' : 's'}`);
+
+  console.log(color.gray('\n  Verify the model ids above with: npm run pipeline -- models\n'));
+}
+
+// --- models ---------------------------------------------------------------
+// Model ids go stale faster than a config file gets updated. Rather than
+// trusting what's written in config/models.js, ask the provider what this
+// account can actually see.
+
+async function commandModels(providerArg, flags) {
+  const providers = providerArg ? [providerArg] : providersInUse();
+
+  for (const provider of providers) {
+    console.log(`\n${color.bold(provider)}`);
+
+    if (!hasApiKey(provider)) {
+      console.log(color.red(`  ${keyEnvFor(provider)} is not set.`));
+      continue;
+    }
+
+    try {
+      const models = await listAvailableModels(provider);
+      const shown = flags.all ? models : models.filter((id) => /^(gpt|o\d|claude)/.test(id));
+
+      for (const id of shown) {
+        const configured = Object.values(TIERS).some((tier) => tier.model === id);
+        console.log(`  ${configured ? color.green('● ') : '  '}${id}`);
+      }
+      console.log(
+        color.gray(`\n  ${shown.length} shown of ${models.length}. ● = configured in config/models.js.`),
+      );
+      if (!flags.all) console.log(color.gray('  Use --all to see every model.'));
+    } catch (error) {
+      console.log(color.red(`  Failed to list models: ${error.message}`));
+    }
+  }
   console.log();
 }
 
@@ -270,10 +325,19 @@ async function commandRun(jobId, flags) {
           console.log(color.gray(`\nDry run: would commit ${result.relativePath} on branch ${result.branch}\n`));
           return;
         }
-        console.log(`\n${color.green('Published')} — branch ${color.bold(result.branch)}`);
-        if (result.prUrl) console.log(`${color.bold('Pull request:')} ${result.prUrl}`);
+        console.log(`\n${color.green('Pushed')} — branch ${color.bold(result.branch)}`);
+
+        if (result.prMode === 'gh') {
+          console.log(`${color.bold('Pull request:')} ${result.prUrl}`);
+        } else if (result.prMode === 'manual') {
+          console.log(`\n${color.bold('Open the pull request here:')}\n  ${result.prUrl}`);
+          console.log(color.gray('\n(Install the GitHub CLI and run `gh auth login` to have this opened for you.)'));
+        } else if (result.prMode === 'pushed-only') {
+          console.log(color.gray('\nBranch pushed. Open the pull request on your git host.'));
+        }
+
         printSpend(result.job);
-        console.log(color.gray('\nMerging that PR deploys it to production.\n'));
+        console.log(color.gray('\nMerging deploys it to production.\n'));
         return;
       }
 
@@ -433,6 +497,7 @@ async function main() {
       category: { type: 'string' },
       to: { type: 'string' },
       mock: { type: 'boolean', default: false },
+      all: { type: 'boolean', default: false },
       json: { type: 'boolean', default: false },
       verbose: { type: 'boolean', default: false },
       'skip-build': { type: 'boolean', default: false },
@@ -463,6 +528,8 @@ async function main() {
       return commandTopic(args.join(' '), flags);
     case 'doctor':
       return commandDoctor();
+    case 'models':
+      return commandModels(args[0], flags);
     case 'ingest':
       return commandIngest(args[0], flags);
     case 'run':

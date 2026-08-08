@@ -41,6 +41,39 @@ export function loadEnv() {
   }
 }
 
-export function hasApiKey() {
-  return Boolean(process.env.ANTHROPIC_API_KEY);
+const KEY_ENV = { openai: 'OPENAI_API_KEY', anthropic: 'ANTHROPIC_API_KEY' };
+
+export function keyEnvFor(provider) {
+  return KEY_ENV[provider] ?? `${provider.toUpperCase()}_API_KEY`;
+}
+
+// The copied-but-not-filled-in .env is the single most likely setup
+// mistake, and checking only that the variable EXISTS reports it as fine
+// - so the first real failure arrives later, as a confusing 401 from the
+// provider. Cheap to catch here instead.
+export function looksLikePlaceholder(value) {
+  if (!value) return false;
+  return (
+    value.includes('...') ||
+    value.includes('YOUR_') ||
+    value.includes('<') ||
+    // Real keys from both providers are far longer than this.
+    value.replace(/^sk-(ant-)?/, '').length < 20
+  );
+}
+
+export function keyStatus(provider) {
+  const value = process.env[keyEnvFor(provider)];
+  if (!value) return 'missing';
+  if (looksLikePlaceholder(value)) return 'placeholder';
+  return 'set';
+}
+
+export function hasApiKey(provider) {
+  return keyStatus(provider) === 'set';
+}
+
+/** Providers a tier is configured to use but has no usable key for. */
+export function missingKeys(providers) {
+  return providers.filter((provider) => !hasApiKey(provider));
 }

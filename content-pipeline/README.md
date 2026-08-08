@@ -18,8 +18,9 @@ covers why it's built this way.
 
 ```bash
 cp content-pipeline/.env.example .env        # at the REPO ROOT
-# then put your key in it: ANTHROPIC_API_KEY=sk-ant-...
-npm run pipeline -- doctor                   # confirms key + registry
+# then put your key in it: OPENAI_API_KEY=sk-...
+npm run pipeline -- doctor                   # confirms keys + registry
+npm run pipeline -- models                   # confirms the model ids are real
 ```
 
 No key? Every command takes `--mock`, which uses a built-in fake model: no
@@ -96,11 +97,13 @@ PR), `--skip-build` (faster staging, less safe), `--json`, `--verbose`.
 
 ## The agents
 
-| Agent | Tier | Does |
-| --- | --- | --- |
-| `outliner` | standard | Topic → structure. No prose. |
-| `writer` | frontier | Outline → article. The only step that writes body text. |
-| `reviser` | standard | Findings → targeted fixes. Never rewrites wholesale. |
+| Agent | Tier | Default model | Does |
+| --- | --- | --- | --- |
+| `outliner` | standard | `gpt-5-mini` | Topic → structure. No prose. |
+| `writer` | frontier | `gpt-5` | Outline → article. The only step that writes body text. |
+| `reviser` | standard | `gpt-5-mini` | Findings → targeted fixes. Never rewrites wholesale. |
+
+Gate verdicts and other cheap calls use the `fast` tier (`gpt-5-nano`).
 
 Prompts live in `prompts/<agent>/v<N>.md`, versioned, never in code. Each
 declares its model tier, temperature, and output schema in a small header. `v2`
@@ -128,15 +131,27 @@ stops it. Three things do:
 Anything that trips a guard goes to `quarantined`, which is not a failure: it
 means the system correctly decided a human should look.
 
-### Cost
+### Providers and cost
 
-Steps request a model *tier*, never a model name, so the expensive model is
-used only for drafting. Per-job and per-run caps are enforced **before** each
-call, and every call's tokens and cost land in the job's `events.jsonl`.
-`status` shows the total.
+Steps request a model *tier*, never a model name, so the flagship model is used
+only for drafting — once per article — while structural and revision calls run
+on cheaper ones.
 
-⚠ The rates in `config/models.js` are placeholders. Check them against current
-pricing before trusting the caps.
+**`provider` is set per tier** in `config/models.js`, so you can mix. Everything
+defaults to OpenAI; switch a tier to Anthropic by changing its `provider` and
+`model` (equivalents are listed in that file as `ANTHROPIC_MODELS`). Only the
+providers you actually use need a key.
+
+Adding a provider means editing `src/llm/client.js` and nothing else — that is
+the seam it exists for.
+
+Per-job and per-run caps are enforced **before** each call, and every call's
+tokens and cost land in the job's `events.jsonl`. `status` shows the total.
+
+⚠ **Verify two things before trusting this**: the model ids
+(`npm run pipeline -- models` lists what your account can actually see) and the
+prices in `config/models.js`, which are placeholders. Wrong prices make the
+budget guard optimistic, which is the dangerous direction.
 
 ---
 

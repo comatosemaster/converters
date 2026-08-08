@@ -19,6 +19,7 @@ import { assertWithinBudget, chargeJob } from '../core/budget.js';
 import { EVENTS, appendEvent } from '../core/events.js';
 import { saveJob } from '../core/job.js';
 import { getSchemaObject } from '../core/validate.js';
+import { writeArtifact } from '../core/store.js';
 import { PIPELINE_ROOT } from '../../config/pipeline.config.js';
 import { readRegistry, readAllArticles } from '../adapters/site.js';
 
@@ -87,20 +88,36 @@ export async function runAgent({ agentId, job, variables, promptVersion, tierOve
     tier: tierOverride ?? prompt.tier,
   });
 
-  const result = await completeStructured({
-    tier: tierOverride ?? prompt.tier,
-    system,
-    schema,
-    // The system prompt carries the instructions and all context; the
-    // user turn is only the trigger. Keeping them separate means prompt
-    // caching can apply to the large, stable part.
-    user: 'Produce the output now, as JSON only.',
-    schemaId: prompt.schemaId,
-    temperature: prompt.temperature,
-    maxTokens: prompt.maxTokens,
-    onRetry: ({ attempt, delay, error }) =>
-      appendEvent(job.id, 'llm.retry', { agentId, attempt, delay, error: error.message }),
-  });
+  let result;
+  try {
+    result = await completeStructured({
+      tier: tierOverride ?? prompt.tier,
+      system,
+      schema,
+      // The system prompt carries the instructions and all context; the
+      // user turn is only the trigger. Keeping them separate means prompt
+      // caching can apply to the large, stable part.
+      user: 'Produce the output now, as JSON only.',
+      schemaId: prompt.schemaId,
+      temperature: prompt.temperature,
+      maxTokens: prompt.maxTokens,
+      onRetry: ({ attempt, delay, error }) =>
+        appendEvent(job.id, 'llm.retry', { agentId, attempt, delay, error: error.message }),
+    });
+  } catch (error) {
+    // Persist whatever the model actually said before rethrowing. A
+    // failure you can't inspect afterwards is one you debug by re-running
+    // an expensive call and hoping it fails the same way.
+    if (error.details?.lastText) {
+      await writeArtifact(job.id, `failed-${agentId}.txt`, error.details.lastText);
+      await appendEvent(job.id, 'llm.failed', {
+        agent: agentId,
+        errors: error.details.lastErrors,
+        savedAs: `failed-${agentId}.txt`,
+      });
+    }
+    throw error;
+  }
 
   chargeJob(job, result.meta.costUsd);
   await saveJob(job);

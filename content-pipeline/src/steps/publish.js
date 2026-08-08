@@ -81,14 +81,31 @@ async function assertCanPublish() {
   }
 }
 
-async function ensureGhAvailable() {
+async function ghAvailable() {
   const result = await exec('gh', ['--version']);
-  if (!result.ok) {
-    throw new ExternalError(
-      'The GitHub CLI (`gh`) is required to open a pull request. Install it and run `gh auth login`, or pass --no-pr to commit to a branch without opening one.',
-      {},
-    );
-  }
+  return result.ok;
+}
+
+// Turns a git remote into its web URL, so a pull request can be opened in
+// a browser when the GitHub CLI isn't installed.
+//   https://github.com/owner/repo.git  → https://github.com/owner/repo
+//   git@github.com:owner/repo.git      → https://github.com/owner/repo
+export function remoteToWebUrl(remote) {
+  if (!remote) return null;
+  const cleaned = remote.trim().replace(/\.git$/, '');
+
+  const ssh = cleaned.match(/^git@([^:]+):(.+)$/);
+  if (ssh) return `https://${ssh[1]}/${ssh[2]}`;
+
+  if (/^https?:\/\//.test(cleaned)) return cleaned.replace(/^http:/, 'https:');
+  return null;
+}
+
+// GitHub's compare view with ?expand=1 opens the "create pull request"
+// form pre-filled with the branch - one click, no CLI, no API token.
+function compareUrl(webUrl, baseBranch, branch) {
+  if (!webUrl || !/github\.com/.test(webUrl)) return null;
+  return `${webUrl}/compare/${encodeURIComponent(baseBranch)}...${encodeURIComponent(branch)}?expand=1`;
 }
 
 export async function run(jobId, { noPr = false, dryRun = false } = {}) {
@@ -119,7 +136,6 @@ export async function run(jobId, { noPr = false, dryRun = false } = {}) {
   }
 
   await assertCanPublish();
-  if (config.publish.requirePullRequest && !noPr) await ensureGhAvailable();
 
   const originalBranch = (await git(['rev-parse', '--abbrev-ref', 'HEAD'])).stdout;
 
@@ -141,36 +157,49 @@ export async function run(jobId, { noPr = false, dryRun = false } = {}) {
     ]);
 
     let prUrl = null;
+    let prMode = 'none';
+
     if (config.publish.requirePullRequest && !noPr) {
       await git(['push', '-u', 'origin', branch]);
-      const pr = await exec('gh', [
-        'pr',
-        'create',
-        '--base',
-        config.publish.baseBranch,
-        '--head',
-        branch,
-        '--title',
-        `Add blog article: ${job.title ?? slug}`,
-        '--body',
-        [
-          `Adds \`${relativePath}\`.`,
-          '',
-          '| | |',
-          '| --- | --- |',
-          `| Slug | \`${slug}\` |`,
-          `| Job | \`${job.id}\` |`,
-          `| Gates | all passed |`,
-          `| Build | verified with the article in place |`,
-          '',
-          'Merging deploys this to production.',
-        ].join('\n'),
-      ]);
 
-      if (!pr.ok) {
-        throw new ExternalError(`gh pr create failed: ${pr.stderr || pr.stdout}`, { pr });
+      const body = [
+        `Adds \`${relativePath}\`.`,
+        '',
+        '| | |',
+        '| --- | --- |',
+        `| Slug | \`${slug}\` |`,
+        `| Job | \`${job.id}\` |`,
+        `| Gates | all passed |`,
+        `| Build | verified with the article in place |`,
+        '',
+        'Merging deploys this to production.',
+      ].join('\n');
+
+      if (await ghAvailable()) {
+        const pr = await exec('gh', [
+          'pr',
+          'create',
+          '--base',
+          config.publish.baseBranch,
+          '--head',
+          branch,
+          '--title',
+          `Add blog article: ${job.title ?? slug}`,
+          '--body',
+          body,
+        ]);
+
+        if (!pr.ok) throw new ExternalError(`gh pr create failed: ${pr.stderr || pr.stdout}`, { pr });
+        prUrl = pr.stdout.split('\n').find((line) => line.startsWith('http')) ?? null;
+        prMode = 'gh';
+      } else {
+        // No GitHub CLI. The branch is pushed, so the pull request can
+        // still be opened from a browser - requiring a CLI install to
+        // finish publishing would be a poor trade for one command.
+        const remote = await exec('git', ['remote', 'get-url', 'origin']);
+        prUrl = compareUrl(remoteToWebUrl(remote.stdout), config.publish.baseBranch, branch);
+        prMode = prUrl ? 'manual' : 'pushed-only';
       }
-      prUrl = pr.stdout.split('\n').find((line) => line.startsWith('http')) ?? null;
     }
 
     // Return to where we started so the working tree is left as found.
@@ -179,9 +208,9 @@ export async function run(jobId, { noPr = false, dryRun = false } = {}) {
     await transition(job, 'published', {
       publish: { branch, prUrl: prUrl ?? undefined, at: new Date().toISOString() },
     });
-    await EVENTS.published(job.id, { branch, prUrl });
+    await EVENTS.published(job.id, { branch, prUrl, prMode });
 
-    return { job, ok: true, branch, prUrl };
+    return { job, ok: true, branch, prUrl, prMode };
   } catch (error) {
     // Get back to the original branch so a failure doesn't strand the
     // working tree on a half-built content branch.

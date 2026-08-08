@@ -33,8 +33,15 @@ import addFormats from 'ajv-formats';
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 
-// Models like to wrap JSON in ```json fences or add a sentence of
-// preamble. Pull out the outermost {...} or [...] before parsing.
+// Salvage for when a model wraps its JSON in a ```json fence or adds a
+// sentence of preamble.
+//
+// ⚠ This must only ever run on text that has ALREADY failed to parse as
+// JSON. Our articles are about code, so their bodies are full of ```
+// fences - and those fences live INSIDE a JSON string value. Running this
+// first would match a fence in the article body and extract a code sample
+// instead of the response, corrupting output that was perfectly valid.
+// (That is not hypothetical: it silently discarded three good drafts.)
 function extractJson(text) {
   const fenced = text.match(/```(?:json)?\s*\n?([\s\S]*?)```/);
   const candidate = (fenced ? fenced[1] : text).trim();
@@ -46,16 +53,37 @@ function extractJson(text) {
   return lastBrace > firstBrace ? candidate.slice(firstBrace, lastBrace + 1) : candidate.slice(firstBrace);
 }
 
+// Ordered cheapest-and-safest first. Each step is only reached because
+// the previous one failed, so a well-behaved response never touches the
+// salvage paths at all.
 function tryParse(text) {
-  const candidate = extractJson(text);
+  // 1. The response as-is. JSON mode means this is the normal case.
   try {
-    return { ok: true, value: JSON.parse(candidate) };
+    return { ok: true, value: JSON.parse(text) };
   } catch {
-    try {
-      return { ok: true, value: JSON.parse(jsonrepair(candidate)), repaired: true };
-    } catch (error) {
-      return { ok: false, error: error.message };
-    }
+    /* fall through */
+  }
+
+  // 2. Repair the raw text - trailing commas, smart quotes, and similar.
+  try {
+    return { ok: true, value: JSON.parse(jsonrepair(text)), repaired: true };
+  } catch {
+    /* fall through */
+  }
+
+  // 3. Only now assume the JSON is wrapped in prose or a fence.
+  const extracted = extractJson(text);
+  try {
+    return { ok: true, value: JSON.parse(extracted), extracted: true };
+  } catch {
+    /* fall through */
+  }
+
+  // 4. Both salvage techniques at once.
+  try {
+    return { ok: true, value: JSON.parse(jsonrepair(extracted)), repaired: true, extracted: true };
+  } catch (error) {
+    return { ok: false, error: error.message };
   }
 }
 
@@ -94,6 +122,11 @@ export async function completeStructured({
   const attempts = [];
   let currentTier = tier;
   let currentUser = user;
+  // Kept so a total failure can report WHY rather than just "3 attempts
+  // failed". Without this the raw output is discarded and the only way to
+  // diagnose is to reproduce the call by hand.
+  let lastText = '';
+  let lastErrors = [];
 
   for (let attempt = 1; attempt <= 3; attempt++) {
     // eslint-disable-next-line no-await-in-loop -- each attempt depends on the previous one's error
@@ -118,6 +151,7 @@ export async function completeStructured({
     });
     onAttempt?.(attempts[attempts.length - 1]);
 
+    lastText = response.text;
     const parsed = tryParse(response.text);
 
     if (parsed.ok) {
@@ -138,6 +172,8 @@ export async function completeStructured({
         };
       }
 
+      lastErrors = errors;
+
       // Valid JSON, wrong shape. Show the model exactly what failed -
       // this is what it needs to fix it, and it usually does on the first
       // correction.
@@ -151,6 +187,7 @@ export async function completeStructured({
         'Return corrected JSON only. No prose, no code fence.',
       ].join('\n');
     } else {
+      lastErrors = [{ field: '(root)', message: `Not parseable as JSON: ${parsed.error}` }];
       currentUser = [
         user,
         '',
@@ -166,7 +203,15 @@ export async function completeStructured({
   }
 
   throw new OutputFormatError(
-    `Model did not return schema-valid JSON after ${attempts.length} attempts (tiers: ${attempts.map((a) => a.tier).join(' → ')}).`,
-    { attempts },
+    [
+      `Model did not return schema-valid JSON after ${attempts.length} attempts (tiers: ${attempts.map((a) => a.tier).join(' → ')}).`,
+      '',
+      'Last validation errors:',
+      ...lastErrors.slice(0, 6).map((error) => `  - ${error.message}`),
+      '',
+      `Response was ${lastText.length} characters. First 300:`,
+      `  ${lastText.slice(0, 300).replace(/\n/g, ' ')}`,
+    ].join('\n'),
+    { attempts, lastErrors, lastText },
   );
 }
