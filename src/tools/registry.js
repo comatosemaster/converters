@@ -109,7 +109,14 @@ export const CATEGORIES = [
 //   keywords                - extra search terms; users rarely type the
 //                             exact tool name, so this is what makes
 //                             search actually find things
-//   popular                 - surfaces the tool in "Popular tools"
+//   isPopular               - surfaces the tool in the homepage's
+//                             "Popular tools" row. Optional; omitting it
+//                             means false. Flip this flag here and the
+//                             homepage updates itself - no UI code knows
+//                             which tools are popular. At most
+//                             MAX_POPULAR_TOOLS (5) are ever rendered,
+//                             so if more than five are flagged the extras
+//                             are simply not shown (see getPopularTools).
 export const tools = [
   {
     id: 'base64-encoder-decoder',
@@ -132,7 +139,7 @@ export const tools = [
     icon: Images,
     component: lazy(() => import('./image-converter/ImageConverter.jsx')),
     keywords: ['png', 'jpg', 'jpeg', 'webp', 'avif', 'convert', 'format', 'image'],
-    popular: true,
+    isPopular: true,
   },
   {
     id: 'image-compressor',
@@ -144,7 +151,7 @@ export const tools = [
     icon: Shrink,
     component: lazy(() => import('./image-compressor/ImageCompressor.jsx')),
     keywords: ['compress', 'shrink', 'optimize', 'reduce', 'size', 'image', 'photo'],
-    popular: true,
+    isPopular: true,
   },
   {
     id: 'image-resizer',
@@ -189,7 +196,6 @@ export const tools = [
     icon: FileOutput,
     component: lazy(() => import('./image-to-pdf/ImageToPdf.jsx')),
     keywords: ['image', 'pdf', 'convert', 'combine', 'merge', 'jpg to pdf', 'png to pdf', 'photos'],
-    popular: true,
   },
   {
     id: 'heic-to-jpg',
@@ -201,7 +207,6 @@ export const tools = [
     icon: Smartphone,
     component: lazy(() => import('./heic-to-jpg/HeicToJpg.jsx')),
     keywords: ['heic', 'heif', 'iphone', 'apple', 'jpg', 'jpeg', 'photo', 'convert'],
-    popular: true,
   },
   {
     id: 'favicon-generator',
@@ -224,7 +229,6 @@ export const tools = [
     icon: ScanText,
     component: lazy(() => import('./image-to-text/ImageToText.jsx')),
     keywords: ['ocr', 'extract', 'scan', 'text', 'recognize', 'screenshot', 'georgian'],
-    popular: true,
   },
   {
     id: 'color-converter',
@@ -260,7 +264,7 @@ export const tools = [
     icon: Braces,
     component: lazy(() => import('./json-formatter-validator/JsonFormatter.jsx')),
     keywords: ['json', 'format', 'beautify', 'pretty print', 'minify', 'validate', 'fix', 'repair'],
-    popular: true,
+    isPopular: true,
   },
   {
     id: 'qr-code-generator',
@@ -273,7 +277,7 @@ export const tools = [
     icon: QrCode,
     component: lazy(() => import('./qr-code-generator/QrCodeGenerator.jsx')),
     keywords: ['qr', 'qr code', 'barcode', 'wifi', 'vcard', 'url', 'contact', 'generate'],
-    popular: true,
+    isPopular: true,
   },
   {
     id: 'word-counter-text-analyzer',
@@ -341,7 +345,6 @@ export const tools = [
       'kilograms',
       'pounds',
     ],
-    popular: true,
   },
   {
     id: 'tip-calculator',
@@ -363,7 +366,6 @@ export const tools = [
       'group bill',
       'how much to tip',
     ],
-    popular: true,
   },
   {
     id: 'password-generator',
@@ -383,7 +385,7 @@ export const tools = [
       'strength',
       'crypto',
     ],
-    popular: true,
+    isPopular: true,
   },
   {
     id: 'currency-converter',
@@ -405,7 +407,6 @@ export const tools = [
       'convert',
       'historical rates',
     ],
-    popular: true,
   },
   {
     id: 'world-clock-time-zone-converter',
@@ -426,7 +427,6 @@ export const tools = [
       'convert time',
       'timezone converter',
     ],
-    popular: true,
   },
   {
     id: 'dice-roller',
@@ -438,7 +438,6 @@ export const tools = [
     icon: Dices,
     component: lazy(() => import('./dice-roller/DiceRoller.jsx')),
     keywords: ['dice', 'roll', 'd4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100', 'tabletop', 'rpg', 'random'],
-    popular: true,
   },
   {
     id: 'coin-flip',
@@ -450,7 +449,6 @@ export const tools = [
     icon: Disc,
     component: lazy(() => import('./coin-flip/CoinFlip.jsx')),
     keywords: ['coin', 'flip', 'heads', 'tails', 'toss', 'random', 'decision'],
-    popular: true,
   },
   {
     id: 'random-number-generator',
@@ -462,7 +460,6 @@ export const tools = [
     icon: Shuffle,
     component: lazy(() => import('./random-number-generator/RandomNumberGenerator.jsx')),
     keywords: ['random number', 'rng', 'generator', 'range', 'lottery', 'raffle', 'pick a number'],
-    popular: true,
   },
   {
     id: 'css-gradient-generator',
@@ -482,7 +479,6 @@ export const tools = [
       'background',
       'generator',
     ],
-    popular: true,
   },
   {
     id: 'jwt-decoder',
@@ -494,7 +490,6 @@ export const tools = [
     icon: FileKey,
     component: lazy(() => import('./jwt-decoder/JwtDecoder.jsx')),
     keywords: ['jwt', 'json web token', 'decode', 'token', 'auth', 'bearer token', 'claims', 'base64url'],
-    popular: true,
   },
   {
     id: 'bmi-calculator',
@@ -506,7 +501,6 @@ export const tools = [
     icon: Scale,
     component: lazy(() => import('./bmi-calculator/BmiCalculator.jsx')),
     keywords: ['bmi', 'body mass index', 'weight', 'height', 'healthy weight', 'obesity', 'underweight'],
-    popular: true,
   },
   {
     id: 'age-calculator',
@@ -518,7 +512,6 @@ export const tools = [
     icon: Cake,
     component: lazy(() => import('./age-calculator/AgeCalculator.jsx')),
     keywords: ['age', 'age calculator', 'date of birth', 'birthday', 'how old am i'],
-    popular: true,
   },
   {
     id: 'image-color-picker',
@@ -552,7 +545,6 @@ export const tools = [
     icon: Database,
     component: lazy(() => import('./sql-formatter/SqlFormatter.jsx')),
     keywords: ['sql', 'format', 'beautify', 'mysql', 'postgresql', 'sqlite', 'sql server', 'query', 'pretty print'],
-    popular: true,
   },
   {
     id: 'url-encoder-decoder',
@@ -564,7 +556,6 @@ export const tools = [
     icon: Link2,
     component: lazy(() => import('./url-encoder-decoder/UrlEncoderDecoder.jsx')),
     keywords: ['url', 'encode', 'decode', 'percent encoding', 'uri', 'query string', 'encodeuricomponent'],
-    popular: true,
   },
 ];
 
@@ -588,8 +579,18 @@ export function getCategoryById(id) {
   return CATEGORIES.find((category) => category.id === id);
 }
 
-export function getPopularTools() {
-  return tools.filter((tool) => tool.popular);
+// The homepage's "Popular tools" row is deliberately short - it is a
+// shortcut, not a second directory, and it stops being a useful signal
+// once it grows past a handful. This is the single place that limit is
+// enforced, so no UI file has to remember it.
+export const MAX_POPULAR_TOOLS = 5;
+
+// Tools flagged `isPopular: true` in the registry above, capped at
+// MAX_POPULAR_TOOLS. If more than that are flagged, the extras are simply
+// not returned (registry order wins) rather than the row growing without
+// bound - the registry stays the source of truth either way.
+export function getPopularTools(limit = MAX_POPULAR_TOOLS) {
+  return tools.filter((tool) => tool.isPopular).slice(0, limit);
 }
 
 // Other tools in the same category - shown at the bottom of every tool

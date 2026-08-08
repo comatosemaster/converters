@@ -56,11 +56,14 @@ export default function Home() {
   const results = useMemo(() => searchTools(query), [query]);
   const isSearching = query.trim().length > 0;
 
+  // Compact single-line facts rather than the four large stat blocks this
+  // page used to open with - the same information, but as a footnote to
+  // the hero instead of a section competing with the tools below it.
   const stats = [
-    { value: tools.length, label: 'Tools available' },
-    { value: CATEGORIES.length, label: 'Categories' },
-    { value: '100%', label: 'Client-side' },
-    { value: 'Free', label: 'Forever' },
+    { value: tools.length, label: 'tools' },
+    { value: CATEGORIES.length, label: 'categories' },
+    { value: '100%', label: 'client-side' },
+    { value: 'Free', label: 'forever' },
   ];
 
   return (
@@ -78,12 +81,12 @@ export default function Home() {
         </h1>
 
         <p className="hero-sub">
-          Convert images, format JSON, generate QR codes, extract text, and more. No uploads, no
-          sign-up, no limits - just fast tools that run entirely on your own machine.
+          Convert images, format JSON, generate QR codes, extract text, and more - no uploads, no
+          sign-up, no limits.
         </p>
 
         <div className="hero-search">
-          <Search className="hero-search-icon" size={20} aria-hidden="true" />
+          <Search className="hero-search-icon" size={18} aria-hidden="true" />
           <input
             type="search"
             value={query}
@@ -97,14 +100,13 @@ export default function Home() {
           </span>
         </div>
 
-        <div className="hero-stats">
+        <ul className="hero-stats">
           {stats.map((stat) => (
-            <div className="hero-stat" key={stat.label}>
-              <span className="hero-stat-value">{stat.value}</span>
-              <span className="hero-stat-label">{stat.label}</span>
-            </div>
+            <li className="hero-stat" key={stat.label}>
+              <span className="hero-stat-value">{stat.value}</span> {stat.label}
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       {isSearching ? (
@@ -127,20 +129,26 @@ export default function Home() {
         </section>
       ) : (
         <>
-          <section className="section">
-            <div className="section-head">
-              <div>
-                <h2>Popular tools</h2>
-                <p>The ones people reach for most.</p>
+          {/* Deliberately the first thing under the hero: real, clickable
+              tools within the opening viewport. `popular` comes straight
+              from the registry's isPopular flags (capped there), so this
+              row changes by editing the registry, never this file. */}
+          {popular.length > 0 && (
+            <section className="section section-popular">
+              <div className="section-head">
+                <div>
+                  <h2>Popular tools</h2>
+                  <p>The ones people reach for most.</p>
+                </div>
               </div>
-            </div>
-            <ToolGrid tools={popular} />
-          </section>
+              <ToolGrid tools={popular} featured />
+            </section>
+          )}
 
           <section className="section">
             <div className="section-head">
               <div>
-                <h2>Browse by category</h2>
+                <h2>All tools</h2>
                 <p>All {tools.length} tools, grouped by what they do.</p>
               </div>
             </div>
@@ -149,13 +157,15 @@ export default function Home() {
               const CategoryIcon = category.icon;
               return (
                 <section className="category-section" key={category.id} id={category.id}>
+                  {/* h3, not h2: these sit underneath the "All tools" h2
+                      above, so a flat h2 here would break the outline. */}
                   <div className="category-section-head">
                     <span className="category-icon" aria-hidden="true">
                       <CategoryIcon size={19} strokeWidth={1.75} />
                     </span>
-                    <h2>
+                    <h3>
                       <Link to={`/category/${category.id}`}>{category.name}</Link>
-                    </h2>
+                    </h3>
                     <span className="count-badge">
                       {category.tools.length} {category.tools.length === 1 ? 'tool' : 'tools'}
                     </span>

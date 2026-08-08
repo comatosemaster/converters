@@ -4,20 +4,30 @@ import { BookOpen, Search, Menu, X, Layers, Sun, Moon } from 'lucide-react';
 import { CATEGORIES } from '../tools/registry.js';
 import { useTheme } from '../hooks/useTheme.js';
 import CommandPalette from './CommandPalette.jsx';
+import Sidebar from './Sidebar.jsx';
 
 // The shared frame around every page: a sticky header (brand + category
-// nav + search), the page content itself (<Outlet /> is where React Router
-// inserts whichever page is currently active), and a footer.
+// nav + search), the tool sidebar, the page content itself (<Outlet /> is
+// where React Router inserts whichever page is currently active), and a
+// footer.
 //
 // Because the nav and footer are built by mapping over CATEGORIES, adding
 // a 6th category later is a one-line change in the registry - not a
 // rewrite here.
+
+// The sidebar navigates tools, so it accompanies the tool side of the site
+// (homepage, category pages, tool pages) and stays out of the blog, whose
+// pages are narrow reading columns with their own article navigation.
+function usesToolSidebar(pathname) {
+  return !pathname.startsWith('/blog');
+}
 
 export default function Layout() {
   const location = useLocation();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const showSidebar = usesToolSidebar(location.pathname);
 
   // ⌘K / Ctrl+K opens search from anywhere on the site.
   useEffect(() => {
@@ -103,44 +113,37 @@ export default function Layout() {
               {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
             </button>
 
+            {/* Opens the sidebar as a drawer at narrow widths. The drawer
+                lists categories AND the tools inside them, so it replaces
+                the old category-only dropdown outright rather than sitting
+                alongside it as a second mobile menu. */}
             <button
               type="button"
               className="nav-toggle"
               onClick={() => setMobileNavOpen((open) => !open)}
               aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileNavOpen}
+              aria-controls="tool-sidebar"
             >
               {mobileNavOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
-
-        {/* No Blog entry here: the accent pill in the header stays visible
-            at every width, so repeating it in the menu would be a second
-            link to the same place. */}
-        <nav
-          className={mobileNavOpen ? 'mobile-nav open' : 'mobile-nav'}
-          aria-label="Tool categories (mobile)"
-        >
-          {CATEGORIES.map((category) => {
-            const CategoryIcon = category.icon;
-            return (
-              <NavLink
-                key={category.id}
-                to={`/category/${category.id}`}
-                className={({ isActive }) => (isActive ? 'active' : undefined)}
-              >
-                <CategoryIcon size={16} aria-hidden="true" />
-                {category.name}
-              </NavLink>
-            );
-          })}
-        </nav>
       </header>
 
-      <main className="site-main" id="main">
-        <Outlet />
-      </main>
+      {/* The sidebar is always mounted, but only claims a desktop column on
+          the tool side of the site (.has-sidebar). On the blog it collapses
+          away on desktop while still being reachable as the mobile drawer -
+          otherwise the hamburger would open nothing there, and narrow
+          screens would lose category navigation entirely, since the header's
+          category nav is hidden at that width. */}
+      <div className={showSidebar ? 'site-body has-sidebar' : 'site-body'}>
+        <Sidebar open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+
+        <main className="site-main" id="main">
+          <Outlet />
+        </main>
+      </div>
 
       <footer className="site-footer">
         <div className="site-footer-inner">

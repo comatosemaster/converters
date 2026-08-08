@@ -65,6 +65,14 @@
   --accent-border: rgba(91, 61, 245, 0.35);
   --accent-glow: rgba(91, 61, 245, 0.18);
 
+  /* --- Page background layers (see the body rule in section 2) --- */
+  /* Light stays close to paper: the grid is a whisper and the blooms are
+     barely there, just enough that the header and cards have something to
+     sit on rather than pure white. */
+  --bg-grid: rgba(9, 9, 11, 0.014);
+  --bg-bloom-1: rgba(91, 61, 245, 0.06);
+  --bg-bloom-2: rgba(45, 120, 240, 0.04);
+
   /* --- Status --- */
   --success: #17803d;
   --warning: #a16207;
@@ -120,9 +128,19 @@
   --t-slow: 240ms;
 
   /* --- Layout --- */
-  --container: 1200px;
+  /* Widened from 1200px when the sidebar was introduced. Dropping a 260px
+     navigator inside the old 1200px canvas would have cut the content
+     column down to ~876px - narrower than the site had before it gained a
+     sidebar. Widening the whole canvas instead keeps the content column at
+     roughly its original width, so the sidebar is additive rather than
+     something the tools pay for. The header and footer read the same token,
+     so all three edges stay flush. */
+  --container: 1680px;
   --container-narrow: 780px;
   --header-h: 72px;
+  /* Narrow enough to stay a navigator rather than a second content column
+     (cf. GitHub/Stripe docs), wide enough for the longest tool name. */
+  --sidebar-w: 252px;
 
   /* --- Legacy aliases (keep every existing tool's CSS working) --- */
   --color-bg: var(--bg);
@@ -144,13 +162,16 @@
 /* Dark theme override - applied by adding data-theme="dark" to <html>,
    toggled by the button in the header (see useTheme.js). */
 :root[data-theme='dark'] {
-  --bg: #08090a;
-  --bg-elevated: #0d0e10;
-  --surface: #121316;
-  --surface-2: #17191c;
-  --surface-hover: #1c1e22;
-  --border: #212429;
-  --border-hover: #30343b;
+  /* Lifted off pure black (#08090a) and given a slight blue cast. Near-
+     black reads as "unstyled"; a few points of blue is what makes the
+     accent, the surfaces and the borders feel like one palette. */
+  --bg: #0a0b0f;
+  --bg-elevated: #101218;
+  --surface: #14161d;
+  --surface-2: #191c24;
+  --surface-hover: #1e212a;
+  --border: #242832;
+  --border-hover: #333949;
   --text: #f7f8f8;
   --text-secondary: #b1b5bd;
   --text-muted: #7e8590;
@@ -162,6 +183,14 @@
   --accent-subtle: rgba(124, 108, 246, 0.14);
   --accent-border: rgba(124, 108, 246, 0.42);
   --accent-glow: rgba(124, 108, 246, 0.25);
+
+  /* Dark can carry a little more than light before it stops being subtle,
+     but the grid is deliberately kept near the threshold of visibility -
+     the cards, sidebar and borders already supply the page's structure,
+     and the background should sit behind them rather than compete. */
+  --bg-grid: rgba(255, 255, 255, 0.012);
+  --bg-bloom-1: rgba(124, 108, 246, 0.13);
+  --bg-bloom-2: rgba(56, 130, 246, 0.08);
 
   --success: #3fb950;
   --warning: #d29922;
@@ -189,13 +218,31 @@ html {
   scroll-behavior: smooth;
 }
 
+/* The page background is three stacked layers, all fixed so they stay put
+   while the page scrolls and never repaint on scroll:
+     1. a fine grid, barely above the noise floor, that gives the flat
+        colour some texture and reads as "tool", not "brochure";
+     2. two wide, very low-opacity accent blooms anchored to the top, so
+        the area behind the hero has some depth;
+     3. the base colour underneath.
+   Every layer is driven by tokens that both themes define, so light stays
+   light and dark stops being a flat black rectangle. */
 body {
   margin: 0;
   font-family: var(--font-sans);
   font-size: var(--fs-base);
   line-height: 1.6;
   color: var(--text);
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
+    radial-gradient(ellipse 70% 55% at 50% -5%, var(--bg-bloom-1), transparent 70%),
+    radial-gradient(ellipse 50% 45% at 95% 0%, var(--bg-bloom-2), transparent 70%);
+  background-size: 64px 64px, 64px 64px, 100% 900px, 100% 700px;
+  background-position: center top, center top, center top, right top;
+  background-repeat: repeat, repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -338,12 +385,22 @@ button {
   -webkit-backdrop-filter: saturate(180%) blur(12px);
 }
 
+/* A symmetric three-track grid rather than a flex row with the actions
+   pushed over by margin-left: auto. On the old 1200px canvas that flex
+   row looked fine; on the widened one it left a ~300px void between the
+   nav and the actions, so the header read as "everything shoved right".
+   With 1fr auto 1fr the nav is centred on the page's own axis and the
+   leftover space is split evenly on both sides of it, which is what keeps
+   the header stable as the viewport changes: the brand stays pinned left,
+   the actions stay pinned right, and the gap between them can only ever
+   grow symmetrically. */
 .site-header-inner {
   max-width: var(--container);
   margin: 0 auto;
   height: var(--header-h);
   padding: 0 var(--sp-6);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: var(--sp-6);
 }
@@ -375,9 +432,12 @@ button {
   flex-shrink: 0;
 }
 
+/* The middle grid track. When it's hidden below 1320px the track collapses
+   to zero and the header becomes a clean brand-left / actions-right pair. */
 .category-nav {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--sp-1);
 }
 
@@ -402,8 +462,11 @@ button {
   background: var(--accent-subtle);
 }
 
+/* justify-self: end replaces the old margin-left: auto - in a grid the
+   auto margin would fight the track sizing rather than cooperate with it. */
 .header-actions {
-  margin-left: auto;
+  grid-column: 3;
+  justify-self: end;
   display: flex;
   align-items: center;
   gap: var(--sp-2);
@@ -538,39 +601,38 @@ button {
   background: var(--surface-hover);
 }
 
-.mobile-nav {
-  display: none;
-  flex-direction: column;
-  gap: var(--sp-1);
-  padding: var(--sp-3) var(--sp-6) var(--sp-5);
-  border-top: 1px solid var(--border);
-  background: var(--bg);
-}
+/* (The old .mobile-nav dropdown lived here. It listed categories only;
+   the sidebar drawer that replaced it lists categories AND their tools,
+   so keeping both would have meant two mobile navigation trees.) */
 
-.mobile-nav a {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-3);
-  border-radius: var(--r-md);
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: var(--fs-base);
-  font-weight: 500;
-}
-
-.mobile-nav a:hover,
-.mobile-nav a.active {
-  background: var(--surface-hover);
-  color: var(--text);
-}
-
-.site-main {
+/* The page shell below the header. It owns the max-width, centering AND
+   the horizontal gutter - all three of which used to live on .site-main.
+   Putting the gutter here is what keeps the sidebar's left edge and the
+   content's right edge flush with the header and footer: every one of
+   them is now the same 1480px box with the same 24px inset, so nothing
+   can drift by a padding value the others don't share. */
+.site-body {
   flex: 1;
-  max-width: var(--container);
   width: 100%;
+  max-width: var(--container);
   margin: 0 auto;
-  padding: var(--sp-10) var(--sp-6) var(--sp-24);
+  padding: 0 var(--sp-6);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.site-body.has-sidebar {
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  gap: var(--sp-10);
+}
+
+/* minmax(0, 1fr) above (rather than plain 1fr) is what stops a wide child -
+   a long <pre>, a big table - from forcing the whole grid wider than the
+   viewport and creating horizontal page scroll.
+   No horizontal padding here: the gutter belongs to .site-body now. */
+.site-main {
+  min-width: 0;
+  padding: var(--sp-8) 0 var(--sp-20);
 }
 
 /* --- Footer --- */
@@ -808,39 +870,30 @@ button {
 
 /* --- Hero --- */
 
+/* Centred, as it has always been - just shorter. Only the vertical space
+   changed here; the horizontal composition is untouched. */
 .hero {
   position: relative;
-  padding: var(--sp-16) 0 var(--sp-12);
+  padding: var(--sp-6) 0 var(--sp-5);
   text-align: center;
 }
 
-/* A single soft accent bloom behind the hero - the only decorative flourish
-   on the site, kept very low opacity so it reads as depth, not decoration. */
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(760px, 100%);
-  height: 340px;
-  background: radial-gradient(ellipse at center, var(--accent-glow), transparent 70%);
-  opacity: 0.55;
-  pointer-events: none;
-  z-index: -1;
-}
+/* (The hero's own accent bloom used to live here. The page background now
+   carries that glow for the whole top of the document - see the body rule
+   in section 2 - so keeping this one too just doubled it up right where it
+   was already strongest.) */
 
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
-  margin-bottom: var(--sp-6);
+  margin-bottom: var(--sp-3);
   padding: var(--sp-1) var(--sp-3) var(--sp-1) var(--sp-1);
   border: 1px solid var(--border);
   border-radius: var(--r-full);
   background: var(--surface);
   color: var(--text-secondary);
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
 }
 
 .hero-eyebrow strong {
@@ -855,15 +908,25 @@ button {
   font-size: var(--fs-xs);
 }
 
+/* Was clamp(2.25rem, 6vw, 3.75rem) - dominant enough that it, plus the old
+   stats block, pushed every tool below the fold. Still a substantial
+   headline, just no longer the page's primary content. */
+/* No max-width: the accent span below is display: block, so the two lines
+   are set by the copy itself rather than by a character count that has to
+   be re-guessed every time the wording or font size changes. */
 .hero h1 {
-  max-width: 16ch;
   margin: 0 auto;
-  font-size: clamp(2.25rem, 6vw, 3.75rem);
-  line-height: 1.05;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.625rem, 2.4vw, 2.125rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
 }
 
+/* display: block so the coloured phrase always begins its own line. Left
+   to wrap naturally it broke mid-phrase ("...need, right in" / "your
+   browser"), which split the accent across two lines and made the colour
+   look like an accident rather than an emphasis. */
 .hero h1 .accent-text {
+  display: block;
   background: linear-gradient(120deg, var(--accent), var(--accent-hover));
   -webkit-background-clip: text;
   background-clip: text;
@@ -871,19 +934,22 @@ button {
 }
 
 .hero-sub {
-  max-width: 56ch;
-  margin: var(--sp-6) auto 0;
+  max-width: 68ch;
+  margin: var(--sp-3) auto 0;
   color: var(--text-secondary);
-  font-size: var(--fs-lg);
-  line-height: 1.6;
+  font-size: var(--fs-base);
+  line-height: 1.55;
 }
 
 /* --- Hero search --- */
 
+/* Stays prominent - it's the fastest path to a tool and the one hero
+   element that earns its space - but no longer floats in the middle of a
+   tall empty band. */
 .hero-search {
   position: relative;
-  max-width: 640px;
-  margin: var(--sp-10) auto 0;
+  max-width: 580px;
+  margin: var(--sp-4) auto 0;
 }
 
 .hero-search-icon {
@@ -897,14 +963,14 @@ button {
 
 .hero-search input[type='search'] {
   width: 100%;
-  height: 60px;
+  height: 48px;
   padding: 0 var(--sp-16) 0 calc(var(--sp-5) * 2 + 8px);
   border: 1px solid var(--border);
-  border-radius: var(--r-xl);
+  border-radius: var(--r-lg);
   background: var(--surface);
   color: var(--text);
   font-size: var(--fs-md);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
 
@@ -915,7 +981,7 @@ button {
 .hero-search input[type='search']:focus {
   outline: none;
   border-color: var(--accent-border);
-  box-shadow: var(--shadow-md), 0 0 0 4px var(--accent-subtle);
+  box-shadow: var(--shadow-sm), 0 0 0 3px var(--accent-subtle);
 }
 
 .hero-search .kbd-hint {
@@ -928,39 +994,37 @@ button {
 
 /* --- Stats strip --- */
 
+/* One quiet line of facts. This used to be a four-column grid of 1.75rem
+   numbers roughly 140px tall, which is most of a fold spent restating the
+   footer. Same four facts, a fraction of the height. */
 .hero-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--sp-4);
-  max-width: 760px;
-  margin: var(--sp-12) auto 0;
-}
-
-.hero-stat {
-  padding: var(--sp-4) var(--sp-3);
-  border-radius: var(--r-lg);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-5);
+  list-style: none;
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
 }
 
 .hero-stat-value {
-  display: block;
-  font-size: var(--fs-2xl);
   font-weight: 650;
-  letter-spacing: -0.03em;
   color: var(--text);
-  line-height: 1.15;
-}
-
-.hero-stat-label {
-  display: block;
-  margin-top: var(--sp-1);
-  font-size: var(--fs-sm);
-  color: var(--text-muted);
 }
 
 /* --- Section headers --- */
 
 .section {
-  margin-top: var(--sp-24);
+  margin-top: var(--sp-16);
+}
+
+/* The first section under the hero sits closer to it - the point of the
+   redesign is that tools start almost immediately. */
+.section-popular {
+  margin-top: var(--sp-10);
 }
 
 .section-head {
@@ -999,7 +1063,7 @@ button {
 /* --- Category sections --- */
 
 .category-section {
-  margin-bottom: var(--sp-16);
+  margin-bottom: var(--sp-12);
 }
 
 .category-section-head {
@@ -1012,8 +1076,8 @@ button {
 .category-icon {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
@@ -1021,17 +1085,24 @@ button {
   color: var(--accent);
 }
 
-.category-section-head h2 {
+/* h3 on the homepage (nested under the "All tools" h2), h2 on category
+   pages where it is the top-level section heading - styled identically so
+   the correct document outline costs nothing visually. */
+.category-section-head h2,
+.category-section-head h3 {
   font-size: var(--fs-lg);
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.015em;
 }
 
-.category-section-head h2 a {
+.category-section-head h2 a,
+.category-section-head h3 a {
   color: var(--text);
   text-decoration: none;
 }
 
-.category-section-head h2 a:hover {
+.category-section-head h2 a:hover,
+.category-section-head h3 a:hover {
   color: var(--accent);
 }
 
@@ -1055,85 +1126,173 @@ button {
 
 /* --- Tool cards --- */
 
+/* Category rows size themselves to the space available - their tool counts
+   are arbitrary, so there is no column count that suits all of them. */
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--sp-4);
 }
 
+/* The Popular row is the one grid with a fixed item count, so its columns
+   are fixed too rather than left to auto-fill: at some widths auto-fill
+   resolved to four and left the fifth card stranded alone on a second line.
+   Five only once the content column is genuinely wide enough for it - below
+   that, three readable cards beat five cramped ones. */
+.tool-grid-featured {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (min-width: 1440px) {
+  .tool-grid-featured {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .tool-grid-featured {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* The card keeps its familiar stacked shape - icon, then title, then
+   description - because the title needs the card's full width; putting it
+   beside the icon left roughly 120px for it and wrapped longer names over
+   four lines.
+   What actually caused the dead space is fixed instead: the hover arrow no
+   longer reserves a permanent invisible row (it is positioned absolutely),
+   and descriptions are clamped to two lines so one long entry can't set
+   the height of an entire row and leave its neighbours half empty. */
 .tool-card {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
   height: 100%;
-  padding: var(--sp-6);
+  padding: var(--sp-5);
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
   background: var(--surface);
   text-decoration: none;
   color: var(--text);
-  overflow: hidden;
   transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease),
     transform var(--t) var(--ease), background var(--t) var(--ease);
 }
 
 .tool-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--accent-border);
+  transform: translateY(-2px);
+  border-color: var(--border-hover);
   background: var(--surface-2);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* The icon's own row, with the Popular badge pushed to the far end so it
+   never displaces the title or changes the card's height. */
+.tool-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
 }
 
 .tool-card-icon {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
   border-radius: var(--r-lg);
   background: var(--accent-subtle);
   color: var(--accent);
   transition: background var(--t) var(--ease);
 }
 
+/* --- Popular tools: the same card, one step forward --- */
+/* Restraint is the point: a slightly stronger border, a small badge, and a
+   marginally larger shadow. No gradient, no accent fill - these have to
+   read as "used most", not as advertising. */
+
+.tool-card.featured {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.tool-card.featured:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-md);
+}
+
+.tool-card-badge {
+  flex-shrink: 0;
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-full);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
 .tool-card:hover .tool-card-icon {
   background: color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
+/* Always reserves two lines. Grid rows size themselves independently, so
+   without this a row whose longest title wraps sits 21px taller than the
+   row below it - the cards looked mismatched down the page even though
+   each individual row was internally consistent. */
 .tool-card-name {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: 2.7em;
   font-size: var(--fs-md);
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.35;
 }
 
+/* Three lines rather than two: at the old two-line limit most descriptions
+   were being cut mid-sentence, which read as broken rather than concise.
+   Three lines at the current column width fits the overwhelming majority
+   of them whole, and still bounds the card's height. */
 .tool-card-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
   font-size: var(--fs-sm);
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--text-muted);
 }
 
+/* Sits in the corner on hover instead of occupying a permanent row: it is
+   absolutely positioned, so it costs the card no height at rest. */
 .tool-card-arrow {
-  margin-top: auto;
-  padding-top: var(--sp-2);
+  position: absolute;
+  top: var(--sp-5);
+  right: var(--sp-5);
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-1);
-  font-size: var(--fs-sm);
-  font-weight: 500;
   color: var(--accent);
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateX(-4px);
   transition: opacity var(--t) var(--ease), transform var(--t) var(--ease);
 }
 
 .tool-card:hover .tool-card-arrow,
 .tool-card:focus-visible .tool-card-arrow {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
+}
+
+/* The badge already lives in the corner on featured cards, so the arrow
+   would land on top of it - hide it there and let the badge do the work. */
+.tool-card.featured .tool-card-arrow {
+  display: none;
 }
 
 /* Search-result highlighting */
@@ -3212,20 +3371,37 @@ details:focus-visible,
 
 /* === 18. Responsive / mobile ============================================== */
 
-/* --- Tablet / small laptop: collapse the desktop nav into a menu button
-       and drop the footer to two columns. --- */
-@media (max-width: 900px) {
-  .category-nav,
-  .header-search-trigger .kbd-hint {
+/* The header row (brand + six category links + blog + search + theme) needs
+   roughly 1240px to lay out; below that it used to push the whole page into
+   horizontal scroll - a pre-existing overflow across the entire 900-1260px
+   band, not something the sidebar introduced. The category nav is what
+   gives way first, and nothing is lost by it: between here and the drawer
+   breakpoint the sidebar is already listing every category inline. */
+/* 1320px, measured rather than guessed: the header row needs ~1263px, and
+   the canvas only offers (viewport - 48px of gutter), so below this the
+   header would either scroll the page sideways or push its own right edge
+   past the content's. A 1366px laptop keeps the full nav; a 1280px one
+   drops it and navigates from the sidebar instead. */
+@media (max-width: 1320px) {
+  .category-nav {
     display: none;
   }
+}
 
+/* The menu button appears exactly where the sidebar stops being inline, so
+   there is never a width with neither an inline sidebar nor a way to open
+   the drawer. */
+@media (max-width: 1000px) {
   .nav-toggle {
     display: inline-flex;
   }
+}
 
-  .mobile-nav.open {
-    display: flex;
+/* --- Tablet / small laptop: collapse the desktop nav into a menu button
+       and drop the footer to two columns. --- */
+@media (max-width: 900px) {
+  .header-search-trigger .kbd-hint {
+    display: none;
   }
 
   .header-search-trigger {
@@ -3255,20 +3431,28 @@ details:focus-visible,
   .footer-brand {
     grid-column: 1 / -1;
   }
-
-  .hero-stats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--sp-2);
-  }
 }
 
 @media (max-width: 600px) {
   .site-header-inner,
-  .site-main,
+  .site-body,
   .site-footer-inner,
   .site-footer-bottom {
     padding-left: var(--sp-4);
     padding-right: var(--sp-4);
+  }
+
+  /* The category nav is long gone by this width, so its middle track is
+     dead weight - collapsing to two columns removes a whole 24px gap. That
+     plus the tighter remaining gap is what stops the theme toggle from
+     sitting ~12px past the header's own right edge on a 390px phone. */
+  .site-header-inner {
+    grid-template-columns: 1fr auto;
+    gap: var(--sp-2);
+  }
+
+  .header-actions {
+    grid-column: 2;
   }
 
   .site-main {
@@ -3277,12 +3461,12 @@ details:focus-visible,
   }
 
   .hero {
-    padding: var(--sp-10) 0 var(--sp-8);
+    padding: var(--sp-6) 0 var(--sp-4);
   }
 
   .hero-search input[type='search'] {
-    height: 52px;
-    padding-right: var(--sp-5);
+    height: 46px;
+    padding-right: var(--sp-4);
   }
 
   .hero-search .kbd-hint {
@@ -3290,11 +3474,23 @@ details:focus-visible,
   }
 
   .section {
-    margin-top: var(--sp-16);
+    margin-top: var(--sp-10);
   }
 
+  .section-popular {
+    margin-top: var(--sp-6);
+  }
+
+  /* Two columns down to ~360px keeps the toolbox feeling dense on a phone;
+     a single full-width column made every card look like a banner and put
+     the second tool below the fold. */
   .tool-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--sp-3);
+  }
+
+  .tool-card {
+    padding: var(--sp-4);
   }
 
   /* Touch targets: give every button comfortable height on small screens. */
@@ -5441,4 +5637,355 @@ details:focus-visible,
   margin-top: var(--sp-3);
   margin-bottom: 0;
   justify-content: center;
+}
+
+/* === 34. Tool sidebar + drawer ============================================= */
+/* One component (Sidebar.jsx) renders both forms: a sticky column beside
+   the content on desktop, and a slide-in drawer below the breakpoint. The
+   drawer styles live in the responsive block at the end of this section. */
+
+.sidebar {
+  position: relative;
+  grid-row: 1;
+}
+
+/* Sticks under the sticky header and scrolls on its own once the list is
+   taller than the viewport, so a long category never strands the tools at
+   the bottom out of reach. */
+.sidebar-inner {
+  position: sticky;
+  top: var(--header-h);
+  max-height: calc(100svh - var(--header-h));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* No left padding: the sidebar's own left edge is the page gutter set by
+     .site-body, so its links line up exactly under the header's wordmark. */
+  padding: var(--sp-10) var(--sp-4) var(--sp-10) 0;
+}
+
+/* The drawer's own title bar - redundant on desktop, where the sidebar is
+   visibly part of the page and needs no close button. */
+.sidebar-mobile-head {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-heading {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sidebar-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.sidebar-close:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+.sidebar-list,
+.sidebar-tools {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-group + .sidebar-group {
+  margin-top: 2px;
+}
+
+/* The category row is a link plus a separate toggle button sharing one
+   rounded background, so hovering anywhere on the row reads as a single
+   control while each half keeps its own accessible role. */
+.sidebar-group-head {
+  display: flex;
+  align-items: center;
+  border-radius: var(--r-md);
+  transition: background var(--t-fast) var(--ease);
+}
+
+.sidebar-group-head:hover {
+  background: var(--surface-hover);
+}
+
+.sidebar-group-head.active {
+  background: var(--accent-subtle);
+}
+
+/* Compact on purpose: with all six categories open at once these headers
+   repeat down the whole column, so they are set at the small uppercase
+   scale used for section labels elsewhere. That also puts them in a
+   different type register from the tool links underneath, which is what
+   makes the sidebar read as navigation rather than a second page. */
+.sidebar-category-link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-1) var(--sp-1) var(--sp-2);
+  border-radius: var(--r-md) 0 0 var(--r-md);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sidebar-group-head:hover .sidebar-category-link,
+.sidebar-group-head.active .sidebar-category-link {
+  color: var(--text);
+}
+
+.sidebar-category-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.sidebar-group-head.active .sidebar-category-icon {
+  color: var(--accent);
+}
+
+.sidebar-category-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-count {
+  flex-shrink: 0;
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.sidebar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.sidebar-toggle:hover {
+  color: var(--text);
+}
+
+.sidebar-chevron {
+  transition: transform var(--t) var(--ease);
+}
+
+.sidebar-chevron.open {
+  transform: rotate(90deg);
+}
+
+/* The hairline is the visual "these belong to the category above" cue, so
+   the tool list needs no indent guides or bullets of its own. */
+.sidebar-tools {
+  margin: 2px 0 var(--sp-2);
+  padding-left: var(--sp-5);
+  border-left: 1px solid var(--border);
+  margin-left: calc(var(--sp-3) + 10px);
+  animation: sidebar-reveal var(--t) var(--ease) both;
+}
+
+@keyframes sidebar-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+
+/* The tool links are the sidebar's primary type - larger and lighter than
+   the uppercase category labels above them, so the eye lands on the
+   destinations rather than the grouping. */
+.sidebar-tool {
+  position: relative;
+  display: block;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--fs-base);
+  line-height: 1.4;
+  transition: color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+}
+
+.sidebar-tool:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+/* The single strongest state in the sidebar - this is the "you are here",
+   and it has to be obvious at a glance while moving around the site: a
+   filled accent tint, accent text, heavier weight, and a solid marker bar
+   sitting on the group's hairline so the eye can find it without reading. */
+.sidebar-tool.active {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.sidebar-tool.active::before {
+  content: '';
+  position: absolute;
+  /* Lands exactly on the .sidebar-tools hairline this list is indented from. */
+  left: calc(var(--sp-5) * -1 - 1px);
+  top: 2px;
+  bottom: 2px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+/* Has to read as a control, not a twelfth tool. It sits outside the tool
+   list's hairline rule, is indented to the category's own left edge rather
+   than the tools', and carries a chevron plus accent colour and smaller
+   uppercase type - none of which any tool link has. */
+.sidebar-more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  margin: 0 0 var(--sp-3) calc(var(--sp-3) + 10px);
+  padding: var(--sp-1) var(--sp-2);
+  border: none;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease);
+}
+
+.sidebar-more:hover {
+  background: var(--accent-subtle);
+}
+
+.sidebar-more-chevron {
+  transition: transform var(--t) var(--ease);
+}
+
+.sidebar-more-chevron.open {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-more-chevron {
+    transition: none;
+  }
+}
+
+.sidebar-scrim {
+  display: none;
+}
+
+/* --- Drawer: below this width the sidebar leaves the page flow --- */
+@media (max-width: 1000px) {
+  .site-body.has-sidebar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    width: min(300px, 84vw);
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    box-shadow: var(--shadow-xl);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform var(--t-slow) var(--ease), visibility var(--t-slow) var(--ease);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .sidebar-inner {
+    position: static;
+    max-height: none;
+    height: 100%;
+    padding: var(--sp-5) var(--sp-4) var(--sp-8);
+  }
+
+  .sidebar-mobile-head {
+    display: flex;
+  }
+
+  .sidebar-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.45);
+    animation: fade-in var(--t) var(--ease) both;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* On the blog the sidebar has no desktop column - it exists only as the
+   mobile drawer, so the reading column keeps the full width it had before
+   the sidebar was introduced. */
+@media (min-width: 1001px) {
+  .site-body:not(.has-sidebar) .sidebar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none;
+  }
+
+  .sidebar-tools,
+  .sidebar-scrim {
+    animation: none;
+  }
 }
