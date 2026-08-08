@@ -136,6 +136,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://rootconverter.com/tool/age-calculator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://rootconverter.com/tool/image-color-picker</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://rootconverter.com/tool/savings-calculator</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://rootconverter.com/tool/sql-formatter</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
