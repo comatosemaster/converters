@@ -34,6 +34,19 @@ export async function initValidators() {
   return ready;
 }
 
+// The raw schema object, for injecting into a prompt so the model is told
+// the exact field names and constraints it will be validated against.
+// Reading it from the same file the validator uses is the point: a schema
+// described in prose inside a prompt drifts from the real one within
+// weeks, and then the model is being marked against rules it was never
+// shown.
+export async function getSchemaObject(schemaId) {
+  await initValidators();
+  const validator = ajv.getSchema(schemaId);
+  if (!validator) throw new ValidationError(`No schema registered with id "${schemaId}".`, { schemaId });
+  return validator.schema;
+}
+
 // Formats Ajv's errors into something a human can act on without knowing
 // what a JSON Pointer is.
 export function formatErrors(errors) {

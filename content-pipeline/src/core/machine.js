@@ -34,7 +34,12 @@ export const STATES = {
 // it's here so the graph explains itself to the next person reading it.
 export const TRANSITIONS = [
   { from: 'queued', to: 'researched', step: 'research', phase: 4 },
-  { from: 'researched', to: 'outlined', step: 'outline', phase: 4 },
+  { from: 'researched', to: 'outlined', step: 'outline', phase: 2 },
+  // Skips research, which doesn't exist yet. Once it does, `route()`
+  // prefers the transition declared first, so a queued job will start
+  // going through research automatically with no change here - the same
+  // mechanism that lets an ingested markdown file skip straight to review.
+  { from: 'queued', to: 'outlined', step: 'outline', phase: 2 },
   { from: 'outlined', to: 'drafted', step: 'draft', phase: 2 },
   { from: 'drafted', to: 'edited', step: 'edit', phase: 3 },
   { from: 'drafted', to: 'reviewed', step: 'review', phase: 1 },

@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "outline.schema.json",
+  "title": "Article outline",
+  "description": "Structure only - no prose. Separating outlining from writing means structural problems (wrong angle, missing section, no tool hook) are caught before a single expensive drafting token is spent.",
+  "type": "object",
+  "required": ["title", "slug", "category", "angle", "sections", "targetKeywords", "relatedTools"],
+  "additionalProperties": false,
+  "properties": {
+    "title": { "type": "string", "minLength": 10, "maxLength": 120 },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "minLength": 3, "maxLength": 80 },
+    "category": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "angle": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 500,
+      "description": "What makes this article worth reading rather than the ten identical ones already ranking."
+    },
+    "audience": { "type": "string", "maxLength": 200 },
+    "difficulty": { "type": "string", "enum": ["beginner", "intermediate", "advanced"] },
+    "targetKeywords": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 2, "maxLength": 60 },
+      "minItems": 1,
+      "maxItems": 8
+    },
+    "relatedTools": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+      "minItems": 1,
+      "maxItems": 6,
+      "description": "Tool ids this article should point readers to. Validated against registry.js by the links gate."
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "required": ["heading", "keyPoints"],
+        "additionalProperties": false,
+        "properties": {
+          "heading": { "type": "string", "minLength": 3, "maxLength": 100 },
+          "keyPoints": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 10 },
+            "minItems": 1,
+            "maxItems": 8
+          },
+          "targetWords": { "type": "integer", "minimum": 50, "maximum": 800 },
+          "toolLink": {
+            "type": "string",
+            "description": "Optional tool id to link from this section."
+          }
+        }
+      }
+    }
+  }
+}

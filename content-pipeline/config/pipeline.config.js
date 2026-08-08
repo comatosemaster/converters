@@ -73,9 +73,17 @@ export const config = {
   },
 
   // --- Build verification -------------------------------------------------
+  //
+  // Vite's binary is invoked directly with the current Node executable
+  // rather than through `npm run build`. Two reasons: npm is a .cmd shim
+  // on Windows and can only be spawned through a shell (which Node now
+  // warns about), and going straight to the binary skips npm's startup
+  // overhead on every staged article.
+  //
+  // `binary` is resolved relative to the repo root.
   build: {
-    command: 'npm',
-    args: ['run', 'build'],
+    binary: 'node_modules/vite/bin/vite.js',
+    args: ['build'],
     timeoutMs: 5 * 60 * 1000,
   },
 };

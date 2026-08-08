@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "draft.schema.json",
+  "title": "Article draft",
+  "description": "Frontmatter as structured data plus the markdown body, kept separate rather than as one blob of text. That way the frontmatter can be schema-validated on its own, and the Assembler is the single place that decides how a .md file is serialised.",
+  "type": "object",
+  "required": ["frontmatter", "body"],
+  "additionalProperties": false,
+  "properties": {
+    "frontmatter": {
+      "type": "object",
+      "required": ["title", "category", "description", "excerpt"],
+      "additionalProperties": true,
+      "properties": {
+        "title": { "type": "string", "minLength": 10, "maxLength": 120 },
+        "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "category": { "type": "string" },
+        "description": { "type": "string", "minLength": 40, "maxLength": 300 },
+        "excerpt": { "type": "string", "minLength": 40, "maxLength": 300 },
+        "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 12 },
+        "difficulty": { "type": "string", "enum": ["beginner", "intermediate", "advanced"] },
+        "seoTitle": { "type": "string", "maxLength": 120 },
+        "metaDescription": { "type": "string", "minLength": 40, "maxLength": 200 },
+        "relatedTools": { "type": "array", "items": { "type": "string" }, "maxItems": 8 }
+      }
+    },
+    "body": {
+      "type": "string",
+      "minLength": 400,
+      "description": "Markdown body. Must NOT contain an h1 - the page renders that from the frontmatter title."
+    }
+  }
+}

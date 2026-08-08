@@ -1,38 +1,58 @@
 # Content pipeline
 
-Validates, stages, build-verifies, and PR-publishes blog articles for Rootconverter.
+Writes, validates, stages, build-verifies, and PR-publishes blog articles for
+Rootconverter.
 
-**Phase 1 — no AI yet.** Everything here is deterministic. There are no model
-calls, no API keys, and nothing to configure before using it. Today it is a
-strict linter and a safe publishing path for articles you write by hand; phases
-2-4 add the agents that write them. See
-[`docs/content-pipeline-architecture.md`](../docs/content-pipeline-architecture.md)
-for the full design.
+**Phase 2 — AI writing, with deterministic quality control.** Three agents
+(outliner, writer, reviser) produce articles; five deterministic gates decide
+whether they ship. Research and a separate editorial pass are still to come.
+
+📖 **[USAGE.md](USAGE.md) — step-by-step walkthrough and troubleshooting.**
+Start there if you just want to use it.
+This file covers what it is; [the architecture doc](../docs/content-pipeline-architecture.md)
+covers why it's built this way.
 
 ---
 
+## Setup
+
+```bash
+cp content-pipeline/.env.example .env        # at the REPO ROOT
+# then put your key in it: ANTHROPIC_API_KEY=sk-ant-...
+npm run pipeline -- doctor                   # confirms key + registry
+```
+
+No key? Every command takes `--mock`, which uses a built-in fake model: no
+network, no cost, schema-shaped output. The whole pipeline runs, so you can
+exercise everything except the actual writing.
+
 ## Quick start
 
-Check an article you wrote:
+Write an article:
+
+```bash
+npm run pipeline -- topic "What Base64 encoding does and when to avoid it"
+npm run pipeline -- run <job-id>
+```
+
+That runs outline → draft → review → (revise if needed) → stage → pull request.
+Merging the PR deploys it.
+
+Check an article you wrote yourself:
 
 ```bash
 npm run pipeline -- check path/to/article.md
 ```
 
-That runs every quality gate and prints what's wrong, with a suggested fix for
-each finding. Exit code is 0 if it would be publishable, 1 otherwise — so it
-drops straight into a pre-commit hook or CI later.
+Runs every gate and prints what's wrong with a suggested fix. Exit code 0 if
+publishable, 1 otherwise — so it drops straight into a hook or CI.
 
-Publish one:
+Publish a hand-written one:
 
 ```bash
-npm run pipeline -- ingest path/to/article.md   # → prints a job id
+npm run pipeline -- ingest path/to/article.md
 npm run pipeline -- run <job-id>
 ```
-
-That validates it, writes it into `src/content/blog/`, runs the **real site
-build** to confirm it renders, then opens a pull request. Merging the PR
-deploys it.
 
 ---
 
@@ -55,7 +75,9 @@ that damage is slow to undo.
 
 | Command | Does |
 | --- | --- |
+| `topic "<topic>"` | Create a job from a topic, to be written by AI. |
 | `check <file.md>` | Run all gates against a file. No job, no side effects. |
+| `doctor` | Check API key, provider, and tool registry. |
 | `ingest <file.md>` | Create a job from a file. |
 | `run <job-id>` | Advance the job as far as it can go. |
 | `step <job-id> <step>` | Run exactly one step. |
@@ -66,9 +88,55 @@ that damage is slow to undo.
 | `abandon <job-id>` | Drop a job. |
 | `gates` / `states` | Show the configured gates / the state graph. |
 
-Useful flags: `--dry-run` (publish: show what would happen, change nothing),
-`--no-pr` (commit to a branch without opening a PR), `--skip-build` (faster
-staging, less safe), `--json`, `--verbose`.
+Useful flags: `--mock` (fake model, no cost), `--dry-run` (publish: show what
+would happen, change nothing), `--no-pr` (commit to a branch without opening a
+PR), `--skip-build` (faster staging, less safe), `--json`, `--verbose`.
+
+---
+
+## The agents
+
+| Agent | Tier | Does |
+| --- | --- | --- |
+| `outliner` | standard | Topic → structure. No prose. |
+| `writer` | frontier | Outline → article. The only step that writes body text. |
+| `reviser` | standard | Findings → targeted fixes. Never rewrites wholesale. |
+
+Prompts live in `prompts/<agent>/v<N>.md`, versioned, never in code. Each
+declares its model tier, temperature, and output schema in a small header. `v2`
+is a new file; `v1` stays, and the version used is recorded in every job's
+event log — so a quality regression is bisectable instead of a mystery.
+
+Shared voice lives once in `config/house-style.md` and is injected into all
+three. **It must agree with `src/gates/prose.gate.js`**: the gate rejects what
+that file forbids, so a disagreement means every article burns a revision cycle
+fixing something the prompt told it to do.
+
+### Why the revision loop can't run away
+
+"Send it back for improvement" is an unbounded spend loop unless something
+stops it. Three things do:
+
+1. **Bounded budget** — 2 revisions per gate, 4 per job (`config/pipeline.config.js`).
+2. **Oscillation detection** — if the error count stops falling between rounds,
+   the model is fixing one gate while breaking another. Further attempts are
+   provably wasted, so the job is quarantined early.
+3. **Diff-scoped prompts** — the reviser receives only the specific findings,
+   never "improve this article". Open-ended rewrites are what cause the
+   oscillation in the first place.
+
+Anything that trips a guard goes to `quarantined`, which is not a failure: it
+means the system correctly decided a human should look.
+
+### Cost
+
+Steps request a model *tier*, never a model name, so the expensive model is
+used only for drafting. Per-job and per-run caps are enforced **before** each
+call, and every call's tokens and cost land in the job's `events.jsonl`.
+`status` shows the total.
+
+⚠ The rates in `config/models.js` are placeholders. Check them against current
+pricing before trusting the caps.
 
 ---
 
@@ -154,11 +222,19 @@ and no part of the pipeline changes.
 
 ---
 
-## Known limits (phase 1)
+## Known limits
 
-- **No AI.** By design — phases 2-4.
-- **No revision loop.** If gates find problems, fix the source file and
-  re-ingest. The automated reviser arrives in phase 3.
-- **Job records accumulate** in `data/jobs/`. It's gitignored and small;
-  delete the folder when you want a clean slate.
+- **No research step.** The writer is grounded in the tool registry and its own
+  knowledge, not external sources. It is explicitly told not to invent
+  statistics, but it cannot verify claims about the wider world. Treat factual
+  specifics as unverified until the research and external-verification steps
+  exist.
+- **No separate editorial pass.** Voice is enforced by the writer's prompt and
+  the prose gate rather than by a dedicated editor agent.
+- **A hand-ingested markdown file can't be auto-revised** — there's no
+  structured draft to edit, so it quarantines with an explanation instead. Fix
+  the file and re-ingest.
+- **Job records accumulate** in `data/jobs/`. Gitignored and small; delete the
+  folder for a clean slate.
 - **`gh` is required** to open pull requests. Use `--no-pr` without it.
+- **Model pricing is a placeholder** — see above.

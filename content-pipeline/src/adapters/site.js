@@ -192,18 +192,14 @@ export async function publicAssetExists(assetPath) {
 // actual site compiles with it in place.
 
 export function runSiteBuild() {
-  const { command, args, timeoutMs } = config.build;
+  const { binary, args, timeoutMs } = config.build;
 
   return new Promise((resolve) => {
-    const child = spawn(command, args, {
+    // No shell anywhere in this pipeline: Vite's entry point is a plain
+    // .js file, so the current Node executable can run it directly.
+    const child = spawn(process.execPath, [path.join(REPO_ROOT, binary), ...args], {
       cwd: REPO_ROOT,
-      // npm is a .cmd shim on Windows and cannot be spawned without a
-      // shell there (Node rejects it outright since the CVE-2024-27980
-      // mitigation). That's safe specifically because `command` and
-      // `args` come from config/pipeline.config.js and contain no
-      // caller-supplied data - unlike publish.js, which passes article
-      // titles and therefore refuses to use a shell at all.
-      shell: process.platform === 'win32',
+      shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 

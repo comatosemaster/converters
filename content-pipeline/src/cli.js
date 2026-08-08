@@ -21,8 +21,13 @@ import { loadJob, listJobs, quarantine, transition } from './core/job.js';
 import { readEvents } from './core/events.js';
 import { withLock } from './core/lock.js';
 import { isTerminal, route, STATES } from './core/machine.js';
-import { IMPLEMENTED, getStep } from './steps/index.js';
+import { IMPLEMENTED, LLM_STEPS, getStep } from './steps/index.js';
 import * as ingestStep from './steps/ingest.js';
+import * as topicStep from './steps/topic.js';
+import { loadEnv, hasApiKey } from './core/env.js';
+import { activeProvider } from './llm/client.js';
+import { runTotal } from './core/budget.js';
+import { formatUsd } from './llm/cost.js';
 import { runGates, listGates } from './gates/index.js';
 import { loadCorpus } from './corpus/index.js';
 import { parseFrontmatter } from './adapters/site.js';
@@ -30,17 +35,21 @@ import { color, printJobSummary, printOutcome, printVerdicts } from './util/repo
 import { PipelineError } from './core/errors.js';
 
 const HELP = `
-${color.bold('Rootconverter content pipeline')} ${color.gray('(phase 1: validation, staging, PR publishing)')}
+${color.bold('Rootconverter content pipeline')}
+
+${color.bold('Write an article with AI')}
+  topic "<topic>"              Create a job from a topic, then:
+  run <job-id>                 outline → draft → review → (revise) → stage → PR
 
 ${color.bold('Validate without creating a job')}
   check <file.md>              Run every gate against a markdown file and print findings.
                                The fastest way to check an article you wrote by hand.
 
 ${color.bold('Jobs')}
-  ingest <file.md> [--slug s]  Create a job from a markdown file.
+  ingest <file.md> [--slug s]  Create a job from an existing markdown file.
   run <job-id> [--to state]    Advance a job as far as it can go.
   step <job-id> <step>         Run exactly one step.
-  status <job-id>              Show a job's state, verdicts, and history.
+  status <job-id>              Show a job's state, verdicts, cost, and history.
   jobs [--state s]             List jobs.
   artifacts <job-id> [name]    List artifacts, or print one.
   quarantine <job-id> [reason] Park a job for human attention.
@@ -49,18 +58,35 @@ ${color.bold('Jobs')}
 ${color.bold('Info')}
   gates                        List the configured quality gates.
   states                       Show the pipeline state graph.
+  doctor                       Check API key, provider, and tool registry.
 
 ${color.bold('Flags')}
+  --mock                       Use the built-in mock model: no network, no cost.
   --skip-build                 Stage without running the site build (faster; less safe).
   --no-pr                      Commit to a branch without opening a pull request.
   --dry-run                    Publish: show what would happen, change nothing.
   --json                       Machine-readable output.
   --verbose                    Include informational findings.
+
+${color.gray('Walkthrough & troubleshooting:  content-pipeline/USAGE.md')}
+${color.gray('Design rationale:               docs/content-pipeline-architecture.md')}
 `;
 
 function fail(message, code = 1) {
   console.error(color.red(`\n${message}\n`));
   process.exit(code);
+}
+
+// Cost is printed at the end of every run that spent anything - a number
+// you have to go looking for is a number nobody looks at.
+function printSpend(job) {
+  const jobSpend = job.costUsd ?? 0;
+  if (jobSpend === 0 && runTotal() === 0) return;
+  console.log(
+    color.gray(
+      `Cost: ${formatUsd(jobSpend)} for this article${runTotal() !== jobSpend ? `, ${formatUsd(runTotal())} this run` : ''}.`,
+    ),
+  );
 }
 
 // --- check ----------------------------------------------------------------
@@ -111,6 +137,52 @@ async function commandIngest(file, flags) {
   console.log(color.gray(`\nNext: npm run pipeline -- run ${job.id}\n`));
 }
 
+// --- topic ----------------------------------------------------------------
+
+async function commandTopic(topic, flags) {
+  if (!topic) fail('Usage: topic "What Base64 encoding actually does"');
+
+  const job = await topicStep.run({ topic, category: flags.category });
+  console.log(`\n${color.green('Created job')} ${color.bold(job.id)}`);
+  console.log(color.gray(`  topic: ${topic}`));
+  console.log(color.gray(`\nNext: npm run pipeline -- run ${job.id}${flags.mock ? ' --mock' : ''}\n`));
+}
+
+// --- doctor ---------------------------------------------------------------
+// Answers "is this thing configured?" in one command, so a missing key is
+// found before a run rather than three steps into one.
+
+async function commandDoctor() {
+  console.log(`\n${color.bold('Configuration')}\n`);
+
+  const provider = activeProvider();
+  const key = hasApiKey();
+
+  console.log(`  provider        ${provider === 'mock' ? color.yellow('mock (no network, no cost)') : 'anthropic'}`);
+  console.log(`  ANTHROPIC_API_KEY  ${key ? color.green('set') : color.red('not set')}`);
+
+  if (!key && provider !== 'mock') {
+    console.log(
+      color.gray(
+        '\n  Add it to a .env at the repo root (see content-pipeline/.env.example),\n  or pass --mock to run without a model.',
+      ),
+    );
+  }
+
+  try {
+    const { readRegistry } = await import('./adapters/site.js');
+    const registry = await readRegistry();
+    console.log(`  tool registry   ${color.green(`${registry.tools.length} tools, ${registry.categories.length} categories`)}`);
+  } catch (error) {
+    console.log(`  tool registry   ${color.red(`FAILED — ${error.message}`)}`);
+  }
+
+  const { readAllArticles } = await import('./adapters/site.js');
+  const articles = await readAllArticles();
+  console.log(`  published       ${articles.length} article${articles.length === 1 ? '' : 's'}`);
+  console.log();
+}
+
 // --- run ------------------------------------------------------------------
 // The whole runner: ask where to go, go there, repeat. Every branch in the
 // pipeline is decided by machine.route(), not here.
@@ -152,6 +224,7 @@ async function commandRun(jobId, flags) {
         console.log(`\n${color.bold(job.state)} — nothing left to do.`);
         if (job.state === 'quarantined') console.log(color.gray(`Reason: ${job.quarantine?.reason ?? 'unknown'}`));
         if (job.publish?.prUrl) console.log(color.gray(`Pull request: ${job.publish.prUrl}`));
+        printSpend(job);
         console.log();
         return;
       }
@@ -173,7 +246,10 @@ async function commandRun(jobId, flags) {
       }
 
       const step = getStep(decision.step);
-      console.log(color.gray(`→ ${decision.step}…`));
+      const isLlm = LLM_STEPS.has(decision.step);
+      console.log(
+        color.gray(`→ ${decision.step}${isLlm ? ` ${activeProvider() === 'mock' ? '(mock)' : '(model)'}` : ''}…`),
+      );
 
       const result = await step.run(jobId, {
         skipBuild: flags['skip-build'],
@@ -196,6 +272,7 @@ async function commandRun(jobId, flags) {
         }
         console.log(`\n${color.green('Published')} — branch ${color.bold(result.branch)}`);
         if (result.prUrl) console.log(`${color.bold('Pull request:')} ${result.prUrl}`);
+        printSpend(result.job);
         console.log(color.gray('\nMerging that PR deploys it to production.\n'));
         return;
       }
@@ -256,6 +333,8 @@ async function commandStatus(jobId, flags) {
 
   const artifacts = await listArtifacts(jobId);
   console.log(`  artifacts  ${artifacts.join(', ') || color.gray('(none)')}`);
+  if (job.costUsd) console.log(`  cost       ${formatUsd(job.costUsd)}`);
+  if (job.revisions?.total) console.log(`  revisions  ${job.revisions.total}`);
 
   // Surface the most recent review inline - it's almost always what the
   // operator opened `status` to find out.
@@ -351,7 +430,9 @@ async function main() {
     options: {
       slug: { type: 'string' },
       state: { type: 'string' },
+      category: { type: 'string' },
       to: { type: 'string' },
+      mock: { type: 'boolean', default: false },
       json: { type: 'boolean', default: false },
       verbose: { type: 'boolean', default: false },
       'skip-build': { type: 'boolean', default: false },
@@ -368,11 +449,20 @@ async function main() {
     return;
   }
 
+  loadEnv();
+  // --mock is expressed as an env var so it reaches llm/client.js without
+  // every step having to thread a flag down to it.
+  if (flags.mock) process.env.PIPELINE_MOCK_LLM = '1';
+
   await ensureDataDirs();
 
   switch (command) {
     case 'check':
       return commandCheck(args[0], flags);
+    case 'topic':
+      return commandTopic(args.join(' '), flags);
+    case 'doctor':
+      return commandDoctor();
     case 'ingest':
       return commandIngest(args[0], flags);
     case 'run':

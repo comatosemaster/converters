@@ -13,33 +13,22 @@
 
 import { loadJob, recordArtifact, transition } from '../core/job.js';
 import { assertCanRun } from '../core/machine.js';
-import { readArtifact, writeArtifact } from '../core/store.js';
+import { writeArtifact } from '../core/store.js';
 import { EVENTS } from '../core/events.js';
 import { parseFrontmatter } from '../adapters/site.js';
 import { loadCorpus } from '../corpus/index.js';
 import { runGates } from '../gates/index.js';
+import { readLatestMarkdown } from '../util/artifacts.js';
+import { draftToMarkdown } from '../util/markdown.js';
 
 export const name = 'review';
-
-// Reads the newest body available. From phase 3, an edited or revised
-// artifact supersedes the ingested source; until then there is only
-// source.md. Ordered newest-first so adding later stages needs no change
-// here.
-async function loadBody(job) {
-  for (const artifact of ['revised.md', 'edited.md', 'draft.md', 'source.md']) {
-    if (job.artifacts.includes(artifact)) {
-      return { artifact, raw: await readArtifact(job.id, artifact) };
-    }
-  }
-  return null;
-}
 
 export async function run(jobId) {
   const job = await loadJob(jobId);
   assertCanRun(name, job);
   await EVENTS.stepStarted(job.id, { step: name });
 
-  const source = await loadBody(job);
+  const source = await readLatestMarkdown(jobId, { draftToMarkdown });
   if (!source) {
     throw new Error(`Job "${jobId}" has no body artifact to review.`);
   }
@@ -68,7 +57,7 @@ export async function run(jobId) {
   // is also what the phase-3 oscillation detector will read.
   const round = (job.revisions?.total ?? 0) + 1;
   const artifactName = round === 1 ? 'review.json' : `review.v${round}.json`;
-  await writeArtifact(job.id, artifactName, { outcome, verdicts, reviewedArtifact: source.artifact });
+  await writeArtifact(job.id, artifactName, { outcome, verdicts, reviewedArtifact: source.name });
   await recordArtifact(job, artifactName);
 
   const failedGates = verdicts.filter((verdict) => verdict.verdict !== 'pass').map((verdict) => verdict.gate);

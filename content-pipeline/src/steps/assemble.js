@@ -15,74 +15,26 @@
 
 import { loadJob, recordArtifact, transition } from '../core/job.js';
 import { assertCanRun } from '../core/machine.js';
-import { readArtifact, writeArtifact } from '../core/store.js';
+import { writeArtifact } from '../core/store.js';
 import { EVENTS } from '../core/events.js';
 import { parseFrontmatter } from '../adapters/site.js';
+import { readLatestMarkdown } from '../util/artifacts.js';
+import { draftToMarkdown, serializeFrontmatter } from '../util/markdown.js';
 
 export const name = 'assemble';
-
-// Field order in the output file. Fixed so every generated article looks
-// the same in a diff, and so a reviewer's eye lands on the same field in
-// the same place every time.
-const FIELD_ORDER = [
-  'title',
-  'slug',
-  'category',
-  'description',
-  'excerpt',
-  'tags',
-  'author',
-  'publishDate',
-  'updatedDate',
-  'featured',
-  'difficulty',
-  'readingTime',
-  'coverImage',
-  'seoTitle',
-  'metaDescription',
-  'relatedTools',
-  'relatedArticles',
-];
-
-// Serialises a value in the same mini-YAML dialect src/blog/frontmatter.js
-// parses: single-line scalars and one-level inline arrays. Strings are
-// quoted whenever a bare value would be ambiguous to that parser - a
-// colon would look like a nested key, and a leading "[" like an array.
-function serializeValue(value) {
-  if (Array.isArray(value)) return `[${value.join(', ')}]`;
-  if (typeof value === 'boolean' || typeof value === 'number') return String(value);
-
-  const text = String(value);
-  const needsQuotes = /[:#]/.test(text) || text.startsWith('[') || text.trim() !== text;
-  return needsQuotes ? `"${text.replace(/"/g, '\\"')}"` : text;
-}
-
-export function serializeFrontmatter(data) {
-  const keys = [
-    ...FIELD_ORDER.filter((key) => data[key] !== undefined && data[key] !== null),
-    // Anything not in FIELD_ORDER still gets written, so an unexpected
-    // field is never silently dropped on the floor.
-    ...Object.keys(data).filter((key) => !FIELD_ORDER.includes(key)),
-  ];
-
-  const lines = keys.map((key) => `${key}: ${serializeValue(data[key])}`);
-  return `---\n${lines.join('\n')}\n---\n`;
-}
-
-async function loadBody(job) {
-  for (const artifact of ['revised.md', 'edited.md', 'draft.md', 'source.md']) {
-    if (job.artifacts.includes(artifact)) return readArtifact(job.id, artifact);
-  }
-  throw new Error(`Job "${job.id}" has no body artifact to assemble.`);
-}
 
 export async function run(jobId) {
   const job = await loadJob(jobId);
   assertCanRun(name, job);
   await EVENTS.stepStarted(job.id, { step: name });
 
-  const raw = await loadBody(job);
-  const { data, body } = parseFrontmatter(raw);
+  // Resolved through the shared helper so the assembler ships exactly
+  // what the reviewer approved - the newest revision, not the original
+  // draft. Getting this wrong would publish unreviewed content.
+  const source = await readLatestMarkdown(jobId, { draftToMarkdown });
+  if (!source) throw new Error(`Job "${jobId}" has no body artifact to assemble.`);
+
+  const { data, body } = parseFrontmatter(source.raw);
 
   // Normalise the slug into the frontmatter so the published file is
   // self-describing rather than depending on its filename.
