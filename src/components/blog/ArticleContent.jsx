@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { highlightCodeBlocks } from '../../blog/prismHighlight.js';
 
 // Renders an article's pre-rendered HTML body (see renderMarkdown() in
@@ -7,14 +8,44 @@ import { highlightCodeBlocks } from '../../blog/prismHighlight.js';
 //  - wires up each code block's Copy button via one delegated click
 //    listener, since these buttons live inside raw HTML rather than being
 //    React elements React could attach individual handlers to
+//  - routes internal links (e.g. to a tool) through the router, like every
+//    <Link> elsewhere on the site - see handleInternalLink below
 export default function ArticleContent({ html }) {
   const containerRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (containerRef.current) highlightCodeBlocks(containerRef.current);
   }, [html]);
 
+  // Links in the article text are plain <a> tags from the markdown, not
+  // router <Link>s, so on their own they trigger a full page load. That is
+  // slower, and it used to land the new page scrolled to wherever the
+  // article had been (see the ScrollRestoration note in Layout.jsx).
+  // Handing same-site links to the router makes them behave exactly like
+  // the "Related tools" cards: instant, and the new page starts at the top.
+  //
+  // Anything a person would expect the browser to handle itself is left
+  // alone: modified clicks (new tab/window), other mouse buttons, links
+  // with a target or download attribute, in-page #anchors, and anything
+  // off-site - including protocol-relative "//host" URLs.
+  function handleInternalLink(event) {
+    const anchor = event.target.closest('a[href]');
+    if (!anchor) return false;
+    const href = anchor.getAttribute('href');
+    const isSameSite = href.startsWith('/') && !href.startsWith('//');
+    const isPlainClick =
+      event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+    if (!isSameSite || !isPlainClick || anchor.target || anchor.hasAttribute('download')) return false;
+
+    event.preventDefault();
+    navigate(href);
+    return true;
+  }
+
   function handleClick(event) {
+    if (handleInternalLink(event)) return;
+
     const button = event.target.closest('[data-copy-code]');
     if (!button) return;
 

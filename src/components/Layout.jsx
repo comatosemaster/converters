@@ -210,7 +210,17 @@ export default function Layout() {
           Router leaves the scroll position exactly where it was on the
           old page, so a new page could load already scrolled halfway
           down. */}
-      <ScrollRestoration />
+      {/* getKey: positions are remembered per history entry (location.key),
+          except that EVERY page reached by a full page load shares the key
+          "default". Left as-is, a page loaded fresh inherited the scroll
+          position of the previous freshly-loaded page - an article scrolled
+          halfway down opened its linked tool scrolled halfway down too.
+          Keying those entries by URL keeps reload and back-button
+          restoration working without leaking one page's position into
+          another. */}
+      <ScrollRestoration
+        getKey={(location) => (location.key === 'default' ? location.pathname : location.key)}
+      />
     </div>
   );
 }
