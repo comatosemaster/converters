@@ -30,7 +30,7 @@ export const config = {
     // is no good reason to do that.
     requirePullRequest: true,
     maxPerRun: 1,
-    maxPerDay: 3,
+    maxPerDay: 10,
     branchPrefix: 'content/',
     baseBranch: 'master',
   },
@@ -74,16 +74,30 @@ export const config = {
 
   // --- Build verification -------------------------------------------------
   //
-  // Vite's binary is invoked directly with the current Node executable
-  // rather than through `npm run build`. Two reasons: npm is a .cmd shim
-  // on Windows and can only be spawned through a shell (which Node now
-  // warns about), and going straight to the binary skips npm's startup
-  // overhead on every staged article.
+  // The same four steps as the site's `npm run build` (see the root
+  // package.json), run in order, stopping at the first failure:
+  //   1. the browser bundle
+  //   2. the Node copy of the app used to prerender pages
+  //   3. prerendering every route to static HTML + sitemap.xml
+  //   4. verify-prerender, which rejects duplicate or over-long titles and
+  //      descriptions, wrong canonicals, missing structured data, and thin
+  //      pages
+  // Running only step 1 (as this used to) would let an article through
+  // that then fails Cloudflare's build - and a failed production build
+  // blocks every other change from deploying too.
   //
-  // `binary` is resolved relative to the repo root.
+  // Each script is invoked directly with the current Node executable
+  // rather than through `npm run build`: npm is a .cmd shim on Windows and
+  // can only be spawned through a shell (which Node now warns about).
+  // Paths are resolved relative to the repo root.
   build: {
-    binary: 'node_modules/vite/bin/vite.js',
-    args: ['build'],
+    steps: [
+      ['node_modules/vite/bin/vite.js', 'build'],
+      ['node_modules/vite/bin/vite.js', 'build', '--ssr', 'src/entry-server.jsx', '--outDir', 'dist-ssr'],
+      ['scripts/prerender.js'],
+      ['scripts/verify-prerender.js'],
+    ],
+    // For all four steps together.
     timeoutMs: 5 * 60 * 1000,
   },
 };

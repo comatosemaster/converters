@@ -77,12 +77,16 @@ export async function run({ frontmatter, slug, corpus }) {
 
   // --- Soft SEO checks (warnings only) ----------------------------------
 
+  // The two length limits below are ERRORS, not warnings: the site build
+  // (scripts/verify-prerender.js) rejects an over-long <title> or meta
+  // description outright, so letting one through here would only fail
+  // later, at the stage step or - worse - in Cloudflare's build.
   const seoTitle = frontmatter.seoTitle || frontmatter.title || '';
   if (seoTitle.length > thresholds.seo.titleMax) {
     findings.push(
-      warn(
+      error(
         'frontmatter.seoTitle.long',
-        `SEO title is ${seoTitle.length} characters; search results truncate around ${thresholds.seo.titleMax}.`,
+        `SEO title is ${seoTitle.length} characters; the site appends " | NeatSize", so it must be at most ${thresholds.seo.titleMax}.`,
         { location: { field: 'seoTitle' }, fixHint: `Shorten to under ${thresholds.seo.titleMax} characters.` },
       ),
     );
@@ -91,7 +95,7 @@ export async function run({ frontmatter, slug, corpus }) {
   const metaDescription = frontmatter.metaDescription || frontmatter.description || '';
   if (metaDescription.length > thresholds.seo.metaDescriptionMax) {
     findings.push(
-      warn(
+      error(
         'frontmatter.metaDescription.long',
         `Meta description is ${metaDescription.length} characters; target ${thresholds.seo.metaDescriptionMin}-${thresholds.seo.metaDescriptionMax}.`,
         { location: { field: 'metaDescription' }, fixHint: 'Trim it without losing the primary keyword.' },

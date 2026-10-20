@@ -191,13 +191,30 @@ export async function publicAssetExists(assetPath) {
 // parser, an import that doesn't resolve. An article isn't done until the
 // actual site compiles with it in place.
 
-export function runSiteBuild() {
-  const { binary, args, timeoutMs } = config.build;
+// Runs every step in config.build.steps in order and stops at the first
+// failure. The result has the same shape as a single step's, with stdout
+// and stderr accumulated across steps so a failure's excerpt includes it.
+export async function runSiteBuild() {
+  const { steps, timeoutMs } = config.build;
+  const deadline = Date.now() + timeoutMs;
+  let stdout = '';
+  let stderr = '';
 
+  for (const [script, ...args] of steps) {
+    // eslint-disable-next-line no-await-in-loop -- each step consumes the previous step's output
+    const result = await runBuildStep(script, args, Math.max(deadline - Date.now(), 1));
+    stdout += result.stdout;
+    stderr += result.stderr;
+    if (!result.ok) return { ...result, stdout, stderr };
+  }
+  return { ok: true, code: 0, stdout, stderr, timedOut: false };
+}
+
+function runBuildStep(script, args, timeoutMs) {
   return new Promise((resolve) => {
-    // No shell anywhere in this pipeline: Vite's entry point is a plain
-    // .js file, so the current Node executable can run it directly.
-    const child = spawn(process.execPath, [path.join(REPO_ROOT, binary), ...args], {
+    // No shell anywhere in this pipeline: every step is a plain .js file,
+    // so the current Node executable can run it directly.
+    const child = spawn(process.execPath, [path.join(REPO_ROOT, script), ...args], {
       cwd: REPO_ROOT,
       shell: false,
       stdio: ['ignore', 'pipe', 'pipe'],

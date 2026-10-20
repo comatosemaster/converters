@@ -23,10 +23,14 @@ export const thresholds = {
   },
 
   seo: {
-    titleMax: 60,
+    // For `seoTitle` on its own. The site appends " | NeatSize" (11
+    // characters) to make the page's <title>, and the build rejects any
+    // <title> over 60 - so 49 here is what keeps the full title within 60.
+    titleMax: 49,
     titleMin: 20,
     metaDescriptionMin: 120,
-    metaDescriptionMax: 160,
+    // Matches the site build's limit (scripts/verify-prerender.js).
+    metaDescriptionMax: 155,
     // Below this, the article is an SEO dead end - it gives readers
     // nowhere to go and passes no internal link equity.
     minInternalLinks: 1,
