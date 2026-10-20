@@ -222,7 +222,7 @@ export default function Base64Tool() {
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/text-data">Text &amp; Data tools</Link> on
-          Rootconverter.
+          NeatSize.
         </p>
       </article>
     </div>

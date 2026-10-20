@@ -58,11 +58,11 @@ export default function Layout() {
           <Link to="/" className="site-name">
             {/* Decorative: the wordmark beside it already names the site,
                 so alt="" keeps screen readers from announcing it twice. */}
-            <img src="/logo.png" alt="" className="site-logo" width="34" height="34" />
+            <img src="/logo.svg" alt="" className="site-logo" width="34" height="34" />
             {/* Two-tone wordmark. No whitespace between the spans - JSX
                 would render it as a visible space inside the word. */}
             <span>
-              Root<span className="site-name-accent">converter</span>
+              Neat<span className="site-name-accent">Size</span>
             </span>
           </Link>
 
@@ -153,9 +153,9 @@ export default function Layout() {
         <div className="site-footer-inner">
           <div className="footer-brand">
             <Link to="/" className="site-name">
-              <img src="/logo.png" alt="" className="site-logo" width="34" height="34" />
+              <img src="/logo.svg" alt="" className="site-logo" width="34" height="34" />
               <span>
-                Root<span className="site-name-accent">converter</span>
+                Neat<span className="site-name-accent">Size</span>
               </span>
             </Link>
             <p>
@@ -194,7 +194,7 @@ export default function Layout() {
         </div>
 
         <div className="site-footer-bottom">
-          <span>&copy; {new Date().getFullYear()} Rootconverter</span>
+          <span>&copy; {new Date().getFullYear()} NeatSize</span>
           <span>100% client-side · No tracking · No sign-up</span>
         </div>
       </footer>

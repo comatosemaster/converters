@@ -241,7 +241,7 @@ export default function CoinFlip() {
         <p>
           Try the <Link to="/tool/dice-roller">Dice Roller</Link> or the{' '}
           <Link to="/tool/random-number-generator">Random Number Generator</Link>, or browse the
-          rest of the <Link to="/category/fun">Fun</Link> tools on Rootconverter.
+          rest of the <Link to="/category/fun">Fun</Link> tools on NeatSize.
         </p>
       </article>
     </div>

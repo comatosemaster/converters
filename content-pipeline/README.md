@@ -1,7 +1,7 @@
 # Content pipeline
 
 Writes, validates, stages, build-verifies, and PR-publishes blog articles for
-Rootconverter.
+NeatSize.
 
 **Phase 2 — AI writing, with deterministic quality control.** Three agents
 (outliner, writer, reviser) produce articles; five deterministic gates decide

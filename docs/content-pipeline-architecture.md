@@ -1,7 +1,7 @@
 # Autonomous Content Production System — Architecture
 
 **Status:** design proposal, nothing implemented
-**Target repo:** Rootconverter (Vite + React SPA, ~30 client-side tools, markdown blog)
+**Target repo:** NeatSize (Vite + React SPA, ~30 client-side tools, markdown blog)
 **Author:** architecture pass, 2026-08-07
 
 ---
@@ -380,7 +380,7 @@ Revised roster. Note how many steps are **not** agents.
 | 4 | **Writer** | yes (frontier) | article | Outline → prose. The only step that writes body content. |
 | 5 | **Editor** | yes | article | Line editing, voice/house-style conformance, cutting filler. Absorbs the deleted Grammar agent. |
 | 6 | **SEO Reviewer** | yes (cheap) | article | Verdict only. Title/meta/heading/keyword/internal-link assessment. Never edits. |
-| 7 | **Verifier (internal)** | **no** | article | Deterministic: every claim about a Rootconverter tool checked against `registry.js`. |
+| 7 | **Verifier (internal)** | **no** | article | Deterministic: every claim about a NeatSize tool checked against `registry.js`. |
 | 8 | **Verifier (external)** | yes | article | Claim extraction + retrieval grounding. Optional tier. |
 | 9 | **Reviser** | yes | article | Consumes findings, makes *minimal targeted* edits. Never rewrites wholesale. |
 | 10 | **Linker** | partly | **corpus** | Recompute internal link graph; may amend published articles. |

@@ -347,7 +347,7 @@ export default function RandomNumberGenerator() {
         <p>
           Try the <Link to="/tool/dice-roller">Dice Roller</Link> or{' '}
           <Link to="/tool/coin-flip">Coin Flip</Link>, or browse the rest of the{' '}
-          <Link to="/category/fun">Fun</Link> tools on Rootconverter.
+          <Link to="/category/fun">Fun</Link> tools on NeatSize.
         </p>
       </article>
     </div>

@@ -397,7 +397,7 @@ export default function WorldClockConverter() {
 
         <h2>Related tools</h2>
         <p>
-          Browse the rest of the <Link to="/category/everyday">Everyday tools</Link> on Rootconverter.
+          Browse the rest of the <Link to="/category/everyday">Everyday tools</Link> on NeatSize.
         </p>
       </article>
     </div>

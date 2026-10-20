@@ -2,19 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Two raster sizes rather than one scaled file: a 512px source
-         resampled down to a 16px tab icon by the browser loses the mark's
-         inner detail, so each size is generated from the source separately. -->
-    <!-- Two raster sizes rather than one scaled file: a 512px source
-         resampled down to a 16px tab icon by the browser loses the mark's
-         inner detail, so each size is generated from the source separately.
+    <!-- Separate raster sizes rather than one scaled file: the 16px icon is
+         a simplified "N only" version, because the corner mark of the full
+         logo turns into a blurry smudge at that size. No SVG favicon is
+         linked on purpose - browsers prefer it over every PNG, which would
+         skip that hand-tuned 16px version.
+         favicon.ico (16/32/48 inside) is for anything that asks for
+         /favicon.ico directly; Google's search results want a 48px multiple.
          The ?v= is a cache-buster - browsers hold on to a favicon far more
          stubbornly than any other asset, and without it the previous mark
          survives a hard refresh. Bump it whenever the icon changes. -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=2" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=2" />
+    <link rel="icon" href="/favicon.ico?v=3" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=3" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png?v=3" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rootconverter - Free Online Tools &amp; Converters</title>
+    <title>NeatSize - Free Online Tools &amp; Converters</title>
 
     <!--
       SITE-WIDE DEFAULTS.
@@ -26,7 +30,7 @@
       Social scrapers mostly do NOT run JavaScript. Slack, Discord,
       WhatsApp, iMessage and LinkedIn read this static HTML and nothing
       else - so without these tags every shared link on the site rendered
-      as a bare "Rootconverter" with no description and no image.
+      as a bare "NeatSize" with no description and no image.
 
       These are deliberately generic: they describe the site, and are
       overridden per page for any crawler that does execute JS. Anything
@@ -49,25 +53,25 @@
       canonical, which is the correct default.
     -->
 
-    <meta property="og:site_name" content="Rootconverter" />
+    <meta property="og:site_name" content="NeatSize" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://rootconverter.com/" />
-    <meta property="og:title" content="Rootconverter - Free Online Tools &amp; Converters" />
+    <meta property="og:url" content="https://neatsize.com/" />
+    <meta property="og:title" content="NeatSize - Free Online Tools &amp; Converters" />
     <meta
       property="og:description"
       content="Free online tools and converters that run entirely in your browser. No uploads, no sign-up, no limits."
     />
-    <meta property="og:image" content="https://rootconverter.com/og-default.png" />
+    <meta property="og:image" content="https://neatsize.com/og-default.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Rootconverter - Free Online Tools &amp; Converters" />
+    <meta name="twitter:title" content="NeatSize - Free Online Tools &amp; Converters" />
     <meta
       name="twitter:description"
       content="Free online tools and converters that run entirely in your browser. No uploads, no sign-up, no limits."
     />
-    <meta name="twitter:image" content="https://rootconverter.com/og-default.png" />
+    <meta name="twitter:image" content="https://neatsize.com/og-default.png" />
 
     <meta name="theme-color" content="#5b3df5" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />

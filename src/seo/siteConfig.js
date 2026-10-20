@@ -23,15 +23,10 @@
 // there" - and when "there" returns nothing, the page can be dropped from
 // the index entirely. That is strictly worse than having no canonical.
 //
-// The default is the real domain. Until it is attached, builds can point
-// at the workers.dev origin instead without any code change:
+// The default is the real domain (attached to the Cloudflare Worker).
+// A build can still point at another origin without any code change:
 //
 //   SITE_URL=https://converters.mujirishvilidato6.workers.dev npm run build
-//
-// ⚠ While rootconverter.com does not resolve, canonicals point at a host
-// that returns nothing. That is tolerable for a short window on a site
-// with little index history, and must be fixed by attaching the domain -
-// not by leaving canonicals pointing somewhere dead.
 //
 // Read from both `import.meta.env` (Vite, for the app) and `process.env`
 // (Node, for scripts/generate-sitemap.js), because this module is used by
@@ -40,12 +35,12 @@ const fromVite =
   typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_SITE_URL : undefined;
 const fromNode = typeof process !== 'undefined' && process.env ? process.env.SITE_URL : undefined;
 
-export const SITE_URL = (fromVite || fromNode || 'https://rootconverter.com').replace(
+export const SITE_URL = (fromVite || fromNode || 'https://neatsize.com').replace(
   /\/+$/,
   '',
 );
 
-export const SITE_NAME = 'Rootconverter';
+export const SITE_NAME = 'NeatSize';
 
 export const SITE_TAGLINE = 'Free Online Tools & Converters';
 

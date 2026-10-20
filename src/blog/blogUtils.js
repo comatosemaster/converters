@@ -177,7 +177,7 @@ function buildArticle(path, raw) {
     description: data.description || '',
     excerpt: data.excerpt || data.description || '',
     tags: Array.isArray(data.tags) ? data.tags : [],
-    author: data.author || 'Rootconverter Team',
+    author: data.author || 'NeatSize Team',
     publishDate: data.publishDate ? new Date(data.publishDate) : new Date(),
     updatedDate: data.updatedDate ? new Date(data.updatedDate) : null,
     featured: Boolean(data.featured),

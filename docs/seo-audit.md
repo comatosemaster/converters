@@ -1,4 +1,4 @@
-# Technical SEO Audit — Rootconverter
+# Technical SEO Audit — NeatSize
 
 **Date:** 2026-08-08 · **Status:** Phase 1 (audit only, nothing changed)
 **Method:** static inspection of the codebase + a live crawl of 15 representative
@@ -50,7 +50,7 @@ additive rather than structural.
 **Verified:** homepage, all category pages, and all tool pages render **zero**
 `<link rel="canonical">`. Only the three blog routes have one.
 
-**Why it matters:** the site is reachable at both `rootconverter.com` and its
+**Why it matters:** the site is reachable at both `neatsize.com` and its
 `*.workers.dev` origin. Without a canonical, both can be indexed as separate
 sites, splitting ranking signals across duplicates of all 28 tool pages. This is
 the single highest-value fix.
@@ -62,9 +62,9 @@ the single highest-value fix.
 
 | URL | HTTP | `<title>` | robots |
 | --- | --- | --- | --- |
-| `/tool/does-not-exist` | **200** | `Rootconverter` | none |
-| `/totally-bogus-url` | **200** | `Rootconverter` | none |
-| `/blog/does-not-exist` | **200** | `Not found \| Rootconverter` | none |
+| `/tool/does-not-exist` | **200** | `NeatSize` | none |
+| `/totally-bogus-url` | **200** | `NeatSize` | none |
+| `/blog/does-not-exist` | **200** | `Not found \| NeatSize` | none |
 
 `NotFound.jsx` never calls `useDocumentMeta`, so a 404 inherits the default
 title and emits **no `noindex`**.
@@ -109,14 +109,14 @@ generate a sitemap from truth.
 ---
 
 #### H2. `index.html` ships almost no metadata
-**Verified:** the static HTML contains only `<title>Rootconverter</title>`. No
+**Verified:** the static HTML contains only `<title>NeatSize</title>`. No
 meta description, no canonical, no Open Graph, no Twitter Card.
 
 **Why it matters:** every title and description is applied by JavaScript *after*
 React mounts. Googlebot renders JS and will generally see the final values, but
 **social scrapers and link previewers largely do not execute JavaScript** —
 Slack, Discord, WhatsApp, iMessage, and LinkedIn will all show a bare
-"Rootconverter" for every link on the site. This is an SPA-inherent limitation
+"NeatSize" for every link on the site. This is an SPA-inherent limitation
 (see §4) with a good partial mitigation.
 
 ---
@@ -182,9 +182,9 @@ tools" goal.
 
 #### M1. Inconsistent, sometimes awkward title templates
 **Verified samples:**
-- `JSON Formatter, Validator & Fixer - Free & Client-Side | Rootconverter` (70 chars — will truncate)
-- `Image Flipper - Flip Images Horizontally or Vertically | Rootconverter` (69 chars)
-- `Developer Tools | Rootconverter` (31 chars)
+- `JSON Formatter, Validator & Fixer - Free & Client-Side | NeatSize` (65 chars — will truncate)
+- `Image Flipper - Flip Images Horizontally or Vertically | NeatSize` (64 chars)
+- `Developer Tools | NeatSize` (26 chars)
 
 **Why it matters:** Google truncates around 55–60 characters. "Free &
 Client-Side" burns budget on nearly every tool page without adding search value.
@@ -282,7 +282,7 @@ Metadata is applied by JavaScript after mount. Consequences:
 
 **Mitigation without SSR:** put strong site-wide defaults (description, OG,
 Twitter, `og:image`) directly in `index.html`. Every share then renders a
-correct Rootconverter card, even if not page-specific.
+correct NeatSize card, even if not page-specific.
 
 **Full fix** would require prerendering or SSR. The brief says not to introduce
 SSR without compelling reason, and I agree here — a build-time prerender step
@@ -294,7 +294,7 @@ could be added later if social CTR proves to matter. I am not proposing it now.
 
 - Lighthouse / PageSpeed / Core Web Vitals scores (not run — will not invent).
 - Google Search Console state (no access).
-- Live production behaviour of `rootconverter.com` — including whether the
+- Live production behaviour of `neatsize.com` — including whether the
   domain is actually attached, and real HTTP status codes for unknown paths.
   Local dev and Cloudflare may differ.
 - Whether the `*.workers.dev` origin is publicly reachable (this determines how

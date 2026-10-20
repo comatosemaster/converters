@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { pointerToCanvasPixel } from '../image-color-picker/imageColorPickerUtils.js';
@@ -80,12 +79,6 @@ export default function WatermarkRemover() {
 
   const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
   const [pendingFile, setPendingFile] = useState(null);
-
-  useDocumentMeta({
-    title: 'Watermark Remover - Remove Watermarks From Images | Rootconverter',
-    description:
-      'Paint over a watermark, logo, or unwanted area and remove it from your image entirely in your browser. Nothing is ever uploaded - free, private, and works on PNG, JPG, and WebP images.',
-  });
 
   // Decodes the chosen file once, draws it onto the working canvases at a
   // memory-safe capped resolution, and captures a compressed snapshot
@@ -663,7 +656,7 @@ export default function WatermarkRemover() {
           Also try the <Link to="/tool/image-flipper">Image Flipper</Link>, the{' '}
           <Link to="/tool/image-resizer">Image Resizer &amp; Cropper</Link>, or browse the rest of
           the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
-          Rootconverter.
+          NeatSize.
         </p>
       </article>
     </div>

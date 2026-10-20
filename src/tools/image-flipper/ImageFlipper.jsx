@@ -475,7 +475,7 @@ export default function ImageFlipper() {
         <p>
           Also try the <Link to="/tool/image-resizer">Image Resizer &amp; Cropper</Link>, the{' '}
           <Link to="/tool/image-converter">Image Converter</Link>, or browse the rest of the{' '}
-          <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on Rootconverter.
+          <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on NeatSize.
         </p>
       </article>
     </div>

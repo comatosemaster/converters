@@ -464,7 +464,7 @@ export default function CurrencyConverter() {
 
         <h2>Related tools</h2>
         <p>
-          Browse the rest of the <Link to="/category/business-finance">Business &amp; Finance</Link> tools on Rootconverter.
+          Browse the rest of the <Link to="/category/business-finance">Business &amp; Finance</Link> tools on NeatSize.
         </p>
       </article>
     </div>

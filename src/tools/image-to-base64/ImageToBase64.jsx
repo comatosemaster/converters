@@ -422,7 +422,7 @@ export default function ImageToBase64() {
         <h2>Related tools</h2>
         <p>
           Browse the rest of the{' '}
-          <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on Rootconverter.
+          <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on NeatSize.
         </p>
       </article>
     </div>

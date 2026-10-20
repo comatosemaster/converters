@@ -194,7 +194,7 @@ export default function AgeCalculator() {
         <h2>Related tools</h2>
         <p>
           Try the <Link to="/tool/world-clock-time-zone-converter">World Clock &amp; Time Zone Converter</Link>,
-          or browse the rest of the <Link to="/category/everyday">Everyday tools</Link> on Rootconverter.
+          or browse the rest of the <Link to="/category/everyday">Everyday tools</Link> on NeatSize.
         </p>
       </article>
     </div>

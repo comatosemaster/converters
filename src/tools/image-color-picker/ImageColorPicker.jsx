@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import { formatHsl, formatRgb, parseColor, rgbToHex } from '../color-converter/colorConversions.js';
 import { computeCanvasSize, pointerToCanvasPixel, validateImageFile } from './imageColorPickerUtils.js';
@@ -47,12 +46,6 @@ export default function ImageColorPicker() {
   // understands HEX/RGB/HSL - no new parsing code needed for this.
   const [hexInput, setHexInput] = useState('');
   const [hexError, setHexError] = useState('');
-
-  useDocumentMeta({
-    title: 'Image Color Picker - Get HEX, RGB & HSL from an Image | Rootconverter',
-    description:
-      'Upload an image and pick any color from it to get its HEX, RGB, and HSL values instantly. Runs entirely in your browser using the Canvas API - no upload required.',
-  });
 
   // Turn the chosen File into an object URL we can point <img> at.
   useEffect(() => {
@@ -451,7 +444,7 @@ export default function ImageColorPicker() {
         <h2>Related tools</h2>
         <p>
           Also try the <Link to="/tool/color-converter">Color Converter</Link>, or browse the rest
-          of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on Rootconverter.
+          of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on NeatSize.
         </p>
       </article>
     </div>

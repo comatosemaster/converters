@@ -462,7 +462,7 @@ export default function ImageConverter() {
         <h2>Related tools</h2>
         <p>
           Browse the rest of the <Link to="/category/graphics-media">Graphics &amp; Media tools</Link> on
-          Rootconverter.
+          NeatSize.
         </p>
       </article>
     </div>

@@ -37,7 +37,7 @@ import { color, printJobSummary, printOutcome, printVerdicts } from './util/repo
 import { PipelineError } from './core/errors.js';
 
 const HELP = `
-${color.bold('Rootconverter content pipeline')}
+${color.bold('NeatSize content pipeline')}
 
 ${color.bold('Write an article with AI')}
   topic "<topic>"              Create a job from a topic, then:

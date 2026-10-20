@@ -5,7 +5,7 @@ category: developer
 description: A practical beginner guide to the JSON format, syntax, examples, common validation errors, and when it is or is not the right data format.
 excerpt: Need to inspect or fix structured data fast? Learn the shape of valid JSON, the mistakes that break it, and the quickest way to validate it.
 tags: [JSON, developer, data formats, validation]
-author: Rootconverter
+author: NeatSize
 publishDate: 2026-08-08
 difficulty: beginner
 seoTitle: What Is JSON? Beginner Guide

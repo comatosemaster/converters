@@ -5,7 +5,7 @@ category: developer
 description: A practical explanation of JWT structure, signatures, bearer tokens, common validation mistakes, and when JSON Web Tokens are the wrong choice.
 excerpt: JWTs are readable, signed containers for claims. Learn what the signature proves, what it does not hide, and how to avoid trusting the wrong part.
 tags: [JWT, authentication, API security, JSON, bearer token]
-author: Rootconverter
+author: NeatSize
 publishDate: 2026-08-08
 difficulty: intermediate
 seoTitle: "JWT Explained: Tokens, Signatures, and Sessions"
@@ -176,7 +176,7 @@ A quick inspection workflow:
 
 For plain Base64 experiments unrelated to JWT validation, the [Base64 Encoder / Decoder](/tool/base64-encoder-decoder) can help show the difference between encoding and encryption. JWTs use Base64URL for the header and payload, but the lesson is the same: encoded text is not hidden text.
 
-Rootconverter tools run in your browser, so inspection does not require uploading a token to a server. That matters if you are debugging production-like data. Still, decoding is for inspection; it does not prove a token is valid. Your application or API must verify the signature and claims using trusted configuration.
+NeatSize tools run in your browser, so inspection does not require uploading a token to a server. That matters if you are debugging production-like data. Still, decoding is for inspection; it does not prove a token is valid. Your application or API must verify the signature and claims using trusted configuration.
 
 ## JWT vs session cookie: choose the right state model
 

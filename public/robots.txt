@@ -1,4 +1,4 @@
-# Rootconverter — https://rootconverter.com
+# NeatSize — https://neatsize.com
 #
 # Everything here is public and worth crawling. Nothing is disallowed:
 # JS, CSS and images must stay crawlable so search engines can render the
@@ -13,4 +13,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rootconverter.com/sitemap.xml
+Sitemap: https://neatsize.com/sitemap.xml

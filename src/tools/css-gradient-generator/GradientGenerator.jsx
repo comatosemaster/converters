@@ -432,7 +432,7 @@ export default function GradientGenerator() {
         <h2>Related tools</h2>
         <p>
           Try the <Link to="/tool/color-converter">Color Converter</Link>, or browse the rest of the{' '}
-          <Link to="/category/developer">Developer tools</Link> on Rootconverter.
+          <Link to="/category/developer">Developer tools</Link> on NeatSize.
         </p>
       </article>
     </div>

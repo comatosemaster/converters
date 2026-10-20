@@ -30,7 +30,7 @@ function completeFrontmatter(frontmatter, { slug, outline }) {
     ...frontmatter,
     slug: frontmatter.slug ?? slug,
     category: frontmatter.category ?? outline.category,
-    author: frontmatter.author ?? 'Rootconverter',
+    author: frontmatter.author ?? 'NeatSize',
     publishDate: frontmatter.publishDate ?? new Date().toISOString().slice(0, 10),
     relatedTools: frontmatter.relatedTools ?? outline.relatedTools,
   };

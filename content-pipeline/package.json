@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Autonomous content production pipeline for Rootconverter. Phase 2: AI outlining/writing/revision with deterministic quality gates, build verification, and PR-gated publishing.",
+  "description": "Autonomous content production pipeline for NeatSize. Phase 2: AI outlining/writing/revision with deterministic quality gates, build verification, and PR-gated publishing.",
   "bin": {
     "pipeline": "./src/cli.js"
   },

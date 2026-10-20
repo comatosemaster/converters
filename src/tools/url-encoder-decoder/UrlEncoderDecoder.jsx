@@ -326,7 +326,7 @@ export default function UrlEncoderDecoder() {
         <h2>Related tools</h2>
         <p>
           Try the <Link to="/tool/base64-encoder-decoder">Base64 Encoder / Decoder</Link>, or browse
-          the rest of the <Link to="/category/developer">Developer tools</Link> on Rootconverter.
+          the rest of the <Link to="/category/developer">Developer tools</Link> on NeatSize.
         </p>
       </article>
     </div>

@@ -688,7 +688,7 @@ export default function TipCalculator() {
         <h2>Related tools</h2>
         <p>
           Browse the <Link to="/category/business-finance">Business &amp; Finance</Link> category
-          on Rootconverter.
+          on NeatSize.
         </p>
       </article>
     </div>

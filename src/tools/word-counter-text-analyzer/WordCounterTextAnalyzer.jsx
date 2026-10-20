@@ -592,7 +592,7 @@ export default function WordCounterTextAnalyzer() {
 
         <h2>Related tools</h2>
         <p>
-          Browse the rest of the <Link to="/category/developer">Developer tools</Link> on Rootconverter.
+          Browse the rest of the <Link to="/category/developer">Developer tools</Link> on NeatSize.
         </p>
       </article>
     </div>

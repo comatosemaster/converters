@@ -5,7 +5,7 @@ category: developer
 description: Learn why standard JSON rejects comments, what breaks when you add them, and safer ways to document config files, API payloads, and hand-edited data files.
 excerpt: Comments in data files are not a harmless editor preference. Here is how to preserve intent without creating files that fail in parsers, CI, or APIs.
 tags: [JSON, JSON comments, JSONC, developer tools]
-author: Rootconverter
+author: NeatSize
 publishDate: 2026-08-08
 difficulty: beginner
 seoTitle: Why JSON Has No Comments

@@ -5,7 +5,7 @@ category: graphics-media
 description: A practical guide to choosing between HEX, RGB/RGBA, and HSL/HSLA for CSS, design handoff, transparency, color tweaking, and theme work.
 excerpt: HEX is compact, RGB gives channel control, and HSL is easier to adjust by eye. Here’s how to pick the right color format for the job.
 tags: [color, css, design, frontend]
-author: Rootconverter
+author: NeatSize
 publishDate: 2026-08-08
 difficulty: beginner
 seoTitle: "HEX vs RGB vs HSL: Which Should You Use?"

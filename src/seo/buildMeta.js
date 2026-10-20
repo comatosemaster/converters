@@ -33,8 +33,8 @@ const SUFFIX = ` | ${SITE_NAME}`;
 // wins, and the shortest is used as a fallback if none fit.
 //
 // This is why tool titles read "JSON Formatter, Validator & Fixer |
-// Rootconverter" rather than the truncated "JSON Formatter, Validator &
-// Fixer - Free Online Tool | Rootcon…" - the qualifier is dropped only
+// NeatSize" rather than the truncated "JSON Formatter, Validator &
+// Fixer - Free Online Tool | Neat…" - the qualifier is dropped only
 // when it doesn't fit, instead of always or never.
 function fitTitle(candidates) {
   const withinLimit = candidates.find((candidate) => candidate.length <= TITLE_MAX);

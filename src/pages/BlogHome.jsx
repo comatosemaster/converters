@@ -45,7 +45,7 @@ export default function BlogHome() {
 
         <p className="hero-sub">
           Practical, plain-English articles on encoding, file formats, and the tools that work
-          with them - with links to the right Rootconverter tool whenever you're ready to actually
+          with them - with links to the right NeatSize tool whenever you're ready to actually
           do the thing.
         </p>
 

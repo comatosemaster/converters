@@ -1,4 +1,4 @@
-# Rootconverter
+# NeatSize
 
 A collection of small, free, browser-only utilities (image conversion, text formatting, QR
 codes, etc.), organized into categories. Everything runs 100% client-side - there is no backend,

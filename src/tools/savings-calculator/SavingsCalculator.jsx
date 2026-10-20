@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
-import { useDocumentMeta } from '../../hooks/useDocumentMeta.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import { buildChartGeometry } from '../currency-converter/currencyUtils.js';
 import { CONTRIBUTION_FREQUENCIES, calculateSavings, formatCurrency, validateSavingsInputs } from './savingsUtils.js';
@@ -32,12 +31,6 @@ export default function SavingsCalculator() {
   const [yearsText, setYearsText] = useState('');
   const [copied, setCopied] = useState(false);
   const resultRef = useRef(null);
-
-  useDocumentMeta({
-    title: 'Savings Calculator - Compound Interest & Growth | Rootconverter',
-    description:
-      'Calculate how your savings grow over time with compound interest and regular contributions. See your final balance, total contributions, total interest, and a growth chart - free and entirely in your browser.',
-  });
 
   // Re-validates and re-calculates on every change, like every other
   // converter on this site - the "Calculate" button below exists for
@@ -287,7 +280,7 @@ export default function SavingsCalculator() {
         <p>
           Try the <Link to="/tool/currency-converter">Currency Converter</Link>, or browse the
           rest of the <Link to="/category/business-finance">Business &amp; Finance tools</Link> on
-          Rootconverter.
+          NeatSize.
         </p>
       </article>
     </div>

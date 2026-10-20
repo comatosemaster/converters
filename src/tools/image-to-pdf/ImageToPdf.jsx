@@ -583,7 +583,7 @@ export default function ImageToPdf() {
         <p>
           Also try the <Link to="/tool/image-resizer">Image Resizer &amp; Cropper</Link>, the{' '}
           <Link to="/tool/image-compressor">Image Compressor</Link>, or browse the rest of the{' '}
-          <Link to="/category/text-data">Text &amp; Data tools</Link> on Rootconverter.
+          <Link to="/category/text-data">Text &amp; Data tools</Link> on NeatSize.
         </p>
       </article>
     </div>

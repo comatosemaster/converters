@@ -412,7 +412,7 @@ export default function UnitConverter() {
 
         <h2>Related tools</h2>
         <p>
-          Browse the <Link to="/category/everyday">Everyday tools</Link> category on Rootconverter.
+          Browse the <Link to="/category/everyday">Everyday tools</Link> category on NeatSize.
         </p>
       </article>
     </div>

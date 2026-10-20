@@ -5,7 +5,7 @@ category: developer
 description: "A plain-English explanation of Base64 encoding - what it is, why it exists, and when you actually need it."
 excerpt: "Base64 turns binary data into plain text so it can travel safely through systems built for text - here's what that actually means."
 tags: [base64, encoding, web development]
-author: "Rootconverter Team"
+author: "NeatSize Team"
 publishDate: 2026-01-15
 updatedDate: 2026-01-20
 featured: true

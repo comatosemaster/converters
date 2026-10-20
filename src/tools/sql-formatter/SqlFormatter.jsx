@@ -408,7 +408,7 @@ export default function SqlFormatter() {
         <p>
           Try the <Link to="/tool/json-formatter-validator">JSON Formatter, Validator &amp; Fixer</Link> or the{' '}
           <Link to="/tool/regex-tester">Regex Tester</Link>, or browse the rest of the{' '}
-          <Link to="/category/developer">Developer tools</Link> on Rootconverter.
+          <Link to="/category/developer">Developer tools</Link> on NeatSize.
         </p>
       </article>
     </div>

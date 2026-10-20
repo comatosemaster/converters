@@ -303,7 +303,7 @@ export default function BmiCalculator() {
         <h2>Related tools</h2>
         <p>
           Try the <Link to="/tool/unit-converter">Unit Converter</Link>, or browse the rest of the{' '}
-          <Link to="/category/everyday">Everyday tools</Link> on Rootconverter.
+          <Link to="/category/everyday">Everyday tools</Link> on NeatSize.
         </p>
       </article>
     </div>

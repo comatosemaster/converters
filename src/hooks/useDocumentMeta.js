@@ -14,7 +14,7 @@ import { absoluteUrl } from '../seo/siteConfig.js';
 // every other page needing to know those fields exist.
 //
 // Usage:
-//   useDocumentMeta({ title: 'My Tool | Rootconverter', description: '...' });
+//   useDocumentMeta({ title: 'My Tool | NeatSize', description: '...' });
 //   useDocumentMeta({
 //     title, description, canonical: `/blog/${slug}`, image: coverImage,
 //     type: 'article', jsonLd: [articleSchema, breadcrumbSchema],
@@ -25,7 +25,7 @@ export function useDocumentMeta({
   canonical,
   image,
   type = 'website',
-  siteName = 'Rootconverter',
+  siteName = 'NeatSize',
   // e.g. 'noindex, follow' for the not-found view. A static host serving
   // an SPA shell returns 200 for every unmatched path, so this tag is the
   // only way to keep invented URLs out of the index.
