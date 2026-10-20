@@ -93,7 +93,7 @@ export const CATEGORIES = [
     intro:
       'Calculators for the money questions that come up at a restaurant table, before a trip abroad, or while planning ahead. Work out a tip and split the bill evenly or by what each person ordered, convert between world currencies with live exchange rates and a year of rate history, or see how regular deposits and compound interest grow your savings over time. The numbers you type stay in your browser: only the currency converter goes online, and only to fetch published exchange rates, never to send your amounts anywhere.',
     blogIntro:
-      'Plain-English guides to everyday money maths: how tips, exchange rates and compound interest actually work, what the numbers on a statement mean, and the common mistakes worth avoiding. Each article links to the NeatSize calculator that does the sum for you.',
+      'Plain-English guides to everyday money maths: how tips, exchange rates and compound interest actually work, what the numbers on a statement or a savings projection really mean, and the common mistakes worth avoiding when you plan, split or convert money. Each article works through real examples step by step and links to the NeatSize calculator that does the sum for you, so you can check the figures against your own situation.',
   },
   {
     id: 'developer',
