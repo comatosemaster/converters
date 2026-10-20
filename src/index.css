@@ -1502,8 +1502,12 @@ button {
 }
 
 /* The longer descriptive paragraph on category pages - body-sized, so a
-   hundred words don't read as a wall of large text under the tagline. */
+   hundred words don't read as a wall of large text under the tagline.
+   Wider than the tagline's 62ch: at that width a hundred words became a
+   tall, narrow column. ~100ch keeps it to a few lines while staying a
+   readable line length. */
 .page-header p.category-intro {
+  max-width: 100ch;
   font-size: var(--fs-base);
   line-height: 1.7;
 }
