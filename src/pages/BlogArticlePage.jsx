@@ -9,9 +9,7 @@ import {
   getRelatedToolsForArticle,
 } from '../blog/blogUtils.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
-import { articleMeta } from '../seo/buildMeta.js';
-import { absoluteUrl } from '../seo/siteConfig.js';
-import { articleSchema, breadcrumbSchema } from '../seo/structuredData.js';
+import { useCurrentRoute } from '../hooks/useCurrentRoute.js';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import ToolGrid from '../components/ToolGrid.jsx';
 import ArticleGrid from '../components/blog/ArticleGrid.jsx';
@@ -33,36 +31,14 @@ export default function BlogArticlePage() {
   const article = getArticleBySlug(slug);
   const category = article ? getCategoryById(article.category) : null;
 
-  // Built once, used twice: rendered as the visible trail below, and
-  // marked up as BreadcrumbList - so the structured data always matches
-  // what a visitor actually sees.
-  const breadcrumbs = article
-    ? [
-        { label: 'Home', to: '/' },
-        { label: 'Blog', to: '/blog' },
-        ...(category ? [{ label: category.name, to: `/blog/category/${category.id}` }] : []),
-        { label: article.title },
-      ]
-    : [];
+  // Metadata, structured data (BlogPosting + BreadcrumbList) and the
+  // breadcrumb trail all come from the route registry, so the visible trail
+  // and its markup can't disagree. Hooks must run on every render, so this
+  // comes before the early "not found" return.
+  const route = useCurrentRoute();
+  useDocumentMeta(route);
 
-  // Hooks must run on every render, so this is computed before the early
-  // "not found" return. Absolute URLs come from siteConfig rather than
-  // window.location - the site is also served from a workers.dev origin,
-  // and deriving them from the current host would emit canonicals and
-  // schema pointing at the wrong domain.
-  useDocumentMeta(
-    article
-      ? {
-          ...articleMeta(article),
-          jsonLd: [
-            articleSchema(article, { url: absoluteUrl(`/blog/${article.slug}`) }),
-            breadcrumbSchema(breadcrumbs),
-          ],
-        }
-      : {},
-  );
-
-  if (!article) {
+  if (!article || !route) {
     return <NotFound />;
   }
 
@@ -74,7 +50,7 @@ export default function BlogArticlePage() {
 
   return (
     <article className="article-page">
-      <Breadcrumbs items={breadcrumbs} />
+      <Breadcrumbs items={route.breadcrumbs} />
 
       <header className="article-header">
         {category && (

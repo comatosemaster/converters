@@ -97,14 +97,22 @@ export function blogSchema() {
   };
 }
 
+// Dates are written as plain YYYY-MM-DD: that's all the frontmatter
+// records, and a full timestamp would claim a time of day nobody chose.
+function isoDay(date) {
+  return date?.toISOString?.().slice(0, 10) ?? date ?? undefined;
+}
+
+// BlogPosting (a subtype of Article) because that's what these pages are.
+// The headline is the visible <h1>, not the shorter search-result title.
 export function articleSchema(article, { url }) {
   return {
     '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: article.seoTitle || article.title,
+    '@type': 'BlogPosting',
+    headline: article.title,
     description: article.metaDescription || article.description,
-    datePublished: article.publishDate?.toISOString?.() ?? article.publishDate,
-    dateModified: (article.updatedDate ?? article.publishDate)?.toISOString?.() ?? article.publishDate,
+    datePublished: isoDay(article.publishDate),
+    dateModified: isoDay(article.updatedDate ?? article.publishDate),
     author: { '@type': 'Organization', name: article.author, url: SITE_URL },
     publisher: { '@id': ORGANIZATION_ID },
     ...(article.coverImage ? { image: absoluteUrl(article.coverImage) } : {}),

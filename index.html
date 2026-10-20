@@ -18,60 +18,21 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NeatSize - Free Online Tools &amp; Converters</title>
-
     <!--
-      SITE-WIDE DEFAULTS.
+      PER-PAGE HEAD.
 
-      Per-page titles, descriptions, canonicals and structured data are set
-      by React after mount (see src/hooks/useDocumentMeta.js), and Googlebot
-      renders JavaScript, so it sees those final values.
+      scripts/prerender.js replaces the comment below with each page's own
+      <title>, description, canonical, Open Graph / Twitter tags and JSON-LD,
+      generated from the route registry (src/seo/routes.js). Every URL ships
+      its real metadata in the static HTML, so crawlers and link previews
+      that never run JavaScript see the right page.
 
-      Social scrapers mostly do NOT run JavaScript. Slack, Discord,
-      WhatsApp, iMessage and LinkedIn read this static HTML and nothing
-      else - so without these tags every shared link on the site rendered
-      as a bare "NeatSize" with no description and no image.
-
-      These are deliberately generic: they describe the site, and are
-      overridden per page for any crawler that does execute JS. Anything
-      page-specific here would be a lie on 99% of URLs.
+      Deliberately no site-wide defaults here any more: anything left in
+      this file would appear on every page alongside the page's own tags.
+      In the dev server the comment stays empty and useDocumentMeta fills
+      the head in after mount.
     -->
-    <meta
-      name="description"
-      content="Free online tools and converters that run entirely in your browser. Convert images, format JSON, generate QR codes, decode tokens and more - no uploads, no sign-up."
-    />
-    <!--
-      Deliberately NO static <link rel="canonical"> here.
-
-      A default canonical is worse than none. Pages set their own after
-      mount, but anything that doesn't (the not-found view) would inherit
-      this one and declare itself the homepage - and if a crawler ever
-      failed to render the JS on a tool page, that page would consolidate
-      itself into the homepage and drop out of the index entirely.
-
-      With no tag, a non-rendering crawler simply treats the URL as its own
-      canonical, which is the correct default.
-    -->
-
-    <meta property="og:site_name" content="NeatSize" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://neatsize.com/" />
-    <meta property="og:title" content="NeatSize - Free Online Tools &amp; Converters" />
-    <meta
-      property="og:description"
-      content="Free online tools and converters that run entirely in your browser. No uploads, no sign-up, no limits."
-    />
-    <meta property="og:image" content="https://neatsize.com/og-default.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="NeatSize - Free Online Tools &amp; Converters" />
-    <meta
-      name="twitter:description"
-      content="Free online tools and converters that run entirely in your browser. No uploads, no sign-up, no limits."
-    />
-    <meta name="twitter:image" content="https://neatsize.com/og-default.png" />
+    <!--app-head-->
 
     <meta name="theme-color" content="#5b3df5" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
@@ -97,7 +58,8 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- The build writes each page's prerendered markup in here. -->
+    <div id="root"><!--app-html--></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

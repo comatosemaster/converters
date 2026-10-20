@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { absoluteUrl } from '../../seo/siteConfig.js';
 
 // Share links for X and LinkedIn (their public share-intent URLs need no
 // SDK or API key - just an encoded link), plus a "copy link" button that
@@ -8,12 +9,15 @@ import { useState } from 'react';
 export default function ShareButtons({ url, title }) {
   const [copied, setCopied] = useState(false);
 
-  const absoluteUrl = new URL(url, window.location.origin).href;
-  const twitterHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(absoluteUrl)}`;
-  const linkedinHref = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(absoluteUrl)}`;
+  // The production URL, never window.location: a share from a preview or
+  // localhost should still point people at the real site. (It also keeps
+  // this renderable at build time, where there is no window.)
+  const shareUrl = absoluteUrl(url);
+  const twitterHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`;
+  const linkedinHref = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
 
   function handleCopy() {
-    navigator.clipboard.writeText(absoluteUrl).then(() => {
+    navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     });

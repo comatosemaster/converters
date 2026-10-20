@@ -1,8 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { getCategoryById, getRelatedTools, getToolById } from '../tools/registry.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
-import { toolMeta } from '../seo/buildMeta.js';
-import { breadcrumbSchema, toolSchema } from '../seo/structuredData.js';
+import { useCurrentRoute } from '../hooks/useCurrentRoute.js';
 import ToolLayout from '../components/ToolLayout.jsx';
 import NotFound from './NotFound.jsx';
 
@@ -11,40 +10,22 @@ import NotFound from './NotFound.jsx';
 // and wraps the result in the shared ToolLayout, which supplies the
 // breadcrumbs, header, and related-tools section for free.
 //
-// It is also the ONLY place tool page metadata is set. Tool components
-// used to each call useDocumentMeta themselves, which meant 28 copies of
-// the same concern, no way to audit titles for length or uniqueness, and
-// nothing to generate a sitemap from. Everything now derives from the
-// registry entry (see src/seo/buildMeta.js).
+// Its metadata (title, description, canonical, structured data) and its
+// breadcrumb trail come from the route registry (src/seo/routes.js), which
+// derives them from the tool's registry entry. The same entry is what the
+// build prerenders and what the sitemap lists.
 
 export default function ToolPage() {
   const { id } = useParams();
   const tool = getToolById(id);
   const category = tool ? getCategoryById(tool.category) : null;
+  const route = useCurrentRoute();
 
-  // Breadcrumbs are built once and used twice: rendered visibly by
-  // ToolLayout, and marked up as BreadcrumbList below. Deriving both from
-  // the same array is what keeps the structured data honest - it can't
-  // describe a trail the page doesn't actually show.
-  const breadcrumbs = tool
-    ? [
-        { label: 'Home', to: '/' },
-        ...(category ? [{ label: category.name, to: `/category/${category.id}` }] : []),
-        { label: tool.name },
-      ]
-    : [];
-
-  const meta = tool ? toolMeta(tool, category) : null;
-
-  // Hooks must run on every render, so this is computed before the early
+  // Hooks must run on every render, so this is called before the early
   // return for an unknown id.
-  useDocumentMeta(
-    meta
-      ? { ...meta, jsonLd: [toolSchema(tool, category), breadcrumbSchema(breadcrumbs)] }
-      : { title: '', description: '' },
-  );
+  useDocumentMeta(route);
 
-  if (!tool) {
+  if (!tool || !route) {
     return <NotFound />;
   }
 
@@ -55,7 +36,9 @@ export default function ToolPage() {
       tool={tool}
       category={category}
       relatedTools={getRelatedTools(tool.id)}
-      breadcrumbs={breadcrumbs}
+      // The same array the route registry marks up as BreadcrumbList, so
+      // the visible trail and the structured data can never disagree.
+      breadcrumbs={route.breadcrumbs}
     >
       <ToolComponent />
     </ToolLayout>

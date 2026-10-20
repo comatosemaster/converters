@@ -16,15 +16,21 @@ Then open the URL it prints (usually `http://localhost:5173`).
 
 Other useful commands:
 
-- `npm run build` - builds the production-ready static site into `dist/`
-- `npm run preview` - serves that `dist/` build locally so you can double-check it before deploying
+- `npm run build` - builds the production-ready static site into `dist/`: every page prerendered
+  to its own HTML file, plus `404.html` and `sitemap.xml`, then checks the result (see
+  "Prerendering" below). The build fails if any page is missing what it needs.
+- `npm run verify` - re-runs just that check against an existing `dist/`
+- `npx wrangler dev` - serves `dist/` exactly the way Cloudflare will (real 404s, no trailing
+  slashes), so you can double-check a build before deploying
 
 ## Folder structure
 
 ```
 src/
-├── main.jsx                 # React entry point - you shouldn't need to touch this
-├── App.jsx                  # Sets up the routes (homepage, category pages, tool pages)
+├── main.jsx                 # Browser entry point - hydrates the prerendered page
+├── App.jsx                  # Creates the browser router
+├── router.jsx               # The route tree (shared by the browser and the build)
+├── entry-server.jsx         # Build-time renderer used by scripts/prerender.js
 ├── index.css                # The ONE stylesheet for the whole site
 ├── components/
 │   ├── Layout.jsx           # Sticky header (brand + category nav + search), footer
@@ -39,9 +45,18 @@ src/
 │   ├── useUnsavedChangesWarning.js   # Shared "are you sure you want to leave?" browser guard
 │   ├── usePasteToUpload.js  # Ctrl+V image paste for drop zones
 │   ├── useUndoRedo.js       # Undo/redo stack for one-click transform buttons
-│   └── useDocumentMeta.js   # Per-page <title> + meta description
+│   ├── useDocumentMeta.js   # Swaps the page's <head> tags on in-app navigation
+│   ├── useCurrentRoute.js   # The route registry entry for the current URL
+│   └── useHydrated.js       # For the rare UI that can only render in the browser
+├── seo/
+│   ├── routes.js            # ⭐ THE ROUTE REGISTRY - every page's title, description, canonical...
+│   ├── buildMeta.js         # How titles/descriptions are generated per page type
+│   ├── structuredData.js    # JSON-LD builders
+│   ├── headTags.js          # Metadata -> <head> tags (used by the build AND the browser)
+│   └── siteConfig.js        # The production domain and SEO limits
 ├── utils/
-│   └── formatBytes.js       # Shared byte-size formatting
+│   ├── formatBytes.js       # Shared byte-size formatting
+│   └── lazyWithPreload.js   # Code-splits each tool, but lets the build load it up front
 ├── pages/
 │   ├── Home.jsx             # Homepage - lists every tool, grouped by category
 │   ├── CategoryPage.jsx     # Renders one category's tools at /category/:categoryId
@@ -52,9 +67,9 @@ src/
     └── base64/
         └── Base64Tool.jsx   # The reference tool (copy this folder for new tools)
 
-public/
-└── _redirects               # Tells Cloudflare Pages to send all URLs to index.html
-                              # (needed so refreshing e.g. /tool/base64-encoder-decoder works)
+scripts/
+├── prerender.js             # Renders every route to dist/*.html + 404.html + sitemap.xml
+└── verify-prerender.js      # Reads the built HTML and fails the build on SEO problems
 ```
 
 ## How the tool registry works
@@ -73,7 +88,8 @@ Each entry looks like this:
   description: 'Encode plain text into Base64, or decode Base64 back into readable text.',
   category: 'text-data',              // must match one of the CATEGORIES ids below
   icon: Binary,                       // a lucide-react COMPONENT (not a string) - import it at the top
-  component: Base64Tool,              // the React component that does the actual work
+  component: lazyWithPreload(() => import('./base64/Base64Tool.jsx')),  // the tool's UI (loaded on demand)
+  metaDescription: 'Encode text to Base64 or decode it back...',  // search-result snippet, max 155 chars
   keywords: ['base64', 'encode', 'decode'],  // extra search terms (see below)
   popular: true,                      // optional - surfaces it in "Popular tools" on the homepage
 }
@@ -109,22 +125,32 @@ Say you want to add a "Word Counter" tool under Text & Data.
 
    It should, however, call `useUnsavedChangesWarning(...)` - see the section below.
 
-2. **Import it and add one entry** to `src/tools/registry.js`:
+   Because every page is prerendered at build time (in Node, where there is no `window`,
+   `document` or `localStorage`), only touch browser APIs inside event handlers or
+   `useEffect` - never while rendering or at the top of the file. And the first render must not
+   depend on the current time, `Math.random()` or the visitor's time zone, or it won't match the
+   prerendered HTML; for UI that genuinely needs those, see `useHydrated` (the World Clock tool
+   uses it).
+
+2. **Add one entry** to `src/tools/registry.js`:
    ```js
-   import WordCounter from './word-counter/WordCounter.jsx';
-   // ...
    export const tools = [
      { id: 'base64-encoder-decoder', /* ... */ },
      {
        id: 'word-counter',
        name: 'Word Counter',
        description: 'Count words, characters, and lines in any text.',
+       metaDescription: 'Count words, characters, sentences and lines in any text, live in your browser.',
        category: 'text-data',
-       icon: '📝',
-       component: WordCounter,
+       icon: Type,
+       component: lazyWithPreload(() => import('./word-counter/WordCounter.jsx')),
      },
    ];
    ```
+   That entry is all the SEO work there is: the page's title, description, canonical URL,
+   structured data, prerendered HTML and sitemap entry are all derived from it (see
+   `src/seo/routes.js`). The build fails if the description is over 155 characters or duplicates
+   another page's.
 
 3. **Save and check the dev server.** The new tool now appears automatically on the homepage
    under "Text & Data," in the site as `/tool/word-counter`, and it's reachable from the nav.
@@ -331,8 +357,19 @@ through untouched so native typing-undo still works when there's nothing of your
 
 - Build command: `npm run build`
 - Build output directory: `dist`
-- `wrangler.jsonc` at the project root already configures SPA fallback (`not_found_handling:
-  "single-page-application"`), so client-side routes (like `/tool/base64-encoder-decoder`) work
-  correctly on a hard refresh or direct link. (An older approach used a `public/_redirects`
-  file, but Cloudflare's newer asset-hosting pipeline flags that pattern as a false-positive
-  "infinite loop" - `wrangler.jsonc` is the current recommended way.)
+- `wrangler.jsonc` serves each prerendered page at its own URL (`dist/tool/x.html` at
+  `/tool/x`, no trailing slash) and answers any other URL with `dist/404.html` and a real 404
+  status (`not_found_handling: "404-page"`). The `*.workers.dev` address is switched off
+  (`workers_dev: false`); the site is only served on neatsize.com.
+
+### Prerendering
+
+Every page ships as complete static HTML - its own `<title>`, description, canonical, social
+tags, JSON-LD, and full content - so search engines and link previews see the real page without
+running JavaScript. In the browser, React then hydrates that HTML instead of redrawing it.
+
+`npm run build` does it in four steps: `vite build` (the browser bundle), `vite build --ssr`
+(a Node copy of the app in `dist-ssr/`), `scripts/prerender.js` (renders every route in
+`src/seo/routes.js` into `dist/`), and `scripts/verify-prerender.js` (reads the files back and
+fails on duplicate or over-long titles/descriptions, wrong canonicals, missing structured data,
+or any page with under 100 words of text). Nothing runs on a server at request time.

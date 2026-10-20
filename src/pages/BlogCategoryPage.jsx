@@ -2,8 +2,7 @@ import { useParams } from 'react-router-dom';
 import { getCategoryById } from '../tools/registry.js';
 import { getArticlesByCategory } from '../blog/blogUtils.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
-import { blogCategoryMeta } from '../seo/buildMeta.js';
-import { breadcrumbSchema, collectionSchema } from '../seo/structuredData.js';
+import { useCurrentRoute } from '../hooks/useCurrentRoute.js';
 import ArticleGrid from '../components/blog/ArticleGrid.jsx';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import NotFound from './NotFound.jsx';
@@ -19,36 +18,17 @@ export default function BlogCategoryPage() {
 
   const categoryArticles = category ? getArticlesByCategory(categoryId) : [];
 
-  const breadcrumbs = category
-    ? [{ label: 'Home', to: '/' }, { label: 'Blog', to: '/blog' }, { label: category.name }]
-    : [];
+  // Metadata, breadcrumbs and structured data come from the route
+  // registry. Its description is deliberately different from the tool
+  // category page's (see blogCategoryMeta) - two indexable URLs sharing one
+  // is a duplicate-content signal.
+  //
+  // A category with no articles has no entry: it would be a page with
+  // nothing on it, so it's a 404 instead (and isn't linked from /blog).
+  const route = useCurrentRoute();
+  useDocumentMeta(route);
 
-  // The description here is deliberately different from the tool category
-  // page's. Both used to fall back to `category.tagline`, which meant
-  // /category/developer and /blog/category/developer shipped identical
-  // meta descriptions - a duplicate-content signal repeated across all six
-  // categories.
-  useDocumentMeta(
-    category
-      ? {
-          ...blogCategoryMeta(category, categoryArticles.length),
-          jsonLd: [
-            collectionSchema({
-              name: `${category.name} Articles`,
-              description: `Guides and explainers on ${category.name.toLowerCase()} topics.`,
-              path: `/blog/category/${category.id}`,
-              items: categoryArticles.map((article) => ({
-                name: article.title,
-                path: `/blog/${article.slug}`,
-              })),
-            }),
-            breadcrumbSchema(breadcrumbs),
-          ],
-        }
-      : {},
-  );
-
-  if (!category) {
+  if (!category || !route) {
     return <NotFound />;
   }
 
@@ -56,7 +36,7 @@ export default function BlogCategoryPage() {
 
   return (
     <div className="category-page">
-      <Breadcrumbs items={breadcrumbs} />
+      <Breadcrumbs items={route.breadcrumbs} />
 
       <header className="page-header">
         <div className="page-header-row">
@@ -69,6 +49,7 @@ export default function BlogCategoryPage() {
           </span>
         </div>
         <p>{category.tagline}</p>
+        {category.blogIntro && <p className="category-intro">{category.blogIntro}</p>}
       </header>
 
       <ArticleGrid

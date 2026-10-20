@@ -1,16 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Layout from './components/Layout.jsx';
-import Home from './pages/Home.jsx';
-import CategoryPage from './pages/CategoryPage.jsx';
-import ToolPage from './pages/ToolPage.jsx';
-import BlogHome from './pages/BlogHome.jsx';
-import BlogCategoryPage from './pages/BlogCategoryPage.jsx';
-import BlogArticlePage from './pages/BlogArticlePage.jsx';
-import NotFound from './pages/NotFound.jsx';
+import { routes } from './router.jsx';
 
-// Top-level routing. Layout wraps every page (header/nav/footer). Routes:
-// the homepage, one page per category, a dynamic route that renders any
-// tool by id, and a catch-all for bad URLs.
+// Top-level routing for the browser. The route tree itself lives in
+// router.jsx, shared with the build-time renderer (entry-server.jsx).
 //
 // This uses react-router's "data router" form (createBrowserRouter +
 // RouterProvider) rather than the plainer <BrowserRouter>/<Routes> JSX form.
@@ -19,20 +11,7 @@ import NotFound from './pages/NotFound.jsx';
 // and show its own "leave without saving?" confirmation before an in-app
 // navigation (clicking another tool, going back, etc.) - see
 // src/components/UnsavedChangesGuard.jsx.
-const router = createBrowserRouter([
-  {
-    element: <Layout />,
-    children: [
-      { path: '/', element: <Home /> },
-      { path: '/category/:categoryId', element: <CategoryPage /> },
-      { path: '/tool/:id', element: <ToolPage /> },
-      { path: '/blog', element: <BlogHome /> },
-      { path: '/blog/category/:categoryId', element: <BlogCategoryPage /> },
-      { path: '/blog/:slug', element: <BlogArticlePage /> },
-      { path: '*', element: <NotFound /> },
-    ],
-  },
-]);
+const router = createBrowserRouter(routes);
 
 export default function App() {
   return <RouterProvider router={router} />;

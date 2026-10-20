@@ -32,3 +32,6 @@ content-pipeline/data/
 *.njsproj
 *.sln
 *.sw?
+
+# Local state written by `wrangler dev` (miniflare caches, temp bundles)
+.wrangler/

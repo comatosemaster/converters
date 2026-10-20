@@ -194,7 +194,10 @@ export default function Layout() {
         </div>
 
         <div className="site-footer-bottom">
-          <span>&copy; {new Date().getFullYear()} NeatSize</span>
+          {/* The year is the build's, then the browser's - they only differ
+              for a site built in December and visited in January, and
+              that one-word difference isn't worth a hydration warning. */}
+          <span suppressHydrationWarning>&copy; {new Date().getFullYear()} NeatSize</span>
           <span>100% client-side · No tracking · No sign-up</span>
         </div>
       </footer>

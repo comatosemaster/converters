@@ -6,9 +6,26 @@
   "compatibility_date": "2026-08-05",
   "assets": {
     "directory": "./dist/",
-    // Serves index.html for any URL that isn't a real file in dist/ — this
-    // is what makes routes like /tool/base64-encoder-decoder work on refresh
-    // or direct link, since React Router handles them client-side.
-    "not_found_handling": "single-page-application"
-  }
+    // Every real page is its own prerendered file (scripts/prerender.js),
+    // so there's no longer any need to answer unknown URLs with index.html.
+    // A URL with no file gets dist/404.html WITH a 404 status - a real
+    // "not found", not a 200 that search engines treat as a soft 404.
+    "not_found_handling": "404-page",
+    // Pages are written as dist/tool/x.html and served at /tool/x - the
+    // same no-trailing-slash form every canonical URL uses. /tool/x/ and
+    // /tool/x.html redirect to it (Cloudflare uses a 307 for these; it
+    // isn't configurable), so each page has exactly one address.
+    "html_handling": "drop-trailing-slash"
+  },
+  // The site lives on neatsize.com (a custom domain attached to this Worker
+  // in the Cloudflare dashboard). The *.workers.dev address served an exact
+  // duplicate of every page, so it's switched off rather than redirected:
+  // a redirect would mean running Worker code on every request just to
+  // send visitors elsewhere. Version preview URLs live on workers.dev too.
+  //
+  // There is deliberately no "routes" key: with none, deploys leave the
+  // dashboard's domain settings alone. Adding one would make every deploy
+  // replace them with whatever is listed here.
+  "workers_dev": false,
+  "preview_urls": false
 }

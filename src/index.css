@@ -1501,6 +1501,13 @@ button {
   line-height: 1.6;
 }
 
+/* The longer descriptive paragraph on category pages - body-sized, so a
+   hundred words don't read as a wall of large text under the tagline. */
+.page-header p.category-intro {
+  font-size: var(--fs-base);
+  line-height: 1.7;
+}
+
 .page-header-row {
   display: flex;
   align-items: center;
@@ -1565,6 +1572,19 @@ button {
 }
 
 /* --- Lazy-loaded tool placeholder --- */
+/* Stands in for a panel that can only be drawn in the browser (the world
+   clock's live times - see useHydrated.js) until the page hydrates. Sized
+   to the real panel's height so the text below doesn't jump. */
+.tool-client-placeholder {
+  min-height: 700px;
+}
+
+@media (max-width: 640px) {
+  .tool-client-placeholder {
+    min-height: 1600px;
+  }
+}
+
 /* Every tool is its own chunk (see registry.js), so there is a brief
    moment before its UI exists. This reserves height so the page doesn't
    shift when it arrives. */

@@ -37,11 +37,27 @@ function literalValue(node) {
   return undefined;
 }
 
+// `component: lazyWithPreload(() => import('./base64/Base64Tool.jsx'))` ->
+// './base64/Base64Tool.jsx'. The build reads it to find which folder holds
+// a tool's code, so it can date the tool from that folder's git history.
+function dynamicImportPath(node) {
+  if (node?.type !== 'CallExpression') return undefined;
+  const loader = node.arguments[0];
+  const body = loader?.type === 'ArrowFunctionExpression' ? loader.body : null;
+  if (body?.type !== 'ImportExpression') return undefined;
+  return literalValue(body.source);
+}
+
 function objectToRecord(node) {
   const record = {};
   for (const property of node.properties) {
     if (property.type !== 'Property') continue;
     const key = property.key.name ?? property.key.value;
+    if (key === 'component') {
+      const modulePath = dynamicImportPath(property.value);
+      if (modulePath) record.modulePath = modulePath;
+      continue;
+    }
     const value = literalValue(property.value);
     // Component and icon references are identifiers, not literals, so they
     // come back undefined and are skipped - which is correct here, since

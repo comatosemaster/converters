@@ -1,8 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { getCategoryById, getToolsByCategory } from '../tools/registry.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
-import { categoryMeta } from '../seo/buildMeta.js';
-import { breadcrumbSchema, collectionSchema } from '../seo/structuredData.js';
+import { useCurrentRoute } from '../hooks/useCurrentRoute.js';
 import ToolGrid from '../components/ToolGrid.jsx';
 import Breadcrumbs from '../components/Breadcrumbs.jsx';
 import NotFound from './NotFound.jsx';
@@ -16,35 +15,17 @@ export default function CategoryPage() {
   const category = getCategoryById(categoryId);
 
   // getToolsByCategory() groups every category's tools; pick out this one.
-  // Resolved before the early return because the metadata below needs the
-  // count, and hooks must run unconditionally.
   const group = category ? getToolsByCategory().find((entry) => entry.id === categoryId) : null;
   const tools = group?.tools ?? [];
 
-  const breadcrumbs = category ? [{ label: 'Home', to: '/' }, { label: category.name }] : [];
+  // Metadata, breadcrumbs and structured data (a CollectionPage listing
+  // these same tools, in this order) come from the route registry. An
+  // unknown id - or a category with no tools yet, which has no page - gets
+  // no entry and renders NotFound, which owns its own metadata (noindex).
+  const route = useCurrentRoute();
+  useDocumentMeta(route);
 
-  // An unknown id renders NotFound, which owns its own metadata (including
-  // noindex) - so this passes nothing rather than describing a page that
-  // doesn't exist.
-  useDocumentMeta(
-    category
-      ? {
-          ...categoryMeta(category, tools.length),
-          jsonLd: [
-            collectionSchema({
-              name: `${category.name} Tools`,
-              description: category.tagline,
-              path: `/category/${category.id}`,
-              // Mirrors the tool cards actually rendered below, in order.
-              items: tools.map((tool) => ({ name: tool.name, path: `/tool/${tool.id}` })),
-            }),
-            breadcrumbSchema(breadcrumbs),
-          ],
-        }
-      : {},
-  );
-
-  if (!category) {
+  if (!category || !route) {
     return <NotFound />;
   }
 
@@ -52,7 +33,7 @@ export default function CategoryPage() {
 
   return (
     <div className="category-page">
-      <Breadcrumbs items={breadcrumbs} />
+      <Breadcrumbs items={route.breadcrumbs} />
 
       <header className="page-header">
         <div className="page-header-row">
@@ -65,6 +46,7 @@ export default function CategoryPage() {
           </span>
         </div>
         <p>{category.tagline}</p>
+        {category.intro && <p className="category-intro">{category.intro}</p>}
       </header>
 
       <ToolGrid

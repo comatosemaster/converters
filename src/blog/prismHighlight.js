@@ -7,6 +7,9 @@
 // logic can be read on its own.
 // -----------------------------------------------------------------------
 
+// Order matters: this sets Prism's "manual" flag, which must exist before
+// the prismjs module itself runs - see prismManual.js.
+import './prismManual.js';
 import Prism from 'prismjs';
 
 // Some Prism language components extend/clone another one, so that

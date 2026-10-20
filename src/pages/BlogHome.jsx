@@ -8,8 +8,7 @@ import {
   searchArticles,
 } from '../blog/blogUtils.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
-import { blogHomeMeta } from '../seo/buildMeta.js';
-import { blogSchema } from '../seo/structuredData.js';
+import { useCurrentRoute } from '../hooks/useCurrentRoute.js';
 import ArticleGrid from '../components/blog/ArticleGrid.jsx';
 
 // The blog homepage: hero + search, featured articles, categories (reusing
@@ -21,11 +20,17 @@ import ArticleGrid from '../components/blog/ArticleGrid.jsx';
 export default function BlogHome() {
   const [query, setQuery] = useState('');
 
-  useDocumentMeta({ ...blogHomeMeta(), jsonLd: blogSchema() });
+  useDocumentMeta(useCurrentRoute());
 
   const featured = useMemo(() => getFeaturedArticles(), []);
   const latest = useMemo(() => getLatestArticles(9), []);
-  const categories = useMemo(() => getArticlesGroupedByCategory(), []);
+  // Only categories that have articles. An empty one has no page (it
+  // isn't in the route registry, so its URL is a 404), so linking to it
+  // would be a dead end.
+  const categories = useMemo(
+    () => getArticlesGroupedByCategory().filter((category) => category.articles.length > 0),
+    [],
+  );
   const results = useMemo(() => searchArticles(query), [query]);
   const isSearching = query.trim().length > 0;
 

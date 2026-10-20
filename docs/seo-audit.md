@@ -273,6 +273,10 @@ remedy.
 
 ## 4. The SPA limitation, stated honestly
 
+> **Superseded (2026-10-21):** every route is now prerendered to static HTML at build time,
+> with its own head tags and content, and unknown URLs return a real 404 - see "Prerendering"
+> in the README. The text below describes the site as it was when audited.
+
 Metadata is applied by JavaScript after mount. Consequences:
 
 - **Googlebot:** renders JS; will see correct titles, descriptions, canonicals,

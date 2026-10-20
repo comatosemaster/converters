@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import { useHydrated } from '../../hooks/useHydrated.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import TimeZoneSelect from './TimeZoneSelect.jsx';
 import {
@@ -52,6 +53,7 @@ const DAY_BADGE_LABEL = { previous: 'Previous day', next: 'Next day' };
 // share one interval instead of each owning its own timer).
 
 export default function WorldClockConverter() {
+  const hydrated = useHydrated();
   const zones = useMemo(() => getAllTimeZones(), []);
 
   const [now, setNow] = useState(() => new Date());
@@ -146,164 +148,178 @@ export default function WorldClockConverter() {
     <div className="world-clock">
       <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
 
-      <div className="converter-toolbar json-toolbar">
-        <button type="button" className="ghost-button" onClick={handleCopy} disabled={!conversion}>
-          {copied ? 'Copied!' : 'Copy Converted Time'}
-        </button>
-        <button type="button" className="ghost-button" onClick={handleClear}>
-          Clear
-        </button>
-      </div>
-
-      <div className="unit-converter-row">
-        <div className="field">
-          <label htmlFor="worldclock-date">Date</label>
-          <input id="worldclock-date" type="date" value={dateInput} onChange={(event) => setDateInput(event.target.value)} />
-        </div>
-        <div className="field">
-          <label htmlFor="worldclock-time">Time</label>
-          <input id="worldclock-time" type="time" value={timeInput} onChange={(event) => setTimeInput(event.target.value)} />
-        </div>
-      </div>
-      {validation.error && <p className="field-error">{validation.error}</p>}
-      {conversionError && <p className="field-error">{conversionError}</p>}
-
-      <div className="unit-converter-row">
-        <TimeZoneSelect
-          id="worldclock-from"
-          label="From time zone"
-          value={fromZone}
-          onChange={setFromZone}
-          zones={zones}
-          popularIds={POPULAR_ZONE_IDS}
-          now={now}
-        />
-
-        <div className="field unit-swap-field">
-          <label htmlFor="worldclock-swap" aria-hidden="true">
-            &nbsp;
-          </label>
-          <button
-            id="worldclock-swap"
-            type="button"
-            className="swap-button unit-swap-button"
-            onClick={handleSwap}
-            aria-label={`Swap ${fromZone} and ${toZone}`}
-            title="Swap time zones"
-          >
-            ⇄
-          </button>
-        </div>
-
-        <TimeZoneSelect
-          id="worldclock-to"
-          label="To time zone"
-          value={toZone}
-          onChange={setToZone}
-          zones={zones}
-          popularIds={POPULAR_ZONE_IDS}
-          now={now}
-        />
-      </div>
-
-      <div className="timezone-current-row">
-        <div className="timezone-current-item">
-          <span className="field-hint">Current time in {findZone(fromZone)?.city ?? fromZone}</span>
-          <p className="timezone-current-value">
-            {fromCurrent.time} <span className="timezone-current-offset">{fromCurrent.offset}</span>
-          </p>
-          <p className="field-hint">
-            {fromCurrent.date}
-            {fromCurrent.isDst && <span className="timezone-dst-badge"> Daylight Saving</span>}
-          </p>
-        </div>
-        <div className="timezone-current-item">
-          <span className="field-hint">Current time in {findZone(toZone)?.city ?? toZone}</span>
-          <p className="timezone-current-value">
-            {toCurrent.time} <span className="timezone-current-offset">{toCurrent.offset}</span>
-          </p>
-          <p className="field-hint">
-            {toCurrent.date}
-            {toCurrent.isDst && <span className="timezone-dst-badge"> Daylight Saving</span>}
-          </p>
-        </div>
-      </div>
-
-      {/* validation.error is only falsy-and-empty in the pristine "nothing
-          entered yet" case (see validateDateTimeInput) - any partial input
-          already has its own specific message above, so this generic hint
-          only needs to cover the blank state, not double up on it. */}
-      {!validation.ok && !validation.error ? (
-        <p className="field-hint">Pick a date and time above to convert it between the two time zones.</p>
-      ) : (
-        conversion && (
-          <div className="unit-result" aria-live="polite">
-            <p className="unit-result-value">{conversion.to.time}</p>
-            <p className="field-hint">
-              {conversion.to.date} · {conversion.to.offset}
-              {conversion.to.isDst && <span className="timezone-dst-badge"> Daylight Saving</span>}
-              {conversion.dayDifference !== 'same' && (
-                <span className={`timezone-day-badge timezone-day-badge-${conversion.dayDifference}`}>
-                  {DAY_BADGE_LABEL[conversion.dayDifference]}
-                </span>
-              )}
-            </p>
-            <p className="field-hint">
-              That's {conversion.from.time} on {conversion.from.date} in {findZone(fromZone)?.city ?? fromZone} (
-              {conversion.from.offset})
-              {conversion.from.isDst && <span className="timezone-dst-badge"> Daylight Saving</span>}
-            </p>
+      {/* The live panel shows the current time and starts from the
+          visitor's own time zone and date - none of which can be known
+          when the page is prerendered at build time. So the static HTML
+          carries a same-size placeholder, and the panel replaces it the
+          moment the page hydrates. The explanation below is static and
+          stays in the prerendered HTML. */}
+      {hydrated ? (
+        <>
+          <div className="converter-toolbar json-toolbar">
+            <button type="button" className="ghost-button" onClick={handleCopy} disabled={!conversion}>
+              {copied ? 'Copied!' : 'Copy Converted Time'}
+            </button>
+            <button type="button" className="ghost-button" onClick={handleClear}>
+              Clear
+            </button>
           </div>
-        )
-      )}
 
-      <div className="field">
-        <div className="field-header">
-          <label>World clocks</label>
-        </div>
-        <TimeZoneSelect
-          id="worldclock-add"
-          label="Add a clock"
-          value=""
-          onChange={handleAddClock}
-          zones={zones}
-          popularIds={POPULAR_ZONE_IDS}
-          now={now}
-        />
-        {clocks.length >= MAX_CLOCKS && <p className="field-hint">You've pinned the maximum of {MAX_CLOCKS} clocks.</p>}
+          <div className="unit-converter-row">
+            <div className="field">
+              <label htmlFor="worldclock-date">Date</label>
+              <input id="worldclock-date" type="date" value={dateInput} onChange={(event) => setDateInput(event.target.value)} />
+            </div>
+            <div className="field">
+              <label htmlFor="worldclock-time">Time</label>
+              <input id="worldclock-time" type="time" value={timeInput} onChange={(event) => setTimeInput(event.target.value)} />
+            </div>
+          </div>
+          {validation.error && <p className="field-error">{validation.error}</p>}
+          {conversionError && <p className="field-error">{conversionError}</p>}
 
-        {clocks.length > 0 && (
-          <div className="timezone-clocks-grid">
-            {clocks.map((clock) => {
-              const zone = findZone(clock.timeZone);
-              const current = getCurrentTime(clock.timeZone, now);
-              return (
-                <div key={clock.id} className="timezone-clock-card">
-                  <div className="timezone-clock-card-header">
-                    <div>
-                      <p className="timezone-clock-city">{zone?.city ?? clock.timeZone}</p>
-                      <p className="field-hint">{[zone?.country, zone?.region].filter(Boolean).join(' · ') || clock.timeZone}</p>
+          <div className="unit-converter-row">
+            <TimeZoneSelect
+              id="worldclock-from"
+              label="From time zone"
+              value={fromZone}
+              onChange={setFromZone}
+              zones={zones}
+              popularIds={POPULAR_ZONE_IDS}
+              now={now}
+            />
+
+            <div className="field unit-swap-field">
+              <label htmlFor="worldclock-swap" aria-hidden="true">
+                &nbsp;
+              </label>
+              <button
+                id="worldclock-swap"
+                type="button"
+                className="swap-button unit-swap-button"
+                onClick={handleSwap}
+                aria-label={`Swap ${fromZone} and ${toZone}`}
+                title="Swap time zones"
+              >
+                ⇄
+              </button>
+            </div>
+
+            <TimeZoneSelect
+              id="worldclock-to"
+              label="To time zone"
+              value={toZone}
+              onChange={setToZone}
+              zones={zones}
+              popularIds={POPULAR_ZONE_IDS}
+              now={now}
+            />
+          </div>
+
+          <div className="timezone-current-row">
+            <div className="timezone-current-item">
+              <span className="field-hint">Current time in {findZone(fromZone)?.city ?? fromZone}</span>
+              <p className="timezone-current-value">
+                {fromCurrent.time} <span className="timezone-current-offset">{fromCurrent.offset}</span>
+              </p>
+              <p className="field-hint">
+                {fromCurrent.date}
+                {fromCurrent.isDst && <span className="timezone-dst-badge"> Daylight Saving</span>}
+              </p>
+            </div>
+            <div className="timezone-current-item">
+              <span className="field-hint">Current time in {findZone(toZone)?.city ?? toZone}</span>
+              <p className="timezone-current-value">
+                {toCurrent.time} <span className="timezone-current-offset">{toCurrent.offset}</span>
+              </p>
+              <p className="field-hint">
+                {toCurrent.date}
+                {toCurrent.isDst && <span className="timezone-dst-badge"> Daylight Saving</span>}
+              </p>
+            </div>
+          </div>
+
+          {/* validation.error is only falsy-and-empty in the pristine "nothing
+              entered yet" case (see validateDateTimeInput) - any partial input
+              already has its own specific message above, so this generic hint
+              only needs to cover the blank state, not double up on it. */}
+          {!validation.ok && !validation.error ? (
+            <p className="field-hint">Pick a date and time above to convert it between the two time zones.</p>
+          ) : (
+            conversion && (
+              <div className="unit-result" aria-live="polite">
+                <p className="unit-result-value">{conversion.to.time}</p>
+                <p className="field-hint">
+                  {conversion.to.date} · {conversion.to.offset}
+                  {conversion.to.isDst && <span className="timezone-dst-badge"> Daylight Saving</span>}
+                  {conversion.dayDifference !== 'same' && (
+                    <span className={`timezone-day-badge timezone-day-badge-${conversion.dayDifference}`}>
+                      {DAY_BADGE_LABEL[conversion.dayDifference]}
+                    </span>
+                  )}
+                </p>
+                <p className="field-hint">
+                  That's {conversion.from.time} on {conversion.from.date} in {findZone(fromZone)?.city ?? fromZone} (
+                  {conversion.from.offset})
+                  {conversion.from.isDst && <span className="timezone-dst-badge"> Daylight Saving</span>}
+                </p>
+              </div>
+            )
+          )}
+
+          <div className="field">
+            <div className="field-header">
+              <label>World clocks</label>
+            </div>
+            <TimeZoneSelect
+              id="worldclock-add"
+              label="Add a clock"
+              value=""
+              onChange={handleAddClock}
+              zones={zones}
+              popularIds={POPULAR_ZONE_IDS}
+              now={now}
+            />
+            {clocks.length >= MAX_CLOCKS && <p className="field-hint">You've pinned the maximum of {MAX_CLOCKS} clocks.</p>}
+
+            {clocks.length > 0 && (
+              <div className="timezone-clocks-grid">
+                {clocks.map((clock) => {
+                  const zone = findZone(clock.timeZone);
+                  const current = getCurrentTime(clock.timeZone, now);
+                  return (
+                    <div key={clock.id} className="timezone-clock-card">
+                      <div className="timezone-clock-card-header">
+                        <div>
+                          <p className="timezone-clock-city">{zone?.city ?? clock.timeZone}</p>
+                          <p className="field-hint">{[zone?.country, zone?.region].filter(Boolean).join(' · ') || clock.timeZone}</p>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleRemoveClock(clock.id)}
+                          aria-label={`Remove ${zone?.city ?? clock.timeZone} clock`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <p className="timezone-clock-time">{current.time}</p>
+                      <p className="field-hint">
+                        {current.date} · {current.offset}
+                      </p>
+                      {current.isDst && <span className="timezone-dst-badge">Daylight Saving</span>}
                     </div>
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleRemoveClock(clock.id)}
-                      aria-label={`Remove ${zone?.city ?? clock.timeZone} clock`}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                  <p className="timezone-clock-time">{current.time}</p>
-                  <p className="field-hint">
-                    {current.date} · {current.offset}
-                  </p>
-                  {current.isDst && <span className="timezone-dst-badge">Daylight Saving</span>}
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <div className="tool-client-placeholder">
+          <p className="field-hint">The live world clock and time zone converter load in your browser.</p>
+        </div>
+      )}
 
       <article className="tool-article">
         <p>

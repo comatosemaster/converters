@@ -295,6 +295,10 @@ export function searchArticles(query) {
     .map((entry) => entry.article);
 }
 
+// Formatted in UTC because that's how the frontmatter's plain dates are
+// parsed ("2026-08-08" is midnight UTC). In local time, a visitor west of
+// Greenwich would see the previous day - and the prerendered page (built
+// in UTC) would disagree with the browser's render of it.
 export function formatArticleDate(date) {
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 }

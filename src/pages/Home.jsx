@@ -9,8 +9,7 @@ import {
   tools,
 } from '../tools/registry.js';
 import { useDocumentMeta } from '../hooks/useDocumentMeta.js';
-import { homeMeta } from '../seo/buildMeta.js';
-import { organizationSchema, websiteSchema } from '../seo/structuredData.js';
+import { useCurrentRoute } from '../hooks/useCurrentRoute.js';
 import ToolGrid from '../components/ToolGrid.jsx';
 
 // The homepage: hero + search, popular tools, then every tool grouped by
@@ -43,13 +42,9 @@ const FAQS = [
 export default function Home() {
   const [query, setQuery] = useState('');
 
-  // Homepage metadata and the site-level structured data both live here.
-  // WebSite + Organization are emitted once, on the homepage only -
-  // repeating them on every page adds nothing and just inflates payloads.
-  useDocumentMeta({
-    ...homeMeta({ toolCount: tools.length }),
-    jsonLd: [websiteSchema(), organizationSchema()],
-  });
+  // Title, description and the site-level structured data (WebSite +
+  // Organization) come from the route registry - see src/seo/routes.js.
+  useDocumentMeta(useCurrentRoute());
 
   const categories = useMemo(() => getToolsByCategory(), []);
   const popular = useMemo(() => getPopularTools(), []);

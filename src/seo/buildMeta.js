@@ -19,6 +19,7 @@
 
 import {
   DEFAULT_OG_IMAGE,
+  META_DESCRIPTION_MAX,
   SITE_DESCRIPTION,
   SITE_NAME,
   SITE_TAGLINE,
@@ -45,7 +46,8 @@ function fitTitle(candidates) {
 // doesn't end in a fragment.
 function clamp(text, max) {
   if (!text || text.length <= max) return text;
-  const cut = text.slice(0, max);
+  // One short of the limit, leaving room for the ellipsis.
+  const cut = text.slice(0, max - 1);
   const lastSpace = cut.lastIndexOf(' ');
   return `${cut.slice(0, lastSpace > 0 ? lastSpace : max).replace(/[,;:.\s]+$/, '')}…`;
 }
@@ -54,10 +56,14 @@ function clamp(text, max) {
 
 export function homeMeta({ toolCount } = {}) {
   return {
-    title: `${SITE_NAME} - ${SITE_TAGLINE}`,
-    description: toolCount
-      ? `${toolCount} free online tools that run entirely in your browser: image conversion, JSON formatting, encoding, calculators and more. No uploads, no sign-up, no limits.`
-      : SITE_DESCRIPTION,
+    // Same "<page> | NeatSize" shape as every other page.
+    title: `${SITE_TAGLINE}${SUFFIX}`,
+    description: clamp(
+      toolCount
+        ? `${toolCount} free online tools that run in your browser: convert images, format JSON, encode text, calculate and more. No uploads, no sign-up.`
+        : SITE_DESCRIPTION,
+      META_DESCRIPTION_MAX,
+    ),
     canonical: '/',
     image: DEFAULT_OG_IMAGE,
     type: 'website',
@@ -79,7 +85,7 @@ export function toolMeta(tool, category) {
   // the tool components; `description` is the shorter card text. Either
   // way it gets clamped - an earlier version clamped only the fallback,
   // which let several 200+ character descriptions through untouched.
-  const description = clamp(tool.metaDescription || tool.description, 160);
+  const description = clamp(tool.metaDescription || tool.description, META_DESCRIPTION_MAX);
 
   return {
     title,
@@ -109,7 +115,7 @@ export function categoryMeta(category, toolCount) {
 
   return {
     title,
-    description: clamp(description, 160),
+    description: clamp(description, META_DESCRIPTION_MAX),
     canonical: `/category/${category.id}`,
     image: DEFAULT_OG_IMAGE,
     type: 'website',
@@ -120,7 +126,7 @@ export function categoryMeta(category, toolCount) {
 
 export function blogHomeMeta() {
   return {
-    title: `${SITE_NAME} Blog - Guides, Tutorials & Tool Tips`,
+    title: `Blog: Guides, Tutorials & Tool Tips${SUFFIX}`,
     description:
       'Practical guides on file formats, encoding, and the tools that work with them - written to explain what you are actually converting, not just how.',
     canonical: '/blog',
@@ -131,7 +137,7 @@ export function blogHomeMeta() {
 
 export function blogCategoryMeta(category, articleCount) {
   const title = fitTitle([
-    `${category.name} Articles & Guides${SUFFIX} Blog`,
+    `${category.name} Articles & Guides${SUFFIX}`,
     `${category.name} Articles${SUFFIX}`,
   ]);
 
@@ -142,7 +148,7 @@ export function blogCategoryMeta(category, articleCount) {
 
   return {
     title,
-    description: clamp(description, 160),
+    description: clamp(description, META_DESCRIPTION_MAX),
     canonical: `/blog/category/${category.id}`,
     image: DEFAULT_OG_IMAGE,
     type: 'website',
@@ -151,8 +157,10 @@ export function blogCategoryMeta(category, articleCount) {
 
 export function articleMeta(article) {
   return {
-    title: article.seoTitle ? `${article.seoTitle}${SUFFIX}` : `${article.title}${SUFFIX}`,
-    description: clamp(article.metaDescription || article.description || article.excerpt, 160),
+    // seoTitle is the short, search-result version of the headline; the
+    // full headline is only used when it happens to fit.
+    title: fitTitle([`${article.seoTitle || article.title}${SUFFIX}`, `${article.title}${SUFFIX}`, article.seoTitle || article.title]),
+    description: clamp(article.metaDescription || article.description || article.excerpt, META_DESCRIPTION_MAX),
     canonical: `/blog/${article.slug}`,
     image: article.coverImage ?? DEFAULT_OG_IMAGE,
     type: 'article',

@@ -54,7 +54,8 @@ export const DEFAULT_OG_IMAGE = '/og-default.png';
 export const TITLE_MAX = 60;
 
 export const META_DESCRIPTION_MIN = 110;
-export const META_DESCRIPTION_MAX = 160;
+// Google cuts snippets at roughly this length; longer ones end in "…".
+export const META_DESCRIPTION_MAX = 155;
 
 /**
  * Joins a path onto the production origin.
