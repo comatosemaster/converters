@@ -10,11 +10,17 @@ let pdfjsPromise = null;
 function loadPdfjs() {
   if (!pdfjsPromise) {
     pdfjsPromise = Promise.all([
-      import('pdfjs-dist'),
+      // The "legacy" build, not the default one: the default build calls
+      // brand-new JavaScript built-ins (Map.getOrInsertComputed,
+      // Math.sumPrecise...) that only the very latest browsers have, and in
+      // anything slightly older it fails outright - thumbnails silently went
+      // missing and PDFs "couldn't be opened". The legacy build carries its
+      // own fallbacks for those.
+      import('pdfjs-dist/legacy/build/pdf.mjs'),
       // `?url` makes Vite emit the worker as its own file and hand back its
       // URL. pdf.js parses PDFs in this background worker so big files
-      // don't freeze the page.
-      import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
+      // don't freeze the page. It must come from the same build as above.
+      import('pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'),
     ]).then(([pdfjs, worker]) => {
       pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
       return pdfjs;
