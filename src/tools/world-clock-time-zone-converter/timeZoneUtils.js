@@ -102,7 +102,9 @@ export function filterTimeZones(zones, query) {
 // digits as if they were UTC, and diff the two timestamps. It correctly
 // handles fractional offsets (India's +5:30, Nepal's +5:45) without any
 // string-parsing of GMT+/-N labels.
-function getTimeZoneOffsetMinutes(date, timeZone) {
+// (Exported for the Unix Timestamp Converter, which builds ISO 8601
+// "+04:00"-style offsets from it.)
+export function getTimeZoneOffsetMinutes(date, timeZone) {
   const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone,
     hour12: false,

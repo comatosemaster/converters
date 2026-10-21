@@ -3,7 +3,7 @@
 Candidate tools for NeatSize, ranked. The site has 35 tools today; this lists
 ~130 more that don't overlap with them.
 
-**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator (2026-10-21) - marked ✅ below.
+**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner (2026-10-21) - marked ✅ below.
 (Image Cropper was removed: the existing Image Resizer & Cropper already crops.)
 
 Focus order: **Graphics & Media → Text & Data → Developer** first, Business &
@@ -38,9 +38,9 @@ Finance next, Everyday and Fun last.
 | 4 | ✅ Text Diff / Compare | Text & Data | M | Evergreen, used daily by devs and writers |
 | 5 | ✅ Hash Generator (MD5/SHA-1/SHA-256/SHA-512) | Developer | S | Web Crypto API, plus a tiny MD5 |
 | 6 | ✅ UUID Generator | Developer | S | `crypto.randomUUID()`, trivial and popular |
-| 7 | Unix Timestamp Converter | Developer | S | Daily dev need; reuse time-zone code from World Clock |
-| 8 | Case Converter | Text & Data | S | Massive search volume, near-zero effort |
-| 9 | QR Code Scanner (from image/camera) | Graphics | S | Pairs with QR Generator; `jsQR` |
+| 7 | ✅ Unix Timestamp Converter | Developer | S | Daily dev need; reuse time-zone code from World Clock |
+| 8 | ✅ Case Converter | Text & Data | S | Massive search volume, near-zero effort |
+| 9 | ✅ QR Code Scanner (from image/camera) | Graphics | S | Pairs with QR Generator; `jsQR` |
 | 10 | Image Rotator | Graphics | S | Reuse Image Flipper's canvas pipeline |
 | 11 | EXIF Viewer & Remover | Graphics | M | Privacy angle fits the brand perfectly |
 | 12 | Add Watermark to Image | Graphics | S | Complements Watermark Remover |
@@ -66,7 +66,7 @@ Finance next, Everyday and Fun last.
 |------|----------|--------|-------|
 | Background Remover | P1 | L | Needs an ONNX/WebGPU segmentation model (tens of MB). Cache it, and show the download size up front |
 | Image Rotator | P1 | S | 90° steps plus a free angle; reuse Image Flipper |
-| QR Code Scanner | P1 | S | Upload, paste, or camera; `jsQR` |
+| ✅ QR Code Scanner | P1 | S | Shipped: image/paste/camera, multi-size retry, WiFi/vCard/link parsing |
 | Barcode Generator | P1 | S | EAN-13, UPC, Code 128; `JsBarcode` |
 | SVG to PNG / JPG | P1 | S | Pick the output size; canvas |
 | Add Watermark to Image | P1 | S | Text/logo, opacity, tiling, position |
@@ -110,7 +110,7 @@ Finance next, Everyday and Fun last.
 | ✅ PDF to Image | P1 | M | Shipped: `pdf.js`, PNG/JPG/WebP, 72-300 DPI, ZIP, password-protected PDFs |
 | PDF to Text | P1 | M | `pdf.js` text layer; fall back to `ocrPipeline.js` for scanned PDFs |
 | ✅ Text Diff / Compare | P1 | M | Shipped as Text Diff Checker: lines/words/chars, side-by-side and inline, patch export |
-| Case Converter | P1 | S | UPPER, lower, Title, Sentence, camelCase, snake_case, kebab-case |
+| ✅ Case Converter | P1 | S | Shipped: 14 cases incl. headline Title Case and code cases; Georgian-aware |
 | CSV ↔ JSON Converter | P1 | S | Delimiter detection, header row option |
 | Markdown Editor & Preview | P1 | S | `marked` + `prismjs` already installed |
 | Lorem Ipsum Generator | P1 | S | Words, sentences, or paragraphs; HTML option |
@@ -148,7 +148,7 @@ Finance next, Everyday and Fun last.
 |------|----------|--------|-------|
 | ✅ Hash Generator | P1 | S | Shipped: MD5 + SHA family, text and files, HMAC, checksum verify |
 | ✅ UUID Generator | P1 | S | Shipped: v4/v7, bulk up to 1,000, 4 formats, UUID inspector |
-| Unix Timestamp Converter | P1 | S | Seconds/ms, time zones, relative time |
+| ✅ Unix Timestamp Converter | P1 | S | Shipped: s/ms/µs/ns auto-detect, any zone, ISO/RFC formats, live clock |
 | YAML ↔ JSON | P1 | S | `js-yaml`; reuse the JSON formatter UI |
 | XML Formatter / Validator + XML ↔ JSON | P1 | M | `DOMParser`; reuse the JSON tree view |
 | HTML Formatter & Minifier | P1 | M | Prettier standalone (lazy) or a light beautifier |
@@ -230,7 +230,7 @@ Finance next, Everyday and Fun last.
 
 ## Notes for building these
 
-- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 6 already shipped.
+- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 9 already shipped.
 - **Cheap SEO wins:** format-pair landing pages (Image Converter presets) and reference pages (HTTP status codes) cost little and match exact-phrase searches.
 - **Shared foundations worth building once:**
   - `pdf-lib` + `pdf.js` unlock about 8 PDF tools - now installed, with a shared loader in `src/utils/pdfjs.js` and page-range parsing in `pdfMergeUtils.js`.

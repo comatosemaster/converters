@@ -6525,3 +6525,260 @@ del.diff-word-removed {
 .diff-options .mode-toggle {
   margin-bottom: 0;
 }
+
+/* ==========================================================================
+   Case Converter
+   ========================================================================== */
+
+.case-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-5);
+  padding: 0;
+  list-style: none;
+}
+
+.case-row {
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.case-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.case-name {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.case-actions {
+  display: flex;
+  gap: var(--sp-1);
+}
+
+.case-value {
+  max-height: 160px;
+  overflow-y: auto;
+  margin: var(--sp-1) 0 0;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   Unix Timestamp Converter
+   ========================================================================== */
+
+.ts-now {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.ts-now-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.ts-now-label {
+  flex-basis: 100%;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.ts-now-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ts-results {
+  margin: 0 0 var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.ts-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.ts-row:last-child {
+  border-bottom: none;
+}
+
+.ts-row dt {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.ts-row dd {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  min-width: 0;
+}
+
+.ts-row code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text);
+  word-break: break-all;
+}
+
+@media (max-width: 640px) {
+  .ts-now {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   QR Code Scanner
+   ========================================================================== */
+
+.qr-scan-preview {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-4);
+  padding: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.qr-scan-preview canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 420px;
+  height: auto;
+  border-radius: var(--r-sm);
+}
+
+.qr-camera-frame {
+  position: relative;
+  overflow: hidden;
+  max-width: 560px;
+  aspect-ratio: 4 / 3;
+  margin: 0 auto var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: #000000;
+}
+
+.qr-camera-frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.qr-camera-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a1a1aa;
+  font-size: var(--fs-sm);
+}
+
+/* A square guide in the middle of the live view. */
+.qr-camera-target {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 55%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--r-lg);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.qr-camera .converter-toolbar {
+  justify-content: center;
+}
+
+.qr-camera .field-hint {
+  text-align: center;
+}
+
+.qr-result {
+  margin: var(--sp-5) 0;
+  padding: var(--sp-4);
+  border: 1px solid var(--success);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--success) 6%, var(--surface));
+}
+
+.qr-result-type {
+  margin: 0;
+  font-size: var(--fs-md);
+  color: var(--text);
+}
+
+.qr-result-fields dd {
+  word-break: break-all;
+}
+
+.qr-result-raw {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Date/time pickers get the same look as the site's other inputs (the
+   global input rule doesn't cover these types). */
+.unix-timestamp-converter input[type='date'],
+.unix-timestamp-converter input[type='time'] {
+  width: 100%;
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: 1.55;
+}
+
+.unix-timestamp-converter input[type='date']:focus,
+.unix-timestamp-converter input[type='time']:focus {
+  outline: none;
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}

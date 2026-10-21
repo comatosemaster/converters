@@ -175,6 +175,16 @@ export function searchOccurrences(text, query, { matchCase = false, wholeWord = 
 // split the text into words and rejoin it, which would otherwise silently
 // collapse things like double spaces or blank lines.
 
+// Capitalizes one letter for Title/Sentence case. Georgian is the
+// exception: it has capital forms (Mtavruli) that JavaScript will happily
+// produce, but Georgian never capitalizes the first letter of a word or
+// sentence - "Გამარჯობა" is simply wrong - so its letters are left alone.
+// (Full UPPERCASE still converts Georgian, since all-Mtavruli is a real
+// style for headings.)
+export function capitalizeLetter(letter) {
+  return /[\u10D0-\u10FF]/.test(letter) ? letter : letter.toUpperCase();
+}
+
 export function convertCase(text, mode) {
   switch (mode) {
     case 'upper':
@@ -184,12 +194,12 @@ export function convertCase(text, mode) {
     case 'title':
       // Matches each run of letters (ignoring surrounding punctuation, so
       // "(hello)" becomes "(Hello)" rather than being left alone).
-      return text.replace(/\p{L}+/gu, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+      return text.replace(/\p{L}+/gu, (word) => capitalizeLetter(word.charAt(0)) + word.slice(1).toLowerCase());
     case 'sentence': {
       const lower = text.toLowerCase();
       // Capitalizes the first letter of the text, and the first letter
       // after any . ! or ? followed by whitespace.
-      return lower.replace(/(^\s*\p{L}|[.!?]\s+\p{L})/gu, (match) => match.toUpperCase());
+      return lower.replace(/(^\s*\p{L}|[.!?]\s+\p{L})/gu, (match) => match.slice(0, -1) + capitalizeLetter(match.slice(-1)));
     }
     case 'toggle':
       return text.replace(/\p{L}/gu, (char) => (char === char.toUpperCase() ? char.toLowerCase() : char.toUpperCase()));

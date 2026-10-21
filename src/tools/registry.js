@@ -15,8 +15,10 @@ import {
   Binary,
   Blend,
   Braces,
+  CaseSensitive,
   Cake,
   Calculator,
+  CalendarClock,
   Clock,
   Code,
   Coins,
@@ -49,6 +51,7 @@ import {
   Regex,
   Ruler,
   Scale,
+  ScanQrCode,
   ScanText,
   Shrink,
   Shuffle,
@@ -280,6 +283,17 @@ export const tools = [
     keywords: ['diff', 'compare', 'difference', 'text compare', 'diff checker', 'changes', 'code', 'patch'],
   },
   {
+    id: 'case-converter',
+    name: 'Case Converter',
+    description: 'Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case and more.',
+    category: 'text-data',
+    metaDescription:
+      'Change text case instantly: UPPERCASE, lowercase, Title Case, Sentence case, camelCase, PascalCase, snake_case, kebab-case and more. Runs in your browser.',
+    icon: CaseSensitive,
+    component: lazyWithPreload(() => import('./case-converter/CaseConverter.jsx')),
+    keywords: ['case', 'uppercase', 'lowercase', 'title case', 'sentence case', 'camelcase', 'snake case', 'kebab case', 'capitalize', 'convert'],
+  },
+  {
     id: 'heic-to-jpg',
     name: 'HEIC to JPG Converter',
     description: 'Convert iPhone HEIC photos to JPG in your browser. Files never leave your device.',
@@ -360,6 +374,17 @@ export const tools = [
     component: lazyWithPreload(() => import('./qr-code-generator/QrCodeGenerator.jsx')),
     keywords: ['qr', 'qr code', 'barcode', 'wifi', 'vcard', 'url', 'contact', 'generate'],
     isPopular: true,
+  },
+  {
+    id: 'qr-code-scanner',
+    name: 'QR Code Scanner',
+    description: 'Scan QR codes from an image, a screenshot, or your camera, right in your browser.',
+    category: 'graphics-media',
+    metaDescription:
+      'Scan a QR code from a photo, screenshot or your camera - no app needed. Reads links, WiFi passwords, contacts and more. Nothing is uploaded.',
+    icon: ScanQrCode,
+    component: lazyWithPreload(() => import('./qr-code-scanner/QrCodeScanner.jsx')),
+    keywords: ['qr', 'qr code', 'scan', 'scanner', 'reader', 'decode', 'camera', 'wifi', 'read qr code from image'],
   },
   {
     id: 'word-counter-text-analyzer',
@@ -660,6 +685,17 @@ export const tools = [
     icon: Fingerprint,
     component: lazyWithPreload(() => import('./uuid-generator/UuidGenerator.jsx')),
     keywords: ['uuid', 'guid', 'v4', 'v7', 'unique id', 'random id', 'generator', 'identifier'],
+  },
+  {
+    id: 'unix-timestamp-converter',
+    name: 'Unix Timestamp Converter',
+    description: 'Convert Unix timestamps to dates and dates to timestamps, in any time zone.',
+    category: 'developer',
+    metaDescription:
+      'Convert Unix/epoch timestamps to human dates and back, in seconds, milliseconds or nanoseconds, for any time zone. Live current epoch time. In-browser.',
+    icon: CalendarClock,
+    component: lazyWithPreload(() => import('./unix-timestamp-converter/UnixTimestampConverter.jsx')),
+    keywords: ['unix', 'timestamp', 'epoch', 'unix time', 'convert', 'date', 'milliseconds', 'iso 8601', 'time zone', 'posix'],
   },
 ];
 
