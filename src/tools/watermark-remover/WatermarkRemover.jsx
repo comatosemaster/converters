@@ -308,7 +308,9 @@ export default function WatermarkRemover() {
         selectionBounds.maxX - selectionBounds.minX,
         selectionBounds.maxY - selectionBounds.minY,
       );
-      const padding = Math.max(24, Math.round(selectionSize * 0.25));
+      // Generous context around the selection: the fill copies texture from
+      // here, so more surrounding image means better matches to choose from.
+      const padding = Math.max(48, Math.round(selectionSize * 0.75));
       const region = padBounds(selectionBounds, padding, dimensions.width, dimensions.height);
       const regionWidth = region.maxX - region.x + 1;
       const regionHeight = region.maxY - region.y + 1;
@@ -513,7 +515,7 @@ export default function WatermarkRemover() {
 
           <p className="field-hint" aria-live="polite">
             {statusMessage ||
-              "Best results are achieved with small watermarks and simple backgrounds - results depend on what's around the selected area."}
+              "Cover the whole watermark, including its faint edges. The selection is rebuilt from texture around it, so results depend on what's nearby."}
           </p>
 
           {error && (
@@ -591,12 +593,13 @@ export default function WatermarkRemover() {
 
         <h2>How removal works</h2>
         <p>
-          This tool uses a diffusion-based fill: it treats the selected area as unknown and solves
-          for it using the colors and gradients immediately surrounding it, blending them inward
-          until the hole is filled. It isn't an AI model and it isn't texture-aware, so it works
-          best on small watermarks over flat or simple backgrounds (sky, walls, solid colors,
-          smooth gradients). A large selection or a busy, detailed background will come out
-          visibly smoothed or smudged rather than perfectly reconstructed.
+          This tool uses a content-aware fill: it rebuilds the selected area by copying small
+          patches of real texture from the surrounding image - the grain of wood, blades of
+          grass, a brick pattern, the noise in a photo - choosing the patches that best continue
+          what's around the selection. It works from a small, blurry version of the image up to
+          full size, so large shapes like a horizon line are continued before the fine detail is
+          filled in. It isn't an AI model: it can only reuse what's already in the picture, so it
+          can't recreate something the watermark completely hid, like a face or a line of text.
         </p>
 
         <h2>Selecting the area to remove</h2>
@@ -613,10 +616,10 @@ export default function WatermarkRemover() {
         <div className="faq-item">
           <h3>Will this perfectly remove any watermark?</h3>
           <p>
-            No - results depend heavily on the watermark's size and the complexity of what's
-            behind it. Small watermarks on plain backgrounds come out well; large watermarks or
-            detailed, textured backgrounds will show visible blending rather than a perfect
-            reconstruction.
+            No - results depend on the watermark's size and on what surrounds it. Watermarks over
+            sky, walls, fabric, grass and other repeating textures usually disappear cleanly.
+            Very large selections, or watermarks covering unique detail that appears nowhere else
+            in the image, may need a second pass or show a visible seam.
           </p>
         </div>
         <div className="faq-item">
