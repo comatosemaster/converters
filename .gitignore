@@ -35,3 +35,6 @@ content-pipeline/data/
 
 # Local state written by `wrangler dev` (miniflare caches, temp bundles)
 .wrangler/
+
+# pdf.js support files, copied from node_modules by scripts/copy-pdfjs-assets.js
+public/pdfjs/

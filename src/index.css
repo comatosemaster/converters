@@ -6019,3 +6019,238 @@ details:focus-visible,
     animation: none;
   }
 }
+
+/* ==========================================================================
+   PDF Merge / PDF to Image
+   (list rows reuse .pdf-image-* from Image to PDF)
+   ========================================================================== */
+
+.pdf-merge-thumb {
+  width: 40px;
+  height: 52px;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+/* The type selector matches the global input[type="text"] rule's
+   specificity, so this compact size wins inside the file list. */
+.pdf-merge-range[type='text'] {
+  margin-top: var(--sp-1);
+  max-width: 260px;
+  min-height: 0;
+  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--fs-sm);
+}
+
+.pdf-password-row {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.pdf-password-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.pdf-to-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--sp-3);
+  margin: 0 0 var(--sp-6);
+  padding: 0;
+  list-style: none;
+}
+
+.pdf-to-image-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+  padding: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.pdf-to-image-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+}
+
+.pdf-to-image-download {
+  justify-content: center;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Text Diff
+   ========================================================================== */
+
+.diff-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+
+.diff-inputs textarea {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+
+.diff-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-4);
+  margin: var(--sp-4) 0;
+}
+
+.diff-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.diff-stat-added {
+  color: var(--success);
+}
+
+.diff-stat-removed {
+  color: var(--danger);
+}
+
+.diff-summary .ghost-button {
+  margin-left: auto;
+}
+
+.diff-identical {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.diff-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.diff-split {
+  table-layout: fixed;
+}
+
+.diff-num {
+  width: 3.5em;
+  padding: 0 var(--sp-2);
+  text-align: right;
+  vertical-align: top;
+  color: var(--text-muted);
+  user-select: none;
+  background: var(--surface-2);
+}
+
+.diff-sign {
+  width: 1.5em;
+  text-align: center;
+  vertical-align: top;
+  user-select: none;
+}
+
+.diff-cell {
+  padding: 0 var(--sp-2);
+  white-space: pre-wrap;
+  word-break: break-word;
+  vertical-align: top;
+  color: var(--text);
+}
+
+.diff-removed {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.diff-added {
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+}
+
+.diff-empty {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 6px,
+    var(--surface-2) 6px 12px
+  );
+}
+
+.diff-skip td {
+  padding: var(--sp-1) var(--sp-3);
+  color: var(--text-muted);
+  background: var(--surface-2);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+}
+
+.diff-word-removed,
+.diff-word-added {
+  color: inherit;
+  text-decoration: none;
+  border-radius: 3px;
+}
+
+.diff-word-removed {
+  background: color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.diff-word-added {
+  background: color-mix(in srgb, var(--success) 30%, transparent);
+}
+
+/* In word/character mode the removed parts are also struck through, so the
+   difference doesn't rely on colour alone. */
+del.diff-word-removed {
+  text-decoration: line-through;
+}
+
+.diff-inline-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.diff-inline {
+  margin: 0;
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 640px) {
+  .diff-inputs,
+  .diff-inline-split {
+    grid-template-columns: 1fr;
+  }
+}
