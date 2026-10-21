@@ -4,6 +4,7 @@ import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.j
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
 import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
+import { extractText } from './ocrPipeline.js';
 
 // A handful of common languages, plus Georgian as specifically requested.
 // These are tesseract's own language codes - the matching "traineddata"
@@ -165,16 +166,32 @@ export default function ImageToText() {
         workerPath: '/tesseract/worker.min.js',
         corePath: '/tesseract/tesseract-core-simd-lstm.wasm.js',
         logger: (message) => {
-          if (message.status) setProgressStatus(message.status);
+          // Loading messages are shown as-is; once reading starts, the
+          // pipeline's own stage names (below) are more meaningful.
+          if (message.status && !message.status.startsWith('recognizing')) {
+            setProgressStatus(message.status);
+          }
           if (typeof message.progress === 'number') {
             setProgressPercent(Math.round(message.progress * 100));
           }
         },
       });
 
-      const { data } = await worker.recognize(file);
-      setResultText(data.text.trim());
-      setConfidence(Math.round(data.confidence));
+      // ocrPipeline.js cleans the image up before Tesseract sees it (resizes
+      // small text, straightens tilted photos, fixes dark mode, shadows and
+      // multi-column layouts) - raw Tesseract misread most real-world images.
+      const result = await extractText(worker, file, {
+        onStage: (stage) => {
+          setProgressStatus(stage);
+          setProgressPercent(0);
+        },
+      });
+      if (!result.text) {
+        setError("No text was found in this image. Try a clearer image, or check the language.");
+        return;
+      }
+      setResultText(result.text);
+      setConfidence(result.confidence);
     } catch {
       setError(
         "Something went wrong running OCR on this image. Try a clearer image, or a different language.",
