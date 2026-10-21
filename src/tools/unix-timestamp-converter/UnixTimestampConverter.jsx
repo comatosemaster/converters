@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import { useHydrated } from '../../hooks/useHydrated.js';
 import TimeZoneSelect from '../world-clock-time-zone-converter/TimeZoneSelect.jsx';
 import { POPULAR_ZONES, getAllTimeZones, getBrowserTimeZone } from '../world-clock-time-zone-converter/timeZoneUtils.js';
@@ -29,6 +31,10 @@ export default function UnixTimestampConverter() {
   const [wallDate, setWallDate] = useState('');
   const [wallTime, setWallTime] = useState('');
   const [copied, setCopied] = useState('');
+  // The date fields are pre-filled with "now"; only the user's own edits count.
+  const [wallEdited, setWallEdited] = useState(false);
+  const hasUnsavedWork = input.trim() !== '' || wallEdited;
+  useUnsavedChangesWarning(hasUnsavedWork);
 
   // Once in the browser: start the clock, switch to the visitor's own time
   // zone, and pre-fill the date picker with the current moment.
@@ -65,6 +71,7 @@ export default function UnixTimestampConverter() {
 
   return (
     <div className="unix-timestamp-converter">
+      <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
       <section className="ts-now" aria-label="Current Unix time">
         <div className="ts-now-item">
           <span className="ts-now-label">Current Unix time (seconds)</span>
@@ -138,11 +145,17 @@ export default function UnixTimestampConverter() {
       <div className="unit-converter-row">
         <div className="field">
           <label htmlFor="ts-date">Date</label>
-          <input id="ts-date" type="date" value={wallDate} onChange={(event) => setWallDate(event.target.value)} />
+          <input id="ts-date" type="date" value={wallDate} onChange={(event) => {
+              setWallDate(event.target.value);
+              setWallEdited(true);
+            }} />
         </div>
         <div className="field">
           <label htmlFor="ts-time">Time ({timeZone})</label>
-          <input id="ts-time" type="time" step={1} value={wallTime} onChange={(event) => setWallTime(event.target.value)} />
+          <input id="ts-time" type="time" step={1} value={wallTime} onChange={(event) => {
+              setWallTime(event.target.value);
+              setWallEdited(true);
+            }} />
         </div>
       </div>
       {wallMs !== null && Number.isFinite(wallMs) && (

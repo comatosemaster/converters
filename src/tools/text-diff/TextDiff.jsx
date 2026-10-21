@@ -1,5 +1,8 @@
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
+import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { MODES, buildLineRows, buildPatch, computeDiff, countChanges } from './textDiffUtils.js';
 
 const SAMPLE_ORIGINAL = `The quick brown fox jumps over the lazy dog.
@@ -43,6 +46,12 @@ export default function TextDiff() {
   const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
   const [collapse, setCollapse] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  // Pasted texts are the user's work - warn before a reload, tab close or
+  // navigation would throw them away.
+  const hasUnsavedWork = original.trim() !== '' || changed.trim() !== '';
+  useUnsavedChangesWarning(hasUnsavedWork);
 
   // Comparing big texts on every keystroke would make typing lag; deferred
   // values let React keep the text boxes responsive and catch the diff up
@@ -80,6 +89,20 @@ export default function TextDiff() {
 
   return (
     <div className="text-diff">
+      <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
+      {showClearConfirm && (
+        <ConfirmDialog
+          title="Clear both texts?"
+          message="This removes the original and changed text. It can't be undone."
+          confirmLabel="Clear both"
+          onCancel={() => setShowClearConfirm(false)}
+          onConfirm={() => {
+            setShowClearConfirm(false);
+            setOriginal('');
+            setChanged('');
+          }}
+        />
+      )}
       <div className="diff-inputs">
         <div className="field">
           <label htmlFor="diff-original">Original text</label>
@@ -120,10 +143,7 @@ export default function TextDiff() {
         <button
           type="button"
           className="ghost-button"
-          onClick={() => {
-            setOriginal('');
-            setChanged('');
-          }}
+          onClick={() => setShowClearConfirm(true)}
           disabled={!original && !changed}
         >
           Clear

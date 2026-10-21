@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import { FORMATS, MAX_COUNT, VERSIONS, formatUuid, generate, inspectUuid } from './uuidUtils.js';
 
 // --- The tool component -------------------------------------------------------
@@ -20,6 +22,12 @@ export default function UuidGenerator() {
   const [uuids, setUuids] = useState([]);
   const [copied, setCopied] = useState('');
   const [inspectInput, setInspectInput] = useState('');
+  // The batch last copied or downloaded (or the automatic first one). A
+  // batch the user generated and hasn't saved yet is worth a warning; the
+  // ID that simply appears when the page opens is not.
+  const [savedBatch, setSavedBatch] = useState(null);
+  const hasUnsavedWork = (uuids.length > 0 && uuids !== savedBatch) || inspectInput.trim() !== '';
+  useUnsavedChangesWarning(hasUnsavedWork);
 
   const safeCount = Math.min(MAX_COUNT, Math.max(1, Math.floor(Number(count)) || 1));
 
@@ -28,7 +36,9 @@ export default function UuidGenerator() {
   }
 
   useEffect(() => {
-    regenerate();
+    const first = generate(version, safeCount);
+    setUuids(first);
+    setSavedBatch(first);
     // Only on mount - later batches are made explicitly.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -44,6 +54,7 @@ export default function UuidGenerator() {
 
   async function copy(text, key) {
     await navigator.clipboard.writeText(text);
+    if (key === 'all' || uuids.length === 1) setSavedBatch(uuids);
     setCopied(key);
     setTimeout(() => setCopied(''), 1500);
   }
@@ -52,6 +63,7 @@ export default function UuidGenerator() {
 
   return (
     <div className="uuid-generator">
+      <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
       <div className="unit-converter-row">
         <div className="field">
           <label htmlFor="uuid-version">Type</label>
@@ -110,7 +122,7 @@ export default function UuidGenerator() {
           {copied === 'all' ? 'Copied!' : lines.length > 1 ? `Copy all ${lines.length}` : 'Copy'}
         </button>
         {downloadUrl && (
-          <a className="ghost-button" href={downloadUrl} download={`uuids-${version}.txt`}>
+          <a className="ghost-button" href={downloadUrl} download={`uuids-${version}.txt`} onClick={() => setSavedBatch(uuids)}>
             Download .txt
           </a>
         )}

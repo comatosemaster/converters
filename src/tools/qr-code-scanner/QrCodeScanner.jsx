@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import { usePasteToUpload } from '../../hooks/usePasteToUpload.js';
 import { describePayload, scanFrame, scanImage } from './qrScanUtils.js';
 
@@ -30,6 +32,10 @@ export default function QrCodeScanner() {
   const [result, setResult] = useState(null); // decoded text
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  // The result last copied or acted on - same idea as Image to Text.
+  const [savedResult, setSavedResult] = useState(null);
+  const hasUnsavedWork = Boolean(result) && result !== savedResult;
+  useUnsavedChangesWarning(hasUnsavedWork);
 
   // --- Camera ---------------------------------------------------------------
 
@@ -160,6 +166,7 @@ export default function QrCodeScanner() {
 
   async function handleCopy() {
     await navigator.clipboard.writeText(result);
+    setSavedResult(result);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
@@ -168,6 +175,7 @@ export default function QrCodeScanner() {
 
   return (
     <div className="qr-code-scanner">
+      <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
       <div className="mode-toggle" role="radiogroup" aria-label="Scan from">
         {[
           ['image', 'Upload image'],
@@ -280,7 +288,13 @@ export default function QrCodeScanner() {
           <pre className="qr-result-raw">{result}</pre>
           {info.action && (
             <>
-              <a className="download-button" href={info.action.href} target="_blank" rel="noopener noreferrer">
+              <a
+                className="download-button"
+                href={info.action.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setSavedResult(result)}
+              >
                 {info.action.label}
               </a>
               {info.type === 'url' && (

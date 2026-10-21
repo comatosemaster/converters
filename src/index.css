@@ -1679,7 +1679,10 @@ input[type='email'],
 input[type='tel'],
 input[type='search'],
 input[type='password'],
-input[type='url'] {
+input[type='url'],
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'] {
   width: 100%;
   padding: var(--sp-3);
   border: 1px solid var(--border);
@@ -1710,7 +1713,10 @@ select:hover:not(:disabled),
 input[type='number']:hover:not(:disabled),
 input[type='text']:hover:not(:disabled),
 input[type='email']:hover:not(:disabled),
-input[type='tel']:hover:not(:disabled) {
+input[type='tel']:hover:not(:disabled),
+input[type='date']:hover:not(:disabled),
+input[type='time']:hover:not(:disabled),
+input[type='datetime-local']:hover:not(:disabled) {
   border-color: var(--border-hover);
 }
 
@@ -1720,7 +1726,10 @@ input[type='number']:focus,
 input[type='text']:focus,
 input[type='email']:focus,
 input[type='tel']:focus,
-input[type='search']:focus {
+input[type='search']:focus,
+input[type='date']:focus,
+input[type='time']:focus,
+input[type='datetime-local']:focus {
   outline: none;
   border-color: var(--accent-border);
   box-shadow: 0 0 0 3px var(--accent-subtle);
@@ -6759,26 +6768,4 @@ del.diff-word-removed {
   font-size: var(--fs-sm);
   white-space: pre-wrap;
   word-break: break-all;
-}
-
-/* Date/time pickers get the same look as the site's other inputs (the
-   global input rule doesn't cover these types). */
-.unix-timestamp-converter input[type='date'],
-.unix-timestamp-converter input[type='time'] {
-  width: 100%;
-  padding: var(--sp-3);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  background: var(--bg-elevated);
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-size: var(--fs-base);
-  line-height: 1.55;
-}
-
-.unix-timestamp-converter input[type='date']:focus,
-.unix-timestamp-converter input[type='time']:focus {
-  outline: none;
-  border-color: var(--accent-border);
-  box-shadow: 0 0 0 3px var(--accent-subtle);
 }

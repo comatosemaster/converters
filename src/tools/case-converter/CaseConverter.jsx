@@ -1,5 +1,8 @@
 import { useDeferredValue, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
+import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { CASES } from './caseUtils.js';
 
 const EXAMPLE = 'the quick brown fox jumps over the lazy dog\nuser profile ID\nXMLHttpRequest';
@@ -13,6 +16,9 @@ const EXAMPLE = 'the quick brown fox jumps over the lazy dog\nuser profile ID\nX
 export default function CaseConverter() {
   const [text, setText] = useState('');
   const [copiedId, setCopiedId] = useState('');
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const hasUnsavedWork = text.trim() !== '';
+  useUnsavedChangesWarning(hasUnsavedWork);
   // Every case is recomputed on each keystroke; deferring keeps typing
   // smooth even when a large document is pasted in.
   const deferredText = useDeferredValue(text);
@@ -67,6 +73,19 @@ export default function CaseConverter() {
 
   return (
     <div className="case-converter">
+      <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
+      {showClearConfirm && (
+        <ConfirmDialog
+          title="Clear your text?"
+          message="This removes the text you entered. It can't be undone."
+          confirmLabel="Clear text"
+          onCancel={() => setShowClearConfirm(false)}
+          onConfirm={() => {
+            setShowClearConfirm(false);
+            setText('');
+          }}
+        />
+      )}
       <div className="field">
         <label htmlFor="case-input">Your text</label>
         <textarea
@@ -79,7 +98,7 @@ export default function CaseConverter() {
         />
       </div>
       <div className="converter-toolbar">
-        <button type="button" className="ghost-button" onClick={() => setText('')} disabled={!text}>
+        <button type="button" className="ghost-button" onClick={() => setShowClearConfirm(true)} disabled={!text}>
           Clear
         </button>
         {!text && (

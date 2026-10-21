@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning.js';
+import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import { formatBytes } from '../../utils/formatBytes.js';
 import {
   ALGORITHMS,
@@ -40,6 +42,9 @@ export default function HashGenerator() {
   const [isHashing, setIsHashing] = useState(false);
   const [error, setError] = useState('');
   const [copiedId, setCopiedId] = useState('');
+
+  const hasUnsavedWork = text !== '' || Boolean(file) || hmacKey !== '' || compareWith.trim() !== '';
+  useUnsavedChangesWarning(hasUnsavedWork);
 
   const input = source === 'text' ? encoder.encode(text) : fileBytes;
   const hasInput = source === 'text' ? true : Boolean(fileBytes);
@@ -114,6 +119,7 @@ export default function HashGenerator() {
 
   return (
     <div className="hash-generator">
+      <UnsavedChangesGuard hasUnsavedChanges={hasUnsavedWork} />
       <div className="mode-toggle" role="radiogroup" aria-label="What to hash">
         {[
           ['text', 'Text'],
