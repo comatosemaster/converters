@@ -6254,3 +6254,274 @@ del.diff-word-removed {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Image Filters & Adjustments
+   ========================================================================== */
+
+.filters-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+.filters-preview {
+  position: sticky;
+  top: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.filters-canvas-frame {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  /* Checkerboard so transparent areas read as transparent. */
+  background: repeating-conic-gradient(var(--surface-2) 0 25%, var(--surface) 0 50%) 0 0 / 16px 16px;
+}
+
+.filters-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 65vh;
+  height: auto;
+  border-radius: var(--r-sm);
+}
+
+.filters-badge {
+  position: absolute;
+  top: var(--sp-3);
+  left: var(--sp-3);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-full);
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.filters-compare {
+  align-self: flex-start;
+  touch-action: none;
+  user-select: none;
+}
+
+.filters-controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.filters-label {
+  display: block;
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.filters-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.filters-preset {
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+
+.filters-preset:hover {
+  background: var(--surface-hover);
+}
+
+.filters-preset.active {
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.filters-slider {
+  margin-bottom: var(--sp-3);
+}
+
+.filters-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filters-value {
+  min-width: 3em;
+  padding: 0 var(--sp-1);
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  text-align: right;
+  cursor: pointer;
+}
+
+.filters-value:disabled {
+  cursor: default;
+}
+
+.filters-value:not(:disabled):hover {
+  color: var(--accent);
+}
+
+@media (max-width: 860px) {
+  .filters-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-preview {
+    position: static;
+  }
+}
+
+/* ==========================================================================
+   Hash Generator / UUID Generator
+   ========================================================================== */
+
+.hash-generator > .mode-toggle {
+  margin-bottom: var(--sp-4);
+}
+
+.hash-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3) var(--sp-4);
+  margin: var(--sp-4) 0;
+}
+
+.hash-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-5);
+  padding: 0;
+  list-style: none;
+}
+
+.hash-row {
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.hash-row.hash-match {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+}
+
+.hash-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-1);
+}
+
+.hash-name {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.hash-weak {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+}
+
+.hash-value {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.hash-verdict {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.hash-verdict-ok {
+  color: var(--success);
+}
+
+.hash-verdict-bad {
+  color: var(--danger);
+}
+
+.uuid-single {
+  margin: var(--sp-4) 0 var(--sp-6);
+  padding: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  text-align: center;
+}
+
+.uuid-single-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  color: var(--text);
+  word-break: break-all;
+}
+
+.uuid-list {
+  max-height: 420px;
+  overflow-y: auto;
+  margin: var(--sp-4) 0 var(--sp-6);
+  padding: var(--sp-2) var(--sp-3) var(--sp-2) 3.5em;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+}
+
+.uuid-list li {
+  padding: 2px 0;
+}
+
+.uuid-list li > * {
+  vertical-align: middle;
+}
+
+.uuid-list code {
+  margin-right: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text);
+  word-break: break-all;
+}
+
+.uuid-inspect-result code {
+  font-family: var(--font-mono);
+  word-break: break-all;
+}
+
+/* Toggles sitting in a row of options shouldn't push the row apart. */
+.hash-options .mode-toggle,
+.diff-options .mode-toggle {
+  margin-bottom: 0;
+}

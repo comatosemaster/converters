@@ -30,8 +30,10 @@ import {
   FileKey,
   FileOutput,
   FileText,
+  Fingerprint,
   FlipHorizontal,
   Globe,
+  Hash,
   Image,
   ImageDown,
   Images,
@@ -50,6 +52,7 @@ import {
   ScanText,
   Shrink,
   Shuffle,
+  SlidersHorizontal,
   Smartphone,
   Type,
   Wrench,
@@ -209,6 +212,17 @@ export const tools = [
     icon: FlipHorizontal,
     component: lazyWithPreload(() => import('./image-flipper/ImageFlipper.jsx')),
     keywords: ['flip', 'mirror', 'horizontal', 'vertical', 'reverse', 'image'],
+  },
+  {
+    id: 'image-filters',
+    name: 'Image Filters & Adjustments',
+    description: 'Adjust brightness, contrast, saturation, warmth and more, or apply one-click photo filters.',
+    category: 'graphics-media',
+    metaDescription:
+      'Edit photos in your browser: brightness, contrast, saturation, warmth, sharpen, blur, vignette, plus one-click filters. Full resolution, no upload.',
+    icon: SlidersHorizontal,
+    component: lazyWithPreload(() => import('./image-filters/ImageFilters.jsx')),
+    keywords: ['filter', 'brightness', 'contrast', 'saturation', 'photo editor', 'black and white', 'sepia', 'sharpen', 'blur', 'adjust', 'image'],
   },
   {
     id: 'watermark-remover',
@@ -624,6 +638,28 @@ export const tools = [
     icon: Link2,
     component: lazyWithPreload(() => import('./url-encoder-decoder/UrlEncoderDecoder.jsx')),
     keywords: ['url', 'encode', 'decode', 'percent encoding', 'uri', 'query string', 'encodeuricomponent'],
+  },
+  {
+    id: 'hash-generator',
+    name: 'Hash Generator',
+    description: 'Generate MD5, SHA-1, SHA-256 and SHA-512 hashes of text or files, and verify checksums.',
+    category: 'developer',
+    metaDescription:
+      'Calculate MD5, SHA-1, SHA-256, SHA-384 and SHA-512 hashes of text or files, verify download checksums, and compute HMACs. Runs in your browser.',
+    icon: Hash,
+    component: lazyWithPreload(() => import('./hash-generator/HashGenerator.jsx')),
+    keywords: ['hash', 'md5', 'sha1', 'sha256', 'sha512', 'checksum', 'hmac', 'verify', 'digest', 'file hash'],
+  },
+  {
+    id: 'uuid-generator',
+    name: 'UUID Generator',
+    description: 'Generate version 4 and version 7 UUIDs in bulk, and validate or decode any UUID.',
+    category: 'developer',
+    metaDescription:
+      'Generate random v4 or time-ordered v7 UUIDs (GUIDs), up to 1,000 at once, in any format. Validate and decode existing UUIDs. Runs in your browser.',
+    icon: Fingerprint,
+    component: lazyWithPreload(() => import('./uuid-generator/UuidGenerator.jsx')),
+    keywords: ['uuid', 'guid', 'v4', 'v7', 'unique id', 'random id', 'generator', 'identifier'],
   },
 ];
 

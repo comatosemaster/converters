@@ -150,7 +150,7 @@ export default function TextDiff() {
               type="button"
               role="radio"
               aria-checked={mode === m.id}
-              className={mode === m.id ? 'active' : ''}
+              className={mode === m.id ? 'mode-button active' : 'mode-button'}
               onClick={() => setMode(m.id)}
             >
               {m.label}
@@ -167,7 +167,7 @@ export default function TextDiff() {
               type="button"
               role="radio"
               aria-checked={view === id}
-              className={view === id ? 'active' : ''}
+              className={view === id ? 'mode-button active' : 'mode-button'}
               onClick={() => setView(id)}
             >
               {label}

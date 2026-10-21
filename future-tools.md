@@ -3,7 +3,7 @@
 Candidate tools for NeatSize, ranked. The site has 35 tools today; this lists
 ~130 more that don't overlap with them.
 
-**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker (2026-10-21) - marked ✅ below.
+**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator (2026-10-21) - marked ✅ below.
 (Image Cropper was removed: the existing Image Resizer & Cropper already crops.)
 
 Focus order: **Graphics & Media → Text & Data → Developer** first, Business &
@@ -32,12 +32,12 @@ Finance next, Everyday and Fun last.
 
 | # | Tool | Category | Effort | Why now |
 |---|------|----------|--------|---------|
-| 1 | Image Filters & Adjustments | Graphics | M | Brightness/contrast/saturation - a common edit the site can't do yet |
+| 1 | ✅ Image Filters & Adjustments | Graphics | M | Brightness/contrast/saturation - a common edit the site can't do yet |
 | 2 | ✅ PDF Merge | Text & Data | M | One of the most searched file tools; `pdf-lib`, fully client-side |
 | 3 | ✅ PDF to Image (JPG/PNG) | Text & Data | M | Very high demand; `pdf.js` |
 | 4 | ✅ Text Diff / Compare | Text & Data | M | Evergreen, used daily by devs and writers |
-| 5 | Hash Generator (MD5/SHA-1/SHA-256/SHA-512) | Developer | S | Web Crypto API, plus a tiny MD5 |
-| 6 | UUID Generator | Developer | S | `crypto.randomUUID()`, trivial and popular |
+| 5 | ✅ Hash Generator (MD5/SHA-1/SHA-256/SHA-512) | Developer | S | Web Crypto API, plus a tiny MD5 |
+| 6 | ✅ UUID Generator | Developer | S | `crypto.randomUUID()`, trivial and popular |
 | 7 | Unix Timestamp Converter | Developer | S | Daily dev need; reuse time-zone code from World Clock |
 | 8 | Case Converter | Text & Data | S | Massive search volume, near-zero effort |
 | 9 | QR Code Scanner (from image/camera) | Graphics | S | Pairs with QR Generator; `jsQR` |
@@ -71,7 +71,7 @@ Finance next, Everyday and Fun last.
 | SVG to PNG / JPG | P1 | S | Pick the output size; canvas |
 | Add Watermark to Image | P1 | S | Text/logo, opacity, tiling, position |
 | EXIF Viewer & Remover | P1 | M | Show GPS/camera data, strip it on download |
-| Image Filters & Adjustments | P1 | M | Brightness, contrast, saturation, grayscale, sepia, blur |
+| ✅ Image Filters & Adjustments | P1 | M | Shipped: 8 sliders, 10 presets, before/after, full-resolution export |
 | Blur / Pixelate Areas | P1 | M | Redact faces, plates, text; reuse the watermark brush |
 | Color Contrast Checker (WCAG) | P1 | S | AA/AAA verdicts and suggested fixes; reuse color utilities |
 | Palette Extractor from Image | P1 | S | Dominant colors (k-means); reuse Image Color Picker |
@@ -146,8 +146,8 @@ Finance next, Everyday and Fun last.
 
 | Tool | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| Hash Generator | P1 | S | MD5/SHA family for text and files; Web Crypto |
-| UUID Generator | P1 | S | v4/v7, bulk, uppercase/no-dash options |
+| ✅ Hash Generator | P1 | S | Shipped: MD5 + SHA family, text and files, HMAC, checksum verify |
+| ✅ UUID Generator | P1 | S | Shipped: v4/v7, bulk up to 1,000, 4 formats, UUID inspector |
 | Unix Timestamp Converter | P1 | S | Seconds/ms, time zones, relative time |
 | YAML ↔ JSON | P1 | S | `js-yaml`; reuse the JSON formatter UI |
 | XML Formatter / Validator + XML ↔ JSON | P1 | M | `DOMParser`; reuse the JSON tree view |
@@ -230,7 +230,7 @@ Finance next, Everyday and Fun last.
 
 ## Notes for building these
 
-- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 3 already shipped.
+- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 6 already shipped.
 - **Cheap SEO wins:** format-pair landing pages (Image Converter presets) and reference pages (HTTP status codes) cost little and match exact-phrase searches.
 - **Shared foundations worth building once:**
   - `pdf-lib` + `pdf.js` unlock about 8 PDF tools - now installed, with a shared loader in `src/utils/pdfjs.js` and page-range parsing in `pdfMergeUtils.js`.
