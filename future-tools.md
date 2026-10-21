@@ -3,7 +3,7 @@
 Candidate tools for NeatSize, ranked. The site has 35 tools today; this lists
 ~130 more that don't overlap with them.
 
-**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner (2026-10-21) - marked ✅ below.
+**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21) - marked ✅ below.
 (Image Cropper was removed: the existing Image Resizer & Cropper already crops.)
 
 Focus order: **Graphics & Media → Text & Data → Developer** first, Business &
@@ -41,9 +41,9 @@ Finance next, Everyday and Fun last.
 | 7 | ✅ Unix Timestamp Converter | Developer | S | Daily dev need; reuse time-zone code from World Clock |
 | 8 | ✅ Case Converter | Text & Data | S | Massive search volume, near-zero effort |
 | 9 | ✅ QR Code Scanner (from image/camera) | Graphics | S | Pairs with QR Generator; `jsQR` |
-| 10 | Image Rotator | Graphics | S | Reuse Image Flipper's canvas pipeline |
-| 11 | EXIF Viewer & Remover | Graphics | M | Privacy angle fits the brand perfectly |
-| 12 | Add Watermark to Image | Graphics | S | Complements Watermark Remover |
+| 10 | ✅ Image Rotator | Graphics | S | Reuse Image Flipper's canvas pipeline |
+| 11 | ✅ EXIF Viewer & Remover | Graphics | M | Privacy angle fits the brand perfectly |
+| 12 | ✅ Add Watermark to Image | Graphics | S | Complements Watermark Remover |
 | 13 | CSV ↔ JSON Converter | Text & Data | S | Constant dev and data-analyst need |
 | 14 | YAML ↔ JSON Converter | Developer | S | `js-yaml`; reuse JSON formatter UI |
 | 15 | Markdown Editor & Preview | Text & Data | S | `marked` + `prismjs` are already dependencies |
@@ -65,12 +65,12 @@ Finance next, Everyday and Fun last.
 | Tool | Priority | Effort | Notes |
 |------|----------|--------|-------|
 | Background Remover | P1 | L | Needs an ONNX/WebGPU segmentation model (tens of MB). Cache it, and show the download size up front |
-| Image Rotator | P1 | S | 90° steps plus a free angle; reuse Image Flipper |
+| ✅ Image Rotator | P1 | S | Shipped: 90°/180°/free angle, fit/crop/zoom-to-fill, exact quarter turns |
 | ✅ QR Code Scanner | P1 | S | Shipped: image/paste/camera, multi-size retry, WiFi/vCard/link parsing |
 | Barcode Generator | P1 | S | EAN-13, UPC, Code 128; `JsBarcode` |
 | SVG to PNG / JPG | P1 | S | Pick the output size; canvas |
-| Add Watermark to Image | P1 | S | Text/logo, opacity, tiling, position |
-| EXIF Viewer & Remover | P1 | M | Show GPS/camera data, strip it on download |
+| ✅ Add Watermark to Image | P1 | S | Shipped: text or logo, 9 positions or tiled, batch to ZIP |
+| ✅ EXIF Viewer & Remover | P1 | M | Shipped: lossless strip for JPG/PNG/WebP, keeps orientation, verified, batch |
 | ✅ Image Filters & Adjustments | P1 | M | Shipped: 8 sliders, 10 presets, before/after, full-resolution export |
 | Blur / Pixelate Areas | P1 | M | Redact faces, plates, text; reuse the watermark brush |
 | Color Contrast Checker (WCAG) | P1 | S | AA/AAA verdicts and suggested fixes; reuse color utilities |
@@ -230,7 +230,7 @@ Finance next, Everyday and Fun last.
 
 ## Notes for building these
 
-- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 9 already shipped.
+- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 12 already shipped.
 - **Cheap SEO wins:** format-pair landing pages (Image Converter presets) and reference pages (HTTP status codes) cost little and match exact-phrase searches.
 - **Shared foundations worth building once:**
   - `pdf-lib` + `pdf.js` unlock about 8 PDF tools - now installed, with a shared loader in `src/utils/pdfjs.js` and page-range parsing in `pdfMergeUtils.js`.

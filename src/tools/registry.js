@@ -40,6 +40,7 @@ import {
   ImageDown,
   Images,
   KeyRound,
+  MapPinOff,
   Merge,
   Link2,
   Palette,
@@ -49,6 +50,7 @@ import {
   QrCode,
   Receipt,
   Regex,
+  RotateCw,
   Ruler,
   Scale,
   ScanQrCode,
@@ -57,6 +59,7 @@ import {
   Shuffle,
   SlidersHorizontal,
   Smartphone,
+  Stamp,
   Type,
   Wrench,
 } from 'lucide-react';
@@ -217,6 +220,28 @@ export const tools = [
     keywords: ['flip', 'mirror', 'horizontal', 'vertical', 'reverse', 'image'],
   },
   {
+    id: 'image-rotator',
+    name: 'Image Rotator',
+    description: 'Rotate images by 90°, 180°, or any angle, and straighten tilted photos, in your browser.',
+    category: 'graphics-media',
+    metaDescription:
+      'Rotate an image 90°, 180° or by any angle and straighten tilted photos, with fit, crop or zoom-to-fill edges. Full resolution, nothing uploaded.',
+    icon: RotateCw,
+    component: lazyWithPreload(() => import('./image-rotator/ImageRotator.jsx')),
+    keywords: ['rotate', 'rotation', 'turn', 'straighten', 'tilt', '90 degrees', 'sideways', 'image', 'photo'],
+  },
+  {
+    id: 'exif-remover',
+    name: 'EXIF Viewer & Remover',
+    description: 'See the hidden metadata in your photos - GPS location, camera, date - and remove it without losing quality.',
+    category: 'graphics-media',
+    metaDescription:
+      'View and remove photo metadata (EXIF, GPS location, camera, XMP) from JPG, PNG and WebP without re-compressing. Batch, verified, in your browser.',
+    icon: MapPinOff,
+    component: lazyWithPreload(() => import('./exif-remover/ExifRemover.jsx')),
+    keywords: ['exif', 'metadata', 'gps', 'location', 'remove exif', 'exif viewer', 'privacy', 'photo', 'strip metadata', 'xmp'],
+  },
+  {
     id: 'image-filters',
     name: 'Image Filters & Adjustments',
     description: 'Adjust brightness, contrast, saturation, warmth and more, or apply one-click photo filters.',
@@ -237,6 +262,17 @@ export const tools = [
     icon: Eraser,
     component: lazyWithPreload(() => import('./watermark-remover/WatermarkRemover.jsx')),
     keywords: ['watermark', 'remove watermark', 'logo removal', 'object removal', 'inpaint', 'image', 'edit'],
+  },
+  {
+    id: 'add-watermark',
+    name: 'Add Watermark to Image',
+    description: 'Add a text or logo watermark to one image or a whole batch, in your browser.',
+    category: 'graphics-media',
+    metaDescription:
+      'Add a text or logo watermark to photos - set size, opacity, angle and position, or tile it. Batch-watermark many images as a ZIP. Nothing uploaded.',
+    icon: Stamp,
+    component: lazyWithPreload(() => import('./add-watermark/AddWatermark.jsx')),
+    keywords: ['watermark', 'add watermark', 'logo', 'copyright', 'protect photos', 'text on image', 'batch', 'image'],
   },
   {
     id: 'image-to-pdf',
