@@ -5,6 +5,8 @@ import { CATEGORIES } from '../tools/registry.js';
 import { useTheme } from '../hooks/useTheme.js';
 import CommandPalette from './CommandPalette.jsx';
 import Sidebar from './Sidebar.jsx';
+import SubscribeForm from './SubscribeForm.jsx';
+import { FORMS_ENABLED } from '../config/publicConfig.js';
 
 // The shared frame around every page: a sticky header (brand + category
 // nav + search), the tool sidebar, the page content itself (<Outlet /> is
@@ -150,7 +152,7 @@ export default function Layout() {
       </div>
 
       <footer className="site-footer">
-        <div className="site-footer-inner">
+        <div className={FORMS_ENABLED ? 'site-footer-inner has-subscribe' : 'site-footer-inner'}>
           <div className="footer-brand">
             <Link to="/" className="site-name">
               <img src="/logo.svg" alt="" className="site-logo" width="34" height="34" />
@@ -189,8 +191,18 @@ export default function Layout() {
                   Search tools
                 </button>
               </li>
+              <li>
+                <Link to="/privacy">Privacy</Link>
+              </li>
             </ul>
           </div>
+
+          {FORMS_ENABLED && (
+            <div className="footer-col footer-subscribe">
+              <h3>New tools by email</h3>
+              <SubscribeForm source="footer" compact />
+            </div>
+          )}
         </div>
 
         <div className="site-footer-bottom">

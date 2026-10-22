@@ -10,7 +10,7 @@ import { SITE_URL } from './seo/siteConfig.js';
 // static HTML each page ships with. Nothing here runs on a server at
 // request time - Cloudflare only ever serves the resulting files.
 
-export { ROUTES, NOT_FOUND_META } from './seo/routes.js';
+export { ROUTES, UTILITY_ROUTES, NOT_FOUND_META } from './seo/routes.js';
 export { renderHeadTags } from './seo/headTags.js';
 
 export async function render(pathname) {

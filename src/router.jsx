@@ -6,6 +6,9 @@ import BlogHome from './pages/BlogHome.jsx';
 import BlogCategoryPage from './pages/BlogCategoryPage.jsx';
 import BlogArticlePage from './pages/BlogArticlePage.jsx';
 import NotFound from './pages/NotFound.jsx';
+import PrivacyPage from './pages/PrivacyPage.jsx';
+import SubscribedPage from './pages/SubscribedPage.jsx';
+import UnsubscribedPage from './pages/UnsubscribedPage.jsx';
 import { getToolById } from './tools/registry.js';
 import { ROUTE_PATTERNS } from './seo/routes.js';
 
@@ -23,6 +26,9 @@ export const routes = [
       { path: ROUTE_PATTERNS.blog, element: <BlogHome /> },
       { path: ROUTE_PATTERNS.blogCategory, element: <BlogCategoryPage /> },
       { path: ROUTE_PATTERNS.article, element: <BlogArticlePage /> },
+      { path: ROUTE_PATTERNS.privacy, element: <PrivacyPage /> },
+      { path: ROUTE_PATTERNS.subscribed, element: <SubscribedPage /> },
+      { path: ROUTE_PATTERNS.unsubscribed, element: <UnsubscribedPage /> },
       { path: '*', element: <NotFound /> },
     ],
   },

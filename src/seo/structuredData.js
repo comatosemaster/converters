@@ -85,6 +85,20 @@ export function collectionSchema({ name, description, path, items }) {
   };
 }
 
+// A plain WebPage for standalone pages (privacy policy, request a tool) -
+// they're neither tools, listings nor articles.
+export function webPageSchema({ name, description, path }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name,
+    description,
+    url: absoluteUrl(path),
+    isPartOf: { '@id': WEBSITE_ID },
+    publisher: { '@id': ORGANIZATION_ID },
+  };
+}
+
 export function blogSchema() {
   return {
     '@context': 'https://schema.org',

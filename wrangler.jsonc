@@ -1,11 +1,20 @@
 {
+  "$schema": "./node_modules/wrangler/config-schema.json",
   // Config for Cloudflare's static-asset hosting (what "Workers & Pages" uses
   // under the hood now). This replaces the older public/_redirects approach,
   // which triggers a false-positive "infinite loop" error on this platform.
   "name": "converters",
   "compatibility_date": "2026-08-05",
+
+  // The Worker script. It only ever runs for /api/* (see run_worker_first
+  // below) and for the cron - every page, image and script is still served
+  // straight from dist/ without running any code, exactly as before.
+  "main": "worker/index.js",
+
   "assets": {
     "directory": "./dist/",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
     // Every real page is its own prerendered file (scripts/prerender.js),
     // so there's no longer any need to answer unknown URLs with index.html.
     // A URL with no file gets dist/404.html WITH a 404 status - a real
@@ -17,6 +26,40 @@
     // isn't configurable), so each page has exactly one address.
     "html_handling": "drop-trailing-slash"
   },
+
+  // Subscribers, digests and tool requests. Schema: migrations/*.sql.
+  // database_id comes from `npx wrangler d1 create neatsize-db` - see
+  // docs/email-and-requests-setup.md. Local dev (`wrangler dev`) works
+  // without it, using a local SQLite file.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "neatsize-db",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // 05:00 UTC daily = 09:00 in Tbilisi. Mondays build and send the weekly
+  // digest; other days only finish a digest that hit the daily send limit,
+  // plus housekeeping (deleting unconfirmed sign-ups after 7 days).
+  "triggers": {
+    "crons": ["0 5 * * *"]
+  },
+
+  // Non-secret settings. Secrets (RESEND_API_KEY, TURNSTILE_SECRET_KEY,
+  // IP_HASH_SALT) are set with `npx wrangler secret put` - never here.
+  "vars": {
+    "SITE_URL": "https://neatsize.com",
+    "EMAIL_FROM": "NeatSize <updates@neatsize.com>",
+    "EMAIL_REPLY_TO": "hello@neatsize.com",
+    // Kill switch: "false" makes the cron skip the digest entirely.
+    "DIGEST_ENABLED": "true",
+    // Resend's free plan allows 100 emails a day.
+    "MAX_SENDS_PER_RUN": "100"
+  },
+
+  "observability": { "enabled": true },
+
   // The site lives on neatsize.com (a custom domain attached to this Worker
   // in the Cloudflare dashboard). The *.workers.dev address served an exact
   // duplicate of every page, so it's switched off rather than redirected:

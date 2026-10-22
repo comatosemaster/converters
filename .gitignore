@@ -38,3 +38,9 @@ content-pipeline/data/
 
 # pdf.js support files, copied from node_modules by scripts/copy-pdfjs-assets.js
 public/pdfjs/
+
+
+# Cloudflare Worker secrets for local `wrangler dev` (real ones live in
+# `wrangler secret put`)
+.dev.vars
+.dev.vars.*

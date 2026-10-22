@@ -20,7 +20,8 @@ const app = (
   </StrictMode>
 )
 
-if (container.dataset.prerendered === 'page') {
+// 'utility' pages (e.g. /subscribed) are rendered for their real path too.
+if (container.dataset.prerendered === 'page' || container.dataset.prerendered === 'utility') {
   // The current tool's code must be loaded first, or React would have to
   // swap its prerendered UI for a loading placeholder mid-hydration.
   preloadForPath(window.location.pathname).finally(() => {

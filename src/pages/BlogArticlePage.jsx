@@ -15,6 +15,7 @@ import ToolGrid from '../components/ToolGrid.jsx';
 import ArticleGrid from '../components/blog/ArticleGrid.jsx';
 import TableOfContents from '../components/blog/TableOfContents.jsx';
 import ArticleContent from '../components/blog/ArticleContent.jsx';
+import SubscribeForm from '../components/SubscribeForm.jsx';
 import ShareButtons from '../components/blog/ShareButtons.jsx';
 import NotFound from './NotFound.jsx';
 
@@ -95,6 +96,12 @@ export default function BlogArticlePage() {
       <div className="article-page-grid">
         <div className="article-page-main">
           <ArticleContent html={article.html} />
+
+          <SubscribeForm
+            source="blog"
+            title="Get new guides by email"
+            description="One short email when new tools or guides are published - at most once a week."
+          />
 
           <ShareButtons url={canonicalPath} title={article.title} />
 

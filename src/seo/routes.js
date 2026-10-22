@@ -32,6 +32,7 @@ import {
   categoryMeta,
   homeMeta,
   notFoundMeta,
+  staticPageMeta,
   toolMeta,
 } from './buildMeta.js';
 import {
@@ -41,8 +42,10 @@ import {
   collectionSchema,
   organizationSchema,
   toolSchema,
+  webPageSchema,
   websiteSchema,
 } from './structuredData.js';
+import { STATIC_PAGES } from './staticPages.js';
 import { absoluteUrl } from './siteConfig.js';
 
 // The URL shape of each page type - the router's route definitions.
@@ -53,6 +56,8 @@ export const ROUTE_PATTERNS = {
   blog: '/blog',
   blogCategory: '/blog/category/:categoryId',
   article: '/blog/:slug',
+  // Standalone pages each have their own fixed path (see staticPages.js).
+  ...Object.fromEntries(STATIC_PAGES.map((page) => [page.id, page.path])),
 };
 
 // Page dates from git, baked in at build time by vite.config.js (see
@@ -197,13 +202,40 @@ function buildRoutes() {
     );
   }
 
+  for (const page of STATIC_PAGES.filter((entry) => entry.indexable)) {
+    list.push(
+      route({
+        path: page.path,
+        type: 'page',
+        meta: staticPageMeta(page),
+        breadcrumbs: [{ label: 'Home', to: '/' }, { label: page.title }],
+        jsonLd: [webPageSchema({ name: page.title, description: page.description, path: page.path })],
+      }),
+    );
+  }
+
   return list;
 }
 
 /** Every indexable route, in sitemap order. */
 export const ROUTES = buildRoutes();
 
-const byPath = new Map(ROUTES.map((entry) => [entry.path, entry]));
+/**
+ * Real pages that are NOT indexable (noindex, no canonical, not in the
+ * sitemap) - the pages people land on from email links. Prerendered like
+ * the rest; marked data-prerendered="utility".
+ */
+export const UTILITY_ROUTES = STATIC_PAGES.filter((page) => !page.indexable).map((page) => ({
+  path: page.path,
+  type: 'utility',
+  url: absoluteUrl(page.path),
+  lastmod: null,
+  breadcrumbs: null,
+  ...staticPageMeta(page),
+  jsonLd: [],
+}));
+
+const byPath = new Map([...ROUTES, ...UTILITY_ROUTES].map((entry) => [entry.path, entry]));
 
 /**
  * The registry entry for a URL path, or undefined if it isn't a real page.

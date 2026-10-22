@@ -18,6 +18,11 @@
 // ...plus a sitemap that lists exactly the prerendered pages, and a
 // 404.html that is noindex with no canonical.
 //
+// Pages marked data-prerendered="utility" (where email links land, e.g.
+// /subscribed) are the deliberate exception: they must be noindex, have no
+// canonical and stay OUT of the sitemap - but still need a unique title
+// and one <h1>.
+//
 // Deliberately independent of the app's code: it doesn't import the route
 // registry, so a bug there can't hide itself from this check.
 // -----------------------------------------------------------------------
@@ -33,6 +38,8 @@ const BRAND_SUFFIX = ' | NeatSize';
 const TITLE_MAX = 60;
 const DESCRIPTION_MAX = 155;
 const MIN_WORDS = 100;
+// Indexable pages that are neither tools, listings nor articles.
+const STANDALONE_PAGES = new Set(['/privacy', '/request-tool']);
 
 // Folders that hold assets, not pages.
 const SKIP_DIRS = new Set(['assets', 'tesseract']);
@@ -143,6 +150,7 @@ function expectedSchemas(route) {
   if (route.startsWith('/tool/')) return ['WebApplication', 'BreadcrumbList'];
   if (route.startsWith('/category/') || route.startsWith('/blog/category/')) return ['CollectionPage', 'BreadcrumbList'];
   if (route === '/blog') return ['Blog'];
+  if (STANDALONE_PAGES.has(route)) return ['WebPage', 'BreadcrumbList'];
   return ['BlogPosting', 'BreadcrumbList'];
 }
 
@@ -154,6 +162,7 @@ async function main() {
   const seen = { title: new Map(), description: new Map(), canonical: new Map() };
 
   let notFound = null;
+  const utility = [];
   for (const file of files.sort()) {
     const route = routeFor(file);
     // eslint-disable-next-line no-await-in-loop
@@ -161,6 +170,19 @@ async function main() {
 
     if (route === '/404') {
       notFound = page;
+      continue;
+    }
+
+    if (page.prerendered === 'utility') {
+      const title = page.titles[0] ?? '';
+      utility.push(route);
+      if (page.titles.length !== 1) fail(route, `${page.titles.length} <title> tags`);
+      if (!title.endsWith(BRAND_SUFFIX)) fail(route, `title doesn't end with "${BRAND_SUFFIX}"`);
+      if (!page.robots?.includes('noindex')) fail(route, 'noindex page is not marked noindex');
+      if (page.canonicals.length > 0) fail(route, 'noindex page has a canonical tag');
+      if (page.h1s.length !== 1) fail(route, `${page.h1s.length} <h1> elements`);
+      if (seen.title.has(title)) fail(route, `duplicate title - same as ${seen.title.get(title)}`);
+      else seen.title.set(title, route);
       continue;
     }
 
@@ -220,7 +242,9 @@ async function main() {
   const sitemap = await readFile(path.join(DIST, 'sitemap.xml'), 'utf8');
   const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => decode(m[1]));
   const pageUrls = rows.map((row) => (row.route === '/' ? `${SITE}/` : `${SITE}${row.route}`));
+  const utilityUrls = new Set(utility.map((route) => `${SITE}${route}`));
   for (const url of sitemapUrls) {
+    if (utilityUrls.has(url)) failures.push(`sitemap: ${url} is a noindex page and must not be listed`);
     if (!url.startsWith(`${SITE}/`)) failures.push(`sitemap: ${url} is not on ${SITE}`);
     if (!pageUrls.includes(url)) failures.push(`sitemap: ${url} has no prerendered page`);
   }
@@ -235,7 +259,7 @@ async function main() {
     );
   }
   console.log(
-    `\n${rows.length} pages, ${sitemapUrls.length} sitemap URLs (${withLastmod} with lastmod), 404.html: ${notFound ? `robots="${notFound.robots}", canonical tags: ${notFound.canonicals.length}` : 'MISSING'}`,
+    `\n${rows.length} pages (+ ${utility.length} noindex: ${utility.join(', ') || 'none'}), ${sitemapUrls.length} sitemap URLs (${withLastmod} with lastmod), 404.html: ${notFound ? `robots="${notFound.robots}", canonical tags: ${notFound.canonicals.length}` : 'MISSING'}`,
   );
 
   if (failures.length > 0) {

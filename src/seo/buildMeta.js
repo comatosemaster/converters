@@ -167,6 +167,22 @@ export function articleMeta(article) {
   };
 }
 
+// --- Standalone pages (privacy, request a tool, sign-up results) -----------
+
+// `indexable: false` pages (e.g. "You're subscribed") are real pages but
+// have nothing to rank for: noindex, and no canonical - same treatment as
+// the 404 page.
+export function staticPageMeta({ title, description, path, indexable = true }) {
+  return {
+    title: fitTitle([`${title}${SUFFIX}`, title]),
+    description: clamp(description, META_DESCRIPTION_MAX),
+    canonical: indexable ? path : undefined,
+    robots: indexable ? undefined : 'noindex, follow',
+    image: DEFAULT_OG_IMAGE,
+    type: 'website',
+  };
+}
+
 // --- Not found -------------------------------------------------------------
 
 export function notFoundMeta() {

@@ -81,7 +81,7 @@ function buildSitemap(routes) {
 }
 
 async function main() {
-  const { render, ROUTES, NOT_FOUND_META, renderHeadTags } = await import(pathToFileURL(SERVER_ENTRY).href);
+  const { render, ROUTES, UTILITY_ROUTES, NOT_FOUND_META, renderHeadTags } = await import(pathToFileURL(SERVER_ENTRY).href);
 
   // Read once, before anything is written: dist/index.html is both the
   // template and the homepage's own output file.
@@ -95,6 +95,14 @@ async function main() {
     // eslint-disable-next-line no-await-in-loop -- sequential keeps a failure attributable to one route
     const body = await render(route.path);
     pages.set(outputFile(route.path), fillTemplate(template, { head: renderHeadTags(route), body, kind: 'page' }));
+  }
+
+  // Real pages that shouldn't be indexed (where email links land). Built
+  // the same way, but noindex and left out of the sitemap.
+  for (const route of UTILITY_ROUTES) {
+    // eslint-disable-next-line no-await-in-loop
+    const body = await render(route.path);
+    pages.set(outputFile(route.path), fillTemplate(template, { head: renderHeadTags(route), body, kind: 'utility' }));
   }
 
   // The 404 page. The path is only a placeholder - any URL with no file
@@ -115,7 +123,9 @@ async function main() {
 
   await writeFile(path.join(DIST, 'sitemap.xml'), buildSitemap(ROUTES), 'utf8');
 
-  console.log(`prerender: ${ROUTES.length} pages + 404.html + sitemap.xml (${ROUTES.length} URLs) written to dist/`);
+  console.log(
+    `prerender: ${ROUTES.length} pages + ${UTILITY_ROUTES.length} noindex pages + 404.html + sitemap.xml (${ROUTES.length} URLs) written to dist/`,
+  );
 }
 
 main().catch((error) => {

@@ -8306,3 +8306,168 @@ del.diff-word-removed {
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   Email sign-up (SubscribeForm) + standalone pages
+   ========================================================================== */
+
+.site-footer-inner.has-subscribe {
+  grid-template-columns: 1.3fr repeat(2, 1fr) 1.6fr;
+}
+
+.subscribe {
+  margin: var(--sp-10) 0 var(--sp-6);
+  padding: var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+
+.subscribe.compact {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.subscribe-title {
+  margin: 0 0 var(--sp-1);
+  font-size: var(--fs-lg);
+}
+
+.subscribe-description {
+  margin: 0 0 var(--sp-4);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+
+.subscribe-row {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.subscribe-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.subscribe-row .btn {
+  flex: none;
+}
+
+/* Turnstile's iframe takes no space until it actually needs a click. */
+.subscribe-captcha:empty {
+  display: none;
+}
+
+.subscribe-captcha {
+  margin-top: var(--sp-2);
+}
+
+.subscribe-promise {
+  margin: var(--sp-2) 0 0;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.55;
+}
+
+.subscribe-promise a {
+  color: inherit;
+}
+
+.subscribe-error {
+  margin: var(--sp-2) 0 0;
+  color: var(--danger);
+  font-size: var(--fs-sm);
+}
+
+.subscribe-success {
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid color-mix(in srgb, var(--success) 40%, transparent);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--success) 8%, transparent);
+  color: var(--text);
+  font-size: var(--fs-sm);
+}
+
+.static-page {
+  max-width: 720px;
+}
+
+.notice-page {
+  margin: var(--sp-12) auto;
+  text-align: center;
+}
+
+.notice-page p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.notice-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: var(--sp-4);
+  border-radius: var(--r-full);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.notice-icon.warn {
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  color: var(--warning);
+}
+
+.notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-6);
+}
+
+.prose-page h1 {
+  margin: var(--sp-4) 0 var(--sp-3);
+}
+
+.prose-page h2 {
+  margin: var(--sp-8) 0 var(--sp-3);
+  font-size: var(--fs-xl);
+}
+
+.prose-page p,
+.prose-page li {
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.prose-page ul {
+  padding-left: var(--sp-6);
+}
+
+.prose-page li {
+  margin-bottom: var(--sp-2);
+}
+
+.prose-lead {
+  font-size: var(--fs-md);
+}
+
+@media (max-width: 900px) {
+  .site-footer-inner.has-subscribe {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-subscribe {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .subscribe-row {
+    flex-direction: column;
+  }
+}
