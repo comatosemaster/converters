@@ -17,6 +17,11 @@ export default defineConfig(async ({ isSsrBuild }) => ({
         find: /^onnxruntime-web$/,
         replacement: fileURLToPath(new URL('./node_modules/onnxruntime-web/dist/ort.min.mjs', import.meta.url)),
       },
+      {
+        // Same for the processor-only build its background worker uses.
+        find: /^onnxruntime-web\/wasm$/,
+        replacement: fileURLToPath(new URL('./node_modules/onnxruntime-web/dist/ort.wasm.min.mjs', import.meta.url)),
+      },
     ],
   },
   define: {

@@ -6,7 +6,7 @@ import UnsavedChangesGuard from '../../components/UnsavedChangesGuard.jsx';
 import ConfirmDialog from '../../components/ConfirmDialog.jsx';
 import { validateImageDimensions, validateImageFile } from '../image-flipper/imageFlipUtils.js';
 import { canvasToBlob } from '../image-rotator/rotateUtils.js';
-import { MODEL_SIZE_MB, composeCutout, cutoutName, loadModel, predictMask } from './backgroundRemovalUtils.js';
+import { MODEL_SIZES_MB, composeCutout, cutoutName, predictMask } from './backgroundRemovalUtils.js';
 
 const BACKGROUNDS = [
   { id: 'transparent', label: 'Transparent', color: null },
@@ -34,17 +34,22 @@ function decode(file) {
   });
 }
 
-function describeProgress(progress, device) {
+function describeProgress(progress) {
   if (!progress) return '';
+  if (progress.phase === 'fallback') return "Your graphics card couldn't run the model - switching to your processor…";
   if (progress.phase === 'model') {
     if (progress.cached) return 'Loading the AI model from this device…';
+    if (!progress.total) return 'Downloading the AI model (one time)…';
     const mb = (n) => (n / (1024 * 1024)).toFixed(1);
     return `Downloading the AI model (one time): ${mb(progress.loaded)} of ${mb(progress.total)} MB`;
   }
   if (progress.phase === 'init') return 'Starting the AI model…';
-  return device === 'wasm'
-    ? 'Removing the background on your processor - this can take 5 to 20 seconds…'
-    : 'Removing the background…';
+  if (progress.phase === 'run') {
+    return progress.device === 'wasm'
+      ? 'Removing the background on your processor - this can take 5 to 20 seconds…'
+      : 'Removing the background on your graphics card…';
+  }
+  return 'Getting ready…';
 }
 
 // --- The tool component -------------------------------------------------------
@@ -92,15 +97,18 @@ export default function BackgroundRemover() {
     setMask(null);
     setCutoutUrl('');
     setError('');
-    setProgress({ phase: 'model', loaded: 0, total: MODEL_SIZE_MB * 1024 * 1024 });
-    const started = performance.now();
+    setProgress({ phase: 'start' });
+    let runStarted = performance.now();
     try {
-      const loaded = await loadModel((p) => runId === runIdRef.current && setProgress(p));
+      const { mask: nextMask, device: usedDevice } = await predictMask(img, (p) => {
+        if (runId !== runIdRef.current) return;
+        // Timing starts once the model is ready, so it reflects the
+        // removal itself rather than the one-time download.
+        if (p.phase === 'run') runStarted = performance.now();
+        setProgress(p);
+      });
       if (runId !== runIdRef.current) return;
-      setDevice(loaded.device);
-      const runStarted = performance.now();
-      const nextMask = await predictMask(img, (p) => runId === runIdRef.current && setProgress(p));
-      if (runId !== runIdRef.current) return;
+      setDevice(usedDevice);
       // A transparent PNG of the cutout for the preview; the download is
       // composed fresh with whatever background is chosen.
       const blob = await canvasToBlob(composeCutout(img, nextMask, null), 'image/png');
@@ -108,14 +116,17 @@ export default function BackgroundRemover() {
       setCutoutUrl(URL.createObjectURL(blob));
       setMask(nextMask);
       setCompare(100);
-      setElapsed({ total: (performance.now() - started) / 1000, run: (performance.now() - runStarted) / 1000 });
+      setElapsed((performance.now() - runStarted) / 1000);
     } catch (runError) {
       if (runId !== runIdRef.current) return;
       const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+      const message = runError?.message ?? '';
       setError(
         offline
           ? "You're offline, and the AI model hasn't been downloaded on this device yet. Connect to the internet and try again."
-          : runError?.message?.includes('memory')
+          : /failed to fetch|networkerror|load failed|couldn't be downloaded/i.test(message)
+            ? "The AI model couldn't be downloaded. Check your internet connection, then press Try again."
+          : message.includes('memory')
             ? 'Your device ran out of memory for this image. Try a smaller image, or close other tabs.'
             : `Something went wrong: ${runError?.message || 'the AI model could not run in this browser.'}`,
       );
@@ -238,8 +249,9 @@ export default function BackgroundRemover() {
             <p className="drop-zone-hint">People, products, pets, cars - PNG, JPG or WebP</p>
           </div>
           <p className="field-hint">
-            The first time, your browser downloads a {MODEL_SIZE_MB} MB AI model. It&apos;s kept on this
-            device, so later photos start right away. Your photos are never uploaded.
+            The first time, your browser downloads an AI model ({MODEL_SIZES_MB[0]}-{MODEL_SIZES_MB[1]} MB, depending on
+            your device). It&apos;s kept on this device, so later photos start right away. Your photos are
+            never uploaded.
           </p>
         </>
       )}
@@ -276,8 +288,8 @@ export default function BackgroundRemover() {
                   {isWorking && (
                     <div className="bg-remove-status" aria-live="polite">
                       <span className="bg-remove-spinner" aria-hidden="true" />
-                      <p>{describeProgress(progress, device)}</p>
-                      {progress?.phase === 'model' && !progress.cached && (
+                      <p>{describeProgress(progress)}</p>
+                      {progress?.phase === 'model' && progress.total > 0 && (
                         <progress value={progress.loaded} max={progress.total} />
                       )}
                     </div>
@@ -302,7 +314,7 @@ export default function BackgroundRemover() {
               </button>
               {elapsed && (
                 <span className="field-hint">
-                  Done in {elapsed.run.toFixed(1)} s on your {device === 'webgpu' ? 'graphics card' : 'processor'}
+                  Done in {elapsed.toFixed(1)} s on your {device === 'webgpu' ? 'graphics card' : 'processor'}
                 </span>
               )}
             </div>
@@ -382,7 +394,7 @@ export default function BackgroundRemover() {
           fine detail such as hair and edges. It runs on your graphics card through WebGPU where
           your browser supports it (current Chrome, Edge and Safari), which takes about a second;
           otherwise it runs on your processor, which takes longer. The model file is downloaded
-          once - about {MODEL_SIZE_MB} MB - and stored on your device for next time.
+          once - {MODEL_SIZES_MB[1]} MB for graphics cards, {MODEL_SIZES_MB[0]} MB for processors - and stored on your device for next time.
         </p>
 
         <h2>Tips for the best result</h2>

@@ -4,60 +4,57 @@
 // An AI segmentation model (ISNet "general use", from the DIS project,
 // MIT/Apache-licensed) predicts for every pixel how likely it is to be
 // part of the main subject. That prediction becomes the alpha channel of
-// the photo.
+// the photo. It runs with ONNX Runtime Web, in one of two ways:
 //
-// It runs with ONNX Runtime Web: on the graphics card through WebGPU when
-// the browser offers it (about a second), otherwise on the processor
-// (WebAssembly, slower - roughly 5 to 20 seconds per photo).
+//  - Graphics card (WebGPU), about a second per photo: a half-precision
+//    copy of the model (88 MB). The smaller 8-bit copy can't be used
+//    here - ONNX Runtime's WebGPU kernels compute it wrongly (an empty
+//    mask) or refuse it outright, which is what users first ran into.
+//  - Processor (WebAssembly), roughly 5-20 seconds: the 8-bit copy (44 MB).
+//
+// Either way the model runs in a background worker (isnetWorker.js), so
+// the page never freezes while it works.
+//
+// The graphics card is tried first when the browser offers it. If it
+// fails or returns an obviously broken result, the tool switches to the
+// processor automatically for the rest of the visit.
 //
 // What's downloaded, and why it's not served from neatsize.com:
-//  - the model (44 MB) from Hugging Face, pinned to one exact revision so
-//    it can't change underneath the tool. Cached in the browser after the
-//    first time, so later visits start immediately and work offline.
-//  - ONNX Runtime's WebAssembly files from jsDelivr, pinned to the exact
+//  - the model, from Hugging Face, pinned to one exact revision so it
+//    can't change underneath the tool, then kept in the browser's Cache
+//    Storage - later visits start immediately and work offline.
+//  - ONNX Runtime's WebAssembly files, from jsDelivr pinned to the exact
 //    npm version installed here. The WebGPU build is 27 MB, over the
 //    25 MB per-file limit of the site's hosting.
 // Only code and model weights are downloaded - the photo itself never
 // leaves the device.
 // -----------------------------------------------------------------------
 
-const MODEL_REPO = 'xrds/isnet-general-onnx-int8';
-const MODEL_REVISION = '71eff2372ec9c8edbc6ca637ded591423d23b65a';
-export const MODEL_URL = `https://huggingface.co/${MODEL_REPO}/resolve/${MODEL_REVISION}/onnx/model_quantized.onnx`;
-export const MODEL_SIZE_MB = 44;
+const MODELS = {
+  gpu: {
+    url: 'https://huggingface.co/imgly/isnet-general-onnx/resolve/440dea96dd4a3b06bbbf5abec3e26569dd7ec49f/onnx/model_fp16.onnx',
+    sizeMB: 88,
+  },
+  cpu: {
+    url: 'https://huggingface.co/xrds/isnet-general-onnx-int8/resolve/71eff2372ec9c8edbc6ca637ded591423d23b65a/onnx/model_quantized.onnx',
+    sizeMB: 44,
+  },
+};
+export const MODEL_SIZES_MB = [MODELS.cpu.sizeMB, MODELS.gpu.sizeMB];
 const MODEL_CACHE = 'neatsize-models-v1';
 
 // The model's fixed input size.
 const SIZE = 1024;
 
-let ortPromise = null;
-let sessionPromise = null;
-let modelBytesPromise = null;
-
-function loadRuntime(useGpu) {
-  if (!ortPromise) {
-    ortPromise = import('onnxruntime-web').then((ort) => {
-      ort.env.wasm.wasmPaths = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ort.env.versions.web}/dist/`;
-      // On the processor path, run inference in a background worker so the
-      // page stays responsive meanwhile. (WebGPU work already happens off
-      // the main thread, and the worker proxy doesn't support it.) This
-      // has to be decided before the runtime starts up.
-      ort.env.wasm.proxy = !useGpu;
-      return ort;
-    });
-  }
-  return ortPromise;
-}
-
-// Downloads the model once, reporting progress, and keeps it in the
+// Downloads a model once, reporting progress, and keeps it in the
 // browser's Cache Storage for next time.
-async function fetchModel(onProgress) {
+async function fetchModel(model, onProgress) {
   let cache = null;
   try {
     cache = await caches.open(MODEL_CACHE);
-    const cached = await cache.match(MODEL_URL);
+    const cached = await cache.match(model.url);
     if (cached) {
-      onProgress?.({ phase: 'model', loaded: 1, total: 1, cached: true });
+      onProgress?.({ phase: 'model', cached: true });
       return new Uint8Array(await cached.arrayBuffer());
     }
   } catch {
@@ -65,12 +62,13 @@ async function fetchModel(onProgress) {
     // download without caching.
   }
 
-  const response = await fetch(MODEL_URL);
+  const response = await fetch(model.url);
   if (!response.ok) throw new Error(`The AI model couldn't be downloaded (error ${response.status}).`);
-  const total = Number(response.headers.get('content-length')) || MODEL_SIZE_MB * 1024 * 1024;
+  const total = Number(response.headers.get('content-length')) || model.sizeMB * 1024 * 1024;
   const reader = response.body.getReader();
   const chunks = [];
   let loaded = 0;
+  onProgress?.({ phase: 'model', loaded, total });
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -85,7 +83,7 @@ async function fetchModel(onProgress) {
     offset += chunk.length;
   }
   try {
-    await cache?.put(MODEL_URL, new Response(bytes, { headers: { 'content-type': 'application/octet-stream' } }));
+    await cache?.put(model.url, new Response(bytes, { headers: { 'content-type': 'application/octet-stream' } }));
   } catch {
     // Out of storage space: still works, just downloads again next time.
   }
@@ -100,36 +98,102 @@ async function hasWebGpu() {
   }
 }
 
-/**
- * Loads the runtime and model (once per page visit). Resolves to
- * { session, ort, device: 'webgpu' | 'wasm' }.
- */
-export function loadModel(onProgress) {
-  if (!sessionPromise) {
-    sessionPromise = (async () => {
-      const useGpu = await hasWebGpu();
-      const [ort, bytes] = await Promise.all([loadRuntime(useGpu), (modelBytesPromise ??= fetchModel(onProgress))]);
+// --- Running the model (always in a background worker) -----------------------
+
+const workers = { webgpu: null, wasm: null };
+
+function callWorker(worker, message, transfer, expected) {
+  return new Promise((resolve, reject) => {
+    worker.onmessage = ({ data }) => {
+      if (data.type === 'error') reject(new Error(data.message));
+      else if (data.type === expected) resolve(data);
+    };
+    worker.onerror = (event) => reject(new Error(event.message || 'The background worker failed to start.'));
+    worker.postMessage(message, transfer);
+  });
+}
+
+// One worker per device, created (and its model downloaded) on first use.
+function loadWorker(deviceName, onProgress) {
+  if (!workers[deviceName]) {
+    const model = deviceName === 'webgpu' ? MODELS.gpu : MODELS.cpu;
+    workers[deviceName] = (async () => {
+      const bytes = await fetchModel(model, onProgress);
       onProgress?.({ phase: 'init' });
-      if (useGpu) {
-        try {
-          // A copy: creating a session can take ownership of the buffer,
-          // and the processor fallback below needs the bytes intact.
-          const session = await ort.InferenceSession.create(bytes.slice(), { executionProviders: ['webgpu'] });
-          return { session, ort, device: 'webgpu' };
-        } catch {
-          // Some GPUs/drivers fail here - fall back to the processor.
-        }
+      const worker = new Worker(new URL('./isnetWorker.js', import.meta.url), { type: 'module' });
+      try {
+        await callWorker(worker, { type: 'init', device: deviceName, bytes: bytes.buffer }, [bytes.buffer], 'ready');
+      } catch (error) {
+        worker.terminate();
+        throw error;
       }
-      const session = await ort.InferenceSession.create(bytes, { executionProviders: ['wasm'] });
-      return { session, ort, device: 'wasm' };
-    })().catch((error) => {
-      // Let a later attempt (e.g. after reconnecting) start over.
-      sessionPromise = null;
-      modelBytesPromise = null;
-      throw error;
+      return worker;
+    })();
+    // Let a later attempt (e.g. after reconnecting) start over.
+    workers[deviceName].catch(() => {
+      workers[deviceName] = null;
     });
   }
-  return sessionPromise;
+  return workers[deviceName];
+}
+
+async function runOn(deviceName, input, onProgress) {
+  const worker = await loadWorker(deviceName, onProgress);
+  onProgress?.({ phase: 'run', device: deviceName });
+  const { output } = await callWorker(worker, { type: 'run', input }, [input.buffer], 'result');
+  return output;
+}
+
+// --- Choosing between them ----------------------------------------------------
+
+// null = not decided yet; then 'webgpu' or 'wasm' for the rest of the visit.
+let device = null;
+
+// A broken run usually gives NaN or a flat, constant image rather than
+// throwing - treat those as failures too.
+function looksValid(prediction) {
+  let min = Infinity;
+  let max = -Infinity;
+  for (let i = 0; i < prediction.length; i += 1) {
+    const v = prediction[i];
+    if (!Number.isFinite(v)) return false;
+    if (v < min) min = v;
+    if (v > max) max = v;
+  }
+  return max - min > 0.05;
+}
+
+function makeInput(img) {
+  // The model sees the photo squashed to 1024x1024, normalized the way it
+  // was trained: (value - 128) / 256 per channel, planar RGB.
+  const canvas = makeCanvas(SIZE, SIZE);
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, SIZE, SIZE);
+  const pixels = ctx.getImageData(0, 0, SIZE, SIZE).data;
+  const plane = SIZE * SIZE;
+  const data = new Float32Array(3 * plane);
+  for (let i = 0; i < plane; i += 1) {
+    data[i] = (pixels[i * 4] - 128) / 256;
+    data[plane + i] = (pixels[i * 4 + 1] - 128) / 256;
+    data[2 * plane + i] = (pixels[i * 4 + 2] - 128) / 256;
+  }
+  return data;
+}
+
+async function predict(img, onProgress) {
+  if (device === null) device = (await hasWebGpu()) ? 'webgpu' : 'wasm';
+  if (device === 'webgpu') {
+    try {
+      const prediction = await runOn('webgpu', makeInput(img), onProgress);
+      if (looksValid(prediction)) return { prediction, device };
+    } catch {
+      // Falls through to the processor below.
+    }
+    device = 'wasm';
+    onProgress?.({ phase: 'fallback' });
+  }
+  return { prediction: await runOn('wasm', makeInput(img), onProgress), device };
 }
 
 function makeCanvas(width, height) {
@@ -140,33 +204,16 @@ function makeCanvas(width, height) {
 }
 
 /**
- * Predicts the subject mask for `img`. Returns a canvas the size of the
- * image whose alpha channel is the mask (opaque = keep).
+ * Predicts the subject mask for `img`. Resolves to { mask, device }: a
+ * canvas the size of the image whose alpha channel is the mask (opaque =
+ * keep), and which processor did the work.
  */
 export async function predictMask(img, onProgress) {
-  const { session, ort } = await loadModel(onProgress);
-  onProgress?.({ phase: 'run' });
-
-  // The model sees the photo squashed to 1024x1024, normalized the way it
-  // was trained: (value - 128) / 256 per channel, planar RGB.
-  const input = makeCanvas(SIZE, SIZE);
-  const ictx = input.getContext('2d', { willReadFrequently: true });
-  ictx.imageSmoothingQuality = 'high';
-  ictx.drawImage(img, 0, 0, SIZE, SIZE);
-  const pixels = ictx.getImageData(0, 0, SIZE, SIZE).data;
-  const plane = SIZE * SIZE;
-  const data = new Float32Array(3 * plane);
-  for (let i = 0; i < plane; i += 1) {
-    data[i] = (pixels[i * 4] - 128) / 256;
-    data[plane + i] = (pixels[i * 4 + 1] - 128) / 256;
-    data[2 * plane + i] = (pixels[i * 4 + 2] - 128) / 256;
-  }
-
-  const results = await session.run({ [session.inputNames[0]]: new ort.Tensor('float32', data, [1, 3, SIZE, SIZE]) });
-  const prediction = results[session.outputNames[0]].data;
+  const { prediction, device: usedDevice } = await predict(img, onProgress);
 
   // Stretch the prediction to the full 0-1 range, as the model's authors
   // do, so the subject is fully opaque and the background fully clear.
+  const plane = SIZE * SIZE;
   let min = Infinity;
   let max = -Infinity;
   for (let i = 0; i < plane; i += 1) {
@@ -185,7 +232,7 @@ export async function predictMask(img, onProgress) {
   const mctx = mask.getContext('2d');
   mctx.imageSmoothingQuality = 'high';
   mctx.drawImage(small, 0, 0, mask.width, mask.height);
-  return mask;
+  return { mask, device: usedDevice };
 }
 
 /**
