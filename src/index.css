@@ -8471,3 +8471,104 @@ del.diff-word-removed {
     flex-direction: column;
   }
 }
+
+/* --- Request a Tool --- */
+
+.nav-request-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text-secondary);
+  transition: border-color var(--t) var(--ease), background var(--t) var(--ease), color var(--t) var(--ease);
+}
+
+.nav-request-link:hover,
+.nav-request-link.active {
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.tool-card-request {
+  border-style: dashed;
+}
+
+.tool-card-request .tool-card-icon {
+  color: var(--accent);
+}
+
+.tool-request-link {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+.sidebar-request {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: var(--sp-4) var(--sp-3) var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px dashed var(--border-hover);
+  border-radius: var(--r-md);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+}
+
+.sidebar-request:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.request-form {
+  margin: var(--sp-6) 0 var(--sp-8);
+  padding: var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+
+.request-form textarea {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+}
+
+.field-optional {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.request-notify {
+  margin: var(--sp-3) 0 0;
+}
+
+.request-form .btn-lg {
+  margin-top: var(--sp-2);
+}
+
+.request-done {
+  margin: var(--sp-6) 0 var(--sp-8);
+  padding: var(--sp-5);
+  border: 1px solid color-mix(in srgb, var(--success) 40%, transparent);
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--success) 8%, transparent);
+}
+
+.request-done p {
+  margin: 0 0 var(--sp-4);
+  color: var(--text);
+}
+
+.prose-page ol {
+  padding-left: var(--sp-6);
+}

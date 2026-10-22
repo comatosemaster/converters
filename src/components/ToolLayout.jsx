@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { Lightbulb, ShieldCheck } from 'lucide-react';
 import Breadcrumbs from './Breadcrumbs.jsx';
 import ToolGrid from './ToolGrid.jsx';
 import ArticleGrid from './blog/ArticleGrid.jsx';
@@ -77,6 +77,10 @@ export default function ToolLayout({ tool, category, relatedTools = [], breadcru
       <p className="tool-privacy-note">
         <ShieldCheck size={15} aria-hidden="true" />
         Runs entirely in your browser - nothing you enter or upload is sent to a server.
+      </p>
+      <p className="tool-request-link">
+        <Lightbulb size={15} aria-hidden="true" />
+        Need it to do something else? <Link to="/request-tool">Request a tool</Link>
       </p>
 
       {relatedTools.length > 0 && (

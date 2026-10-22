@@ -120,6 +120,7 @@ export default function Home() {
             tools={results}
             query={query}
             emptyMessage="No tools match that search. Try a format name like “webp”, “json”, or “qr”."
+            requestCard
           />
         </section>
       ) : (
@@ -148,7 +149,7 @@ export default function Home() {
               </div>
             </div>
 
-            {categories.map((category) => {
+            {categories.map((category, index) => {
               const CategoryIcon = category.icon;
               return (
                 <section className="category-section" key={category.id} id={category.id}>
@@ -168,6 +169,7 @@ export default function Home() {
                   <ToolGrid
                     tools={category.tools}
                     emptyMessage="No tools in this category yet - more are on the way."
+                    requestCard={index === categories.length - 1}
                   />
                 </section>
               );
@@ -197,10 +199,10 @@ export default function Home() {
               <h2>Can&apos;t find what you need?</h2>
               <p>
                 New tools get added regularly - every one of them free, private, and running
-                entirely in your browser.
+                entirely in your browser. Tell us what you&apos;re missing and it may be next.
               </p>
-              <Link to="/category/graphics-media" className="btn btn-primary btn-lg">
-                Browse all tools <ArrowRight size={16} />
+              <Link to="/request-tool" className="btn btn-primary btn-lg">
+                Request a tool <ArrowRight size={16} />
               </Link>
             </div>
           </section>

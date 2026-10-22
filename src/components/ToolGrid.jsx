@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Lightbulb } from 'lucide-react';
 import Highlight from './Highlight.jsx';
 
 // A grid of tool cards. Shared by the homepage, each category page, and
@@ -7,6 +7,9 @@ import Highlight from './Highlight.jsx';
 //
 // `query` is optional - when present, matching text inside the card is
 // highlighted so search results show why they matched.
+//
+// `requestCard` adds a final "Missing a tool? Request it" card, linking to
+// /request-tool - shown at the end of tool listings.
 //
 // `featured` is optional - it gives the cards a slightly stronger border
 // and a small "Popular" badge. It's a presentation flag passed in by
@@ -19,12 +22,15 @@ export default function ToolGrid({
   query = '',
   featured = false,
   emptyMessage = 'No tools here yet - check back soon.',
+  requestCard = false,
 }) {
-  if (tools.length === 0) {
+  if (tools.length === 0 && !requestCard) {
     return <p className="category-empty">{emptyMessage}</p>;
   }
 
   return (
+    <>
+    {tools.length === 0 && <p className="category-empty">{emptyMessage}</p>}
     <div className={featured ? 'tool-grid tool-grid-featured' : 'tool-grid'}>
       {tools.map((tool) => {
         const ToolIcon = tool.icon;
@@ -52,6 +58,21 @@ export default function ToolGrid({
           </Link>
         );
       })}
+      {requestCard && (
+        <Link to="/request-tool" className="tool-card tool-card-request">
+          <span className="tool-card-top">
+            <span className="tool-card-icon" aria-hidden="true">
+              <Lightbulb size={21} strokeWidth={1.75} />
+            </span>
+          </span>
+          <span className="tool-card-name">Missing a tool? Request it</span>
+          <span className="tool-card-description">Tell us what you need - free, private tools get added regularly.</span>
+          <span className="tool-card-arrow" aria-hidden="true">
+            <ArrowRight size={15} />
+          </span>
+        </Link>
+      )}
     </div>
+    </>
   );
 }

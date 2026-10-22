@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ChevronDown, ChevronRight, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Lightbulb, X } from 'lucide-react';
 import { getToolById, getToolsByCategory } from '../tools/registry.js';
 
 // The persistent tool navigator: every category, expandable to the tools
@@ -217,6 +217,10 @@ export default function Sidebar({ open, onClose }) {
               })}
             </ul>
           </nav>
+          <Link to="/request-tool" className="sidebar-request" onClick={onClose}>
+            <Lightbulb size={15} aria-hidden="true" />
+            Missing a tool? Request it
+          </Link>
         </div>
       </aside>
     </>

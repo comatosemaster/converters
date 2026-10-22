@@ -52,6 +52,7 @@ export default function CategoryPage() {
       <ToolGrid
         tools={tools}
         emptyMessage="No tools in this category yet - more are on the way."
+        requestCard
       />
     </div>
   );

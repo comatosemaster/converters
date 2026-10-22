@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router-dom';
-import { BookOpen, Search, Menu, X, Sun, Moon } from 'lucide-react';
+import { BookOpen, Lightbulb, Search, Menu, X, Sun, Moon } from 'lucide-react';
 import { CATEGORIES } from '../tools/registry.js';
 import { useTheme } from '../hooks/useTheme.js';
 import CommandPalette from './CommandPalette.jsx';
@@ -94,6 +94,15 @@ export default function Layout() {
             >
               <BookOpen size={15} aria-hidden="true" />
               <span className="nav-blog-label">Blog</span>
+            </NavLink>
+
+            <NavLink
+              to="/request-tool"
+              className={({ isActive }) => (isActive ? 'nav-request-link active' : 'nav-request-link')}
+              aria-label="Request a tool"
+              title="Request a tool"
+            >
+              <Lightbulb size={16} aria-hidden="true" />
             </NavLink>
 
             <button
@@ -190,6 +199,9 @@ export default function Layout() {
                 <button type="button" className="link-button" onClick={() => setPaletteOpen(true)}>
                   Search tools
                 </button>
+              </li>
+              <li>
+                <Link to="/request-tool">Request a tool</Link>
               </li>
               <li>
                 <Link to="/privacy">Privacy</Link>

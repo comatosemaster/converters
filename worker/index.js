@@ -13,6 +13,7 @@ import { json, methodNotAllowed } from './lib/http.js';
 import { handleSubscribe } from './routes/subscribe.js';
 import { handleConfirm } from './routes/confirm.js';
 import { handleUnsubscribe } from './routes/unsubscribe.js';
+import { handleRequestTool } from './routes/requestTool.js';
 import { runScheduled } from './lib/cron.js';
 
 // Settings the API can't work without. Missing ones are reported as "not
@@ -43,6 +44,8 @@ async function handleApi(request, env) {
   switch (pathname) {
     case '/api/subscribe':
       return isPost ? handleSubscribe(request, env) : methodNotAllowed('POST');
+    case '/api/request-tool':
+      return isPost ? handleRequestTool(request, env) : methodNotAllowed('POST');
     case '/api/confirm':
       return request.method === 'GET' ? handleConfirm(request, env) : methodNotAllowed('GET');
     case '/api/unsubscribe':

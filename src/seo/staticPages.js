@@ -17,6 +17,14 @@ export const STATIC_PAGES = [
     indexable: true,
   },
   {
+    id: 'requestTool',
+    path: '/request-tool',
+    title: 'Request a Tool',
+    description:
+      'Missing a converter, generator or calculator? Describe the tool you need and it may be built next - free, private and running in your browser.',
+    indexable: true,
+  },
+  {
     id: 'subscribed',
     path: '/subscribed',
     title: 'You’re subscribed',
