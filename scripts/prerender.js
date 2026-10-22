@@ -22,6 +22,8 @@
 //                       that isn't one of these files (see wrangler.jsonc)
 //   - dist/sitemap.xml - generated from the same registry, so it lists
 //                       exactly the pages that exist
+//   - dist/feed.json, dist/rss.xml - every tool and article with its
+//                       publication date (also read by the email digest)
 //
 // Unlike the previous browser-based version, this needs no Playwright and
 // runs on Cloudflare's build machines too. And it fails the build on any
@@ -32,6 +34,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { buildJsonFeed, buildRss, feedItems } from './lib/feeds.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
@@ -123,8 +126,15 @@ async function main() {
 
   await writeFile(path.join(DIST, 'sitemap.xml'), buildSitemap(ROUTES), 'utf8');
 
+  // Every tool and article with its publication date - for feed readers,
+  // and read by the Worker's weekly email digest (see lib/feeds.js).
+  const items = feedItems(ROUTES);
+  const siteUrl = new URL(ROUTES[0].url).origin;
+  await writeFile(path.join(DIST, 'feed.json'), buildJsonFeed(items, siteUrl), 'utf8');
+  await writeFile(path.join(DIST, 'rss.xml'), buildRss(items, siteUrl), 'utf8');
+
   console.log(
-    `prerender: ${ROUTES.length} pages + ${UTILITY_ROUTES.length} noindex pages + 404.html + sitemap.xml (${ROUTES.length} URLs) written to dist/`,
+    `prerender: ${ROUTES.length} pages + ${UTILITY_ROUTES.length} noindex pages + 404.html + sitemap.xml (${ROUTES.length} URLs) + feed.json/rss.xml (${items.length} items) written to dist/`,
   );
 }
 

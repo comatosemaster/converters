@@ -161,6 +161,11 @@ export const CATEGORIES = [
 // Fields:
 //   id / name / description - identity, shown everywhere
 //   category                - must match a CATEGORIES id
+//   publishedAt             - the day the tool went live (YYYY-MM-DD). Feeds
+//                             /feed.json, /rss.xml and the weekly email
+//                             digest, which announces tools published since
+//                             the last one. Set it to the release day when
+//                             adding a tool.
 //   icon                    - a lucide-react component (not a string)
 //   keywords                - extra search terms; users rarely type the
 //                             exact tool name, so this is what makes
@@ -179,6 +184,7 @@ export const tools = [
     name: 'Base64 Encoder / Decoder',
     description: 'Encode plain text into Base64, or decode Base64 back into readable text.',
     category: 'text-data',
+    publishedAt: '2026-08-05',
     metaDescription:
       'Encode text to Base64 or decode Base64 back to readable text, instantly and entirely in your browser. No upload, no tracking.',
     icon: Binary,
@@ -190,6 +196,7 @@ export const tools = [
     name: 'Image Converter',
     description: 'Convert images between PNG, JPG, WebP, and AVIF - right in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Convert images between PNG, JPG, WebP, and AVIF entirely in your browser. Free, fast, and no upload required.',
     icon: Images,
@@ -202,6 +209,7 @@ export const tools = [
     name: 'Image Compressor',
     description: 'Shrink image file size in your browser. Files never leave your device.',
     category: 'graphics-media',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Compress PNG, JPG, and WebP images to reduce file size without uploading them anywhere. Adjustable quality and optional resizing.',
     icon: Shrink,
@@ -214,6 +222,7 @@ export const tools = [
     name: 'Image Resizer & Cropper',
     description: 'Resize or crop images in your browser. Files never leave your device.',
     category: 'graphics-media',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Resize or crop images to exact dimensions entirely in your browser. Lock aspect ratio, use scale presets, or drag a crop selection - no upload required.',
     icon: Crop,
@@ -225,6 +234,7 @@ export const tools = [
     name: 'Image Flipper',
     description: 'Flip images horizontally or vertically directly in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-08-08',
     metaDescription:
       'Flip images horizontally or vertically entirely in your browser using the Canvas API. Transparency preserved, no upload required.',
     icon: FlipHorizontal,
@@ -236,6 +246,7 @@ export const tools = [
     name: 'Image Rotator',
     description: 'Rotate images by 90°, 180°, or any angle, and straighten tilted photos, in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Rotate an image 90°, 180° or by any angle and straighten tilted photos, with fit, crop or zoom-to-fill edges. Full resolution, nothing uploaded.',
     icon: RotateCw,
@@ -247,6 +258,7 @@ export const tools = [
     name: 'EXIF Viewer & Remover',
     description: 'See the hidden metadata in your photos - GPS location, camera, date - and remove it without losing quality.',
     category: 'graphics-media',
+    publishedAt: '2026-10-21',
     metaDescription:
       'View and remove photo metadata (EXIF, GPS location, camera, XMP) from JPG, PNG and WebP without re-compressing. Batch, verified, in your browser.',
     icon: MapPinOff,
@@ -258,6 +270,7 @@ export const tools = [
     name: 'Image Filters & Adjustments',
     description: 'Adjust brightness, contrast, saturation, warmth and more, or apply one-click photo filters.',
     category: 'graphics-media',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Edit photos in your browser: brightness, contrast, saturation, warmth, sharpen, blur, vignette, plus one-click filters. Full resolution, no upload.',
     icon: SlidersHorizontal,
@@ -269,6 +282,7 @@ export const tools = [
     name: 'Watermark Remover',
     description: 'Remove simple text, logos, and unwanted areas from images directly in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-08-08',
     metaDescription:
       'Paint over a watermark, logo, or unwanted object and remove it from your image, entirely in your browser. Works on PNG, JPG, and WebP. Nothing is uploaded.',
     icon: Eraser,
@@ -280,6 +294,7 @@ export const tools = [
     name: 'Background Remover',
     description: 'Remove the background from a photo automatically with AI that runs in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Remove the background from any photo with AI that runs in your browser. Transparent PNG or a new color, full resolution, no upload, no watermark.',
     icon: WandSparkles,
@@ -291,6 +306,7 @@ export const tools = [
     name: 'Blur & Pixelate Image',
     description: 'Blur, pixelate or black out faces, plates and private text in a photo or screenshot.',
     category: 'graphics-media',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Blur, pixelate or black out faces, license plates and private text in a photo or screenshot. Full resolution, metadata stripped, nothing uploaded.',
     icon: ScanFace,
@@ -302,6 +318,7 @@ export const tools = [
     name: 'Add Watermark to Image',
     description: 'Add a text or logo watermark to one image or a whole batch, in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Add a text or logo watermark to photos - set size, opacity, angle and position, or tile it. Batch-watermark many images as a ZIP. Nothing uploaded.',
     icon: Stamp,
@@ -313,6 +330,7 @@ export const tools = [
     name: 'Image to PDF',
     description: 'Convert one or multiple images into a high-quality PDF directly in your browser.',
     category: 'text-data',
+    publishedAt: '2026-08-08',
     metaDescription:
       'Combine one or more images into a single PDF entirely in your browser. Choose page size, layout, and quality - nothing is ever uploaded.',
     icon: FileOutput,
@@ -324,6 +342,7 @@ export const tools = [
     name: 'PDF Merge',
     description: 'Combine multiple PDF files into one, in any order, directly in your browser.',
     category: 'text-data',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Merge PDF files into one document in your browser. Reorder files, pick page ranges, keep text selectable. No upload, no sign-up, no watermark.',
     icon: Merge,
@@ -335,6 +354,7 @@ export const tools = [
     name: 'PDF Split & Extract Pages',
     description: 'Split a PDF into parts, or extract and remove pages, with thumbnails of every page.',
     category: 'text-data',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Split a PDF or extract and remove pages, with page thumbnails. Split every N pages, by ranges, or into single pages. Free, private, in your browser.',
     icon: Scissors,
@@ -346,6 +366,7 @@ export const tools = [
     name: 'PDF to Image',
     description: 'Convert PDF pages to PNG, JPG, or WebP images directly in your browser.',
     category: 'text-data',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Convert PDF pages to PNG, JPG, or WebP images at up to 300 DPI, entirely in your browser. Pick pages, download as ZIP. Nothing is uploaded.',
     icon: ImageDown,
@@ -357,6 +378,7 @@ export const tools = [
     name: 'Text Diff Checker',
     description: 'Compare two texts and see every added, removed, and changed line or word.',
     category: 'text-data',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Compare two texts side by side and highlight every change by line, word, or character. Ignore case or whitespace, copy as a patch. Runs in your browser.',
     icon: Diff,
@@ -368,6 +390,7 @@ export const tools = [
     name: 'Case Converter',
     description: 'Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case and more.',
     category: 'text-data',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Change text case instantly: UPPERCASE, lowercase, Title Case, Sentence case, camelCase, PascalCase, snake_case, kebab-case and more. Runs in your browser.',
     icon: CaseSensitive,
@@ -379,6 +402,7 @@ export const tools = [
     name: 'CSV to JSON Converter',
     description: 'Convert CSV to JSON and JSON back to CSV, with a table preview, right in your browser.',
     category: 'text-data',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Convert CSV to JSON and JSON to CSV in your browser. Auto-detects delimiters, keeps leading zeros, flattens nested JSON, and exports Excel-ready files.',
     icon: FileSpreadsheet,
@@ -390,6 +414,7 @@ export const tools = [
     name: 'Markdown Editor & Preview',
     description: 'Write Markdown and see it formatted live, then export it as a .md file or an HTML page.',
     category: 'text-data',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Write Markdown with a live preview: GitHub-flavored tables, task lists and code highlighting. Export to .md or a styled HTML page. Nothing uploaded.',
     icon: NotebookPen,
@@ -401,6 +426,7 @@ export const tools = [
     name: 'Lorem Ipsum Generator',
     description: 'Generate placeholder text by paragraphs, sentences, words, characters or list items.',
     category: 'text-data',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Generate lorem ipsum placeholder text: paragraphs, sentences, words, exact character counts or lists, as plain text, HTML or Markdown. Free and instant.',
     icon: Pilcrow,
@@ -412,6 +438,7 @@ export const tools = [
     name: 'HEIC to JPG Converter',
     description: 'Convert iPhone HEIC photos to JPG in your browser. Files never leave your device.',
     category: 'graphics-media',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Convert iPhone HEIC/HEIF photos to JPG entirely in your browser, one or many at a time. No upload, no limits, unlike most online converters.',
     icon: Smartphone,
@@ -423,6 +450,7 @@ export const tools = [
     name: 'SVG to PNG Converter',
     description: 'Convert SVG files or code to sharp PNG, JPG or WebP images at any size, in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Convert SVG to PNG, JPG or WebP at any size - sharp at 2x, 4x or exact pixels, with a transparent or colored background. Batch to ZIP, in your browser.',
     icon: Shapes,
@@ -434,6 +462,7 @@ export const tools = [
     name: 'Favicon Generator',
     description: 'Turn any image into a complete favicon package in your browser. Files never leave your device.',
     category: 'graphics-media',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Generate a complete favicon package (ICO, PNG sizes, web manifest, and HTML tags) from any image, entirely in your browser.',
     icon: Globe,
@@ -445,6 +474,7 @@ export const tools = [
     name: 'Image to Text (OCR)',
     description: 'Extract text from images in your browser using OCR. Files never leave your device.',
     category: 'text-data',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Extract text from images using OCR entirely in your browser, in English, Georgian, and more. No upload, no limits.',
     icon: ScanText,
@@ -457,6 +487,7 @@ export const tools = [
     description:
       'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA entirely in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Convert colors instantly between HEX, RGB, RGBA, HSL, and HSLA. Free, fast, and 100% client-side - nothing you enter ever leaves your browser.',
     icon: Palette,
@@ -468,6 +499,7 @@ export const tools = [
     name: 'Color Contrast Checker',
     description: 'Check whether text and background colors meet WCAG AA and AAA contrast, and get passing alternatives.',
     category: 'graphics-media',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Check the contrast ratio of text and background colors against WCAG AA and AAA, preview it live, and get the closest passing colors. Runs in your browser.',
     icon: Contrast,
@@ -479,6 +511,7 @@ export const tools = [
     name: 'Image to Base64',
     description: 'Convert images to Base64 or Data URI format entirely in your browser. Files never leave your device.',
     category: 'graphics-media',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Convert PNG, JPG, WebP, GIF, BMP, or SVG images to Base64 or a Data URI entirely in your browser. No upload, no backend.',
     icon: FileImage,
@@ -491,6 +524,7 @@ export const tools = [
     description:
       'Format, validate, minify, and automatically fix broken JSON instantly in your browser. Your data never leaves your device.',
     category: 'developer',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Format, validate, minify, and auto-fix broken JSON in your browser. One-click repair, line and column error locations, and a tree view. No upload needed.',
     icon: Braces,
@@ -503,6 +537,7 @@ export const tools = [
     name: 'YAML to JSON Converter',
     description: 'Convert YAML to JSON and JSON to YAML as you type, with exact error locations.',
     category: 'developer',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Convert YAML to JSON and JSON to YAML instantly. Handles anchors, merge keys and multi-document files, with exact error lines. Runs in your browser.',
     icon: FileCode,
@@ -515,6 +550,7 @@ export const tools = [
     description:
       'Generate customizable QR codes for URLs, text, WiFi, contacts, email, phone numbers, SMS, and locations entirely in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Create QR codes for URLs, text, email, phone, SMS, Wi-Fi, contacts, and locations in your browser. Customize colors, then export PNG or SVG. No upload.',
     icon: QrCode,
@@ -527,6 +563,7 @@ export const tools = [
     name: 'QR Code Scanner',
     description: 'Scan QR codes from an image, a screenshot, or your camera, right in your browser.',
     category: 'graphics-media',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Scan a QR code from a photo, screenshot or your camera - no app needed. Reads links, WiFi passwords, contacts and more. Nothing is uploaded.',
     icon: ScanQrCode,
@@ -539,6 +576,7 @@ export const tools = [
     description:
       'Analyze text with live word count, character count, reading time, keyword density, readability metrics, and useful writing tools. Everything runs entirely in your browser.',
     category: 'developer',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Live word count, character count, reading time, keyword density, readability scores, and text cleanup tools - entirely in your browser.',
     icon: Type,
@@ -559,6 +597,7 @@ export const tools = [
     description:
       'Test, validate, and debug regular expressions instantly in your browser with live highlighting and match details.',
     category: 'developer',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Test and debug regular expressions live: match highlighting, capture groups, replace preview, and a plain-English explanation. Runs in your browser.',
     icon: Regex,
@@ -581,6 +620,7 @@ export const tools = [
     description:
       'Convert units instantly between length, weight, and temperature directly in your browser.',
     category: 'everyday',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Convert length, weight, and temperature units instantly in your browser, with adjustable precision, the formula used, and a running history.',
     icon: Ruler,
@@ -606,6 +646,7 @@ export const tools = [
     description:
       'Calculate tips, split restaurant bills equally or proportionally, and instantly see how much each person should pay.',
     category: 'business-finance',
+    publishedAt: '2026-08-06',
     metaDescription:
       'Calculate the tip and split a bill equally or by what each person ordered. Per-person totals, rounding, multiple currencies, and a receipt download.',
     icon: Receipt,
@@ -626,6 +667,7 @@ export const tools = [
     name: 'Password Generator',
     description: 'Generate secure random passwords instantly in your browser.',
     category: 'developer',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Generate strong random passwords with the Web Crypto API. Set length and character types, exclude look-alike characters, and check strength live.',
     icon: KeyRound,
@@ -646,6 +688,7 @@ export const tools = [
     name: 'Currency Converter',
     description: 'Convert between world currencies using live exchange rates with a simple historical chart.',
     category: 'business-finance',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Convert between world currencies with live exchange rates and a historical rate chart covering up to a year. Rates from the Frankfurter API.',
     icon: Coins,
@@ -667,6 +710,7 @@ export const tools = [
     name: 'World Clock & Time Zone Converter',
     description: 'Compare current times around the world and convert dates and times between different time zones.',
     category: 'everyday',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Compare current times around the world and convert a date and time between time zones, with live clocks, DST status, and next/previous-day flags.',
     icon: Clock,
@@ -687,6 +731,7 @@ export const tools = [
     name: 'Dice Roller',
     description: 'Roll one or multiple virtual dice with smooth animations.',
     category: 'fun',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Roll one or more virtual dice from D4 to D100, with a shake-and-reveal animation, running total and average, and a history of every roll.',
     icon: Dices,
@@ -698,6 +743,7 @@ export const tools = [
     name: 'Coin Flip',
     description: 'Flip one or multiple virtual coins with realistic animations.',
     category: 'fun',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Flip one coin or up to 100 at once, with a spinning animation, heads and tails totals, the percentage split, and a history of every flip.',
     icon: Disc,
@@ -709,6 +755,7 @@ export const tools = [
     name: 'Random Number Generator',
     description: 'Generate random numbers instantly with customizable ranges.',
     category: 'fun',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Generate random numbers in any range: choose how many, allow or block duplicates, sort the results, and see lowest, highest, and history.',
     icon: Shuffle,
@@ -720,6 +767,7 @@ export const tools = [
     name: 'CSS Gradient Generator',
     description: 'Create beautiful CSS gradients visually and copy the generated CSS instantly.',
     category: 'developer',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Build linear and radial CSS gradients visually with draggable color stops, transparency, presets, and a random generator, then copy the CSS.',
     icon: Blend,
@@ -739,6 +787,7 @@ export const tools = [
     name: 'Box Shadow Generator',
     description: 'Design CSS box shadows visually with layers and presets, then copy the CSS or Tailwind class.',
     category: 'developer',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Design CSS box shadows visually: layered, soft, glow, neumorphic or inset. Live preview, presets, and copy-ready CSS or Tailwind. Runs in your browser.',
     icon: Layers,
@@ -750,6 +799,7 @@ export const tools = [
     name: 'JWT Decoder & Inspector',
     description: 'Decode and inspect JSON Web Tokens (JWT) instantly in your browser without sending data to any server.',
     category: 'developer',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Decode a JSON Web Token in your browser: header, payload, and standard claims explained in plain English, plus expiry status and readable timestamps.',
     icon: FileKey,
@@ -761,6 +811,7 @@ export const tools = [
     name: 'BMI Calculator',
     description: 'Calculate your Body Mass Index (BMI) instantly using either metric or imperial units.',
     category: 'everyday',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Calculate your Body Mass Index in metric or imperial units, with your BMI category, the healthy weight range for your height, and a visual scale.',
     icon: Scale,
@@ -772,6 +823,7 @@ export const tools = [
     name: 'Age Calculator',
     description: 'Calculate your exact age from your date of birth.',
     category: 'everyday',
+    publishedAt: '2026-08-08',
     metaDescription:
       'Calculate exact age in years, months, and days from a date of birth, plus total months, weeks, and days lived and a countdown to the next birthday.',
     icon: Cake,
@@ -783,6 +835,7 @@ export const tools = [
     name: 'Image Color Picker',
     description: 'Upload an image and pick any color from it to get its HEX, RGB, and HSL values.',
     category: 'graphics-media',
+    publishedAt: '2026-08-08',
     metaDescription:
       'Pick any color from an image and get its HEX, RGB, and HSL values instantly. Runs in your browser with the Canvas API, so nothing is uploaded.',
     icon: Pipette,
@@ -794,6 +847,7 @@ export const tools = [
     name: 'Color Palette Extractor',
     description: 'Pull the main colors out of any image and export them as HEX codes, CSS variables or a PNG.',
     category: 'graphics-media',
+    publishedAt: '2026-10-22',
     metaDescription:
       'Extract the main colors from any image as HEX, RGB and HSL. Export CSS variables, SCSS, Tailwind or JSON, or a PNG of the palette. Nothing is uploaded.',
     icon: SwatchBook,
@@ -805,6 +859,7 @@ export const tools = [
     name: 'Savings Calculator',
     description: 'Calculate how your savings can grow over time with regular contributions and interest.',
     category: 'business-finance',
+    publishedAt: '2026-08-08',
     metaDescription:
       'See how savings grow with compound interest and regular deposits: final balance, total contributions, interest earned, and a year-by-year chart.',
     icon: PiggyBank,
@@ -816,6 +871,7 @@ export const tools = [
     name: 'SQL Formatter',
     description: 'Format, beautify, and validate SQL queries directly in your browser.',
     category: 'developer',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Format and beautify SQL for Generic SQL, MySQL, PostgreSQL, SQLite, and SQL Server, with syntax highlighting and adjustable style options.',
     icon: Database,
@@ -827,6 +883,7 @@ export const tools = [
     name: 'URL Encoder / Decoder',
     description: 'Encode and decode URLs and text using standard percent encoding directly in your browser.',
     category: 'developer',
+    publishedAt: '2026-08-07',
     metaDescription:
       'Encode and decode URLs and text using standard percent encoding, instantly in your browser using native JavaScript APIs. Nothing is ever uploaded.',
     icon: Link2,
@@ -838,6 +895,7 @@ export const tools = [
     name: 'Hash Generator',
     description: 'Generate MD5, SHA-1, SHA-256 and SHA-512 hashes of text or files, and verify checksums.',
     category: 'developer',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Calculate MD5, SHA-1, SHA-256, SHA-384 and SHA-512 hashes of text or files, verify download checksums, and compute HMACs. Runs in your browser.',
     icon: Hash,
@@ -849,6 +907,7 @@ export const tools = [
     name: 'UUID Generator',
     description: 'Generate version 4 and version 7 UUIDs in bulk, and validate or decode any UUID.',
     category: 'developer',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Generate random v4 or time-ordered v7 UUIDs (GUIDs), up to 1,000 at once, in any format. Validate and decode existing UUIDs. Runs in your browser.',
     icon: Fingerprint,
@@ -860,6 +919,7 @@ export const tools = [
     name: 'Unix Timestamp Converter',
     description: 'Convert Unix timestamps to dates and dates to timestamps, in any time zone.',
     category: 'developer',
+    publishedAt: '2026-10-21',
     metaDescription:
       'Convert Unix/epoch timestamps to human dates and back, in seconds, milliseconds or nanoseconds, for any time zone. Live current epoch time. In-browser.',
     icon: CalendarClock,
@@ -871,6 +931,7 @@ export const tools = [
     name: 'Number Base Converter',
     description: 'Convert numbers between binary, octal, decimal, hexadecimal and any base from 2 to 36.',
     category: 'developer',
+    publishedAt: '2026-10-22',
     metaDescription:
       "Convert numbers between binary, octal, decimal, hex and any base 2-36. Exact for huge numbers, with negatives, two's complement and a clickable bit view.",
     icon: Cpu,

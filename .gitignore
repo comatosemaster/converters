@@ -44,3 +44,6 @@ public/pdfjs/
 # `wrangler secret put`)
 .dev.vars
 .dev.vars.*
+
+# npm run digest:preview output
+.digest-preview/

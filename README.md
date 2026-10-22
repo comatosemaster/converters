@@ -373,3 +373,15 @@ running JavaScript. In the browser, React then hydrates that HTML instead of red
 `src/seo/routes.js` into `dist/`), and `scripts/verify-prerender.js` (reads the files back and
 fails on duplicate or over-long titles/descriptions, wrong canonicals, missing structured data,
 or any page with under 100 words of text). Nothing runs on a server at request time.
+
+The build also writes `dist/feed.json` (JSON Feed) and `dist/rss.xml` with every tool and
+article and its publication date. New tools need a `publishedAt: 'YYYY-MM-DD'` in the registry.
+
+## Email updates and "Request a Tool"
+
+The only server code is a small Worker (`worker/`) that answers `/api/*` - email sign-up,
+confirm/unsubscribe, tool requests - and a daily cron that sends the weekly digest. It uses
+Cloudflare D1 (`migrations/`), Resend for email and Turnstile against bots; every page is still
+a static file. Setup (API keys, DNS, database), the admin commands (`npm run requests`,
+`npm run digest:preview`, ...) and how it was tested are in
+[docs/email-and-requests-setup.md](docs/email-and-requests-setup.md).

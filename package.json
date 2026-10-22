@@ -18,7 +18,9 @@
     "test:worker": "node --test \"worker/tests/*.test.js\"",
     "requests": "node scripts/admin/requests.js list",
     "request:status": "node scripts/admin/requests.js status",
-    "request:ship": "node scripts/admin/requests.js ship"
+    "request:ship": "node scripts/admin/requests.js ship",
+    "digest:preview": "node scripts/admin/digest.js preview",
+    "digest:test": "node --env-file-if-exists=.env scripts/admin/digest.js test"
   },
   "dependencies": {
     "diff": "^9.0.0",

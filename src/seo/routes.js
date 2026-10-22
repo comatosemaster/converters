@@ -75,12 +75,15 @@ function articleDate(article) {
   return (article.updatedDate ?? article.publishDate).toISOString().slice(0, 10);
 }
 
-function route({ path, type, meta, breadcrumbs = null, jsonLd = [], lastmod = null }) {
+// `feed` marks pages that belong in /feed.json, /rss.xml and the weekly
+// email digest: { type: 'tool' | 'article', title, description, publishedAt }.
+function route({ path, type, meta, breadcrumbs = null, jsonLd = [], lastmod = null, feed = null }) {
   return {
     path,
     type,
     url: absoluteUrl(path),
     lastmod,
+    feed,
     breadcrumbs,
     // Everything useDocumentMeta / renderHeadTags consume.
     ...meta,
@@ -143,6 +146,7 @@ function buildRoutes() {
         ],
         jsonLd: [toolSchema(tool, category)],
         lastmod: LASTMOD.tools[tool.id] ?? null,
+        feed: { type: 'tool', title: tool.name, description: tool.description, publishedAt: tool.publishedAt },
       }),
     );
   }
@@ -198,6 +202,12 @@ function buildRoutes() {
         ],
         jsonLd: [articleSchema(article, { url: absoluteUrl(path) })],
         lastmod: articleDate(article),
+        feed: {
+          type: 'article',
+          title: article.title,
+          description: article.description || article.excerpt,
+          publishedAt: article.publishDate.toISOString().slice(0, 10),
+        },
       }),
     );
   }
