@@ -22,6 +22,7 @@ import {
   Clock,
   Code,
   Coins,
+  Contrast,
   Crop,
   Database,
   Dices,
@@ -42,6 +43,7 @@ import {
   ImageDown,
   Images,
   KeyRound,
+  Layers,
   MapPinOff,
   Merge,
   NotebookPen,
@@ -63,6 +65,7 @@ import {
   SlidersHorizontal,
   Smartphone,
   Stamp,
+  SwatchBook,
   Type,
   Wrench,
 } from 'lucide-react';
@@ -400,6 +403,17 @@ export const tools = [
     keywords: ['color', 'hex', 'rgb', 'rgba', 'hsl', 'hsla', 'picker', 'css'],
   },
   {
+    id: 'color-contrast-checker',
+    name: 'Color Contrast Checker',
+    description: 'Check whether text and background colors meet WCAG AA and AAA contrast, and get passing alternatives.',
+    category: 'graphics-media',
+    metaDescription:
+      'Check the contrast ratio of text and background colors against WCAG AA and AAA, preview it live, and get the closest passing colors. Runs in your browser.',
+    icon: Contrast,
+    component: lazyWithPreload(() => import('./color-contrast-checker/ColorContrastChecker.jsx')),
+    keywords: ['contrast', 'contrast checker', 'wcag', 'accessibility', 'a11y', 'contrast ratio', 'aa', 'aaa', 'color', 'readability'],
+  },
+  {
     id: 'image-to-base64',
     name: 'Image to Base64',
     description: 'Convert images to Base64 or Data URI format entirely in your browser. Files never leave your device.',
@@ -660,6 +674,17 @@ export const tools = [
     ],
   },
   {
+    id: 'box-shadow-generator',
+    name: 'Box Shadow Generator',
+    description: 'Design CSS box shadows visually with layers and presets, then copy the CSS or Tailwind class.',
+    category: 'developer',
+    metaDescription:
+      'Design CSS box shadows visually: layered, soft, glow, neumorphic or inset. Live preview, presets, and copy-ready CSS or Tailwind. Runs in your browser.',
+    icon: Layers,
+    component: lazyWithPreload(() => import('./box-shadow-generator/BoxShadowGenerator.jsx')),
+    keywords: ['box shadow', 'box-shadow', 'css shadow', 'drop shadow', 'neumorphism', 'inset shadow', 'tailwind shadow', 'generator', 'css'],
+  },
+  {
     id: 'jwt-decoder',
     name: 'JWT Decoder & Inspector',
     description: 'Decode and inspect JSON Web Tokens (JWT) instantly in your browser without sending data to any server.',
@@ -702,6 +727,17 @@ export const tools = [
     icon: Pipette,
     component: lazyWithPreload(() => import('./image-color-picker/ImageColorPicker.jsx')),
     keywords: ['color picker', 'eyedropper', 'hex', 'rgb', 'hsl', 'image color', 'pixel color'],
+  },
+  {
+    id: 'image-palette-extractor',
+    name: 'Color Palette Extractor',
+    description: 'Pull the main colors out of any image and export them as HEX codes, CSS variables or a PNG.',
+    category: 'graphics-media',
+    metaDescription:
+      'Extract the main colors from any image as HEX, RGB and HSL. Export CSS variables, SCSS, Tailwind or JSON, or a PNG of the palette. Nothing is uploaded.',
+    icon: SwatchBook,
+    component: lazyWithPreload(() => import('./image-palette-extractor/ImagePaletteExtractor.jsx')),
+    keywords: ['palette', 'color palette', 'extract colors', 'dominant colors', 'color scheme', 'image colors', 'palette from image', 'hex', 'brand colors'],
   },
   {
     id: 'savings-calculator',

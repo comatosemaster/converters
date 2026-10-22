@@ -4208,7 +4208,10 @@ details:focus-visible,
   flex: 1;
 }
 
-.gradient-angle-number {
+/* Scoped to the row on purpose: the global input[type='number'] rule
+   (width: 100%) outranks a lone class, and used to squeeze the slider
+   next to it down to zero width. */
+.gradient-angle-row .gradient-angle-number {
   width: 76px;
   flex-shrink: 0;
 }
@@ -7296,5 +7299,539 @@ del.diff-word-removed {
 
   .md-topbar .mode-toggle .mode-button {
     flex: 1;
+  }
+}
+
+/* ==========================================================================
+   Color Contrast Checker
+   ========================================================================== */
+
+.contrast-inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+
+.contrast-inputs .field {
+  margin-bottom: 0;
+}
+
+.contrast-color-inputs {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.contrast-color-inputs .color-picker {
+  width: 46px;
+  height: 46px;
+  flex: none;
+}
+
+.contrast-color-inputs input[type='text'] {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+}
+
+/* Lines the swap button up with the inputs rather than their labels. */
+.contrast-swap {
+  margin: 30px 0 0;
+}
+
+.contrast-result {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(0, 2fr);
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.contrast-score {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+
+.contrast-ratio {
+  font-size: var(--fs-4xl);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.contrast-summary {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.contrast-pass {
+  color: var(--success);
+}
+
+.contrast-warn {
+  color: var(--warning);
+}
+
+.contrast-fail {
+  color: var(--danger);
+}
+
+/* Colors come from inline styles - this box must never take on the
+   site theme, it shows exactly the pair being tested. */
+.contrast-preview {
+  padding: var(--sp-5) var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.contrast-preview p {
+  margin: 0 0 var(--sp-3);
+}
+
+.contrast-preview-large {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.contrast-preview-normal {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.contrast-preview-small {
+  font-size: 13px;
+}
+
+.contrast-preview-ui {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.contrast-preview-button {
+  padding: 6px 14px;
+  border: 2px solid;
+  border-radius: var(--r-md);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.contrast-preview-link {
+  font-size: 15px;
+  text-decoration: underline;
+}
+
+.contrast-criteria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-5);
+}
+
+.contrast-criterion {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+}
+
+.contrast-criterion.pass {
+  border-color: color-mix(in srgb, var(--success) 40%, transparent);
+  background: color-mix(in srgb, var(--success) 8%, transparent);
+}
+
+.contrast-criterion.fail {
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+  background: var(--danger-subtle);
+}
+
+.contrast-criterion-badge {
+  font-weight: 700;
+}
+
+.contrast-criterion.pass .contrast-criterion-badge {
+  color: var(--success);
+}
+
+.contrast-criterion.fail .contrast-criterion-badge {
+  color: var(--danger);
+}
+
+.contrast-criterion-name {
+  color: var(--text);
+}
+
+.contrast-criterion-min {
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+}
+
+.contrast-suggestions ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 var(--sp-5);
+  padding: 0;
+  list-style: none;
+}
+
+.contrast-suggestions li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.contrast-suggestion-sample {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 36px;
+  flex: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-weight: 700;
+}
+
+.contrast-suggestion-text {
+  flex: 1;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.contrast-actions,
+.shadow-actions,
+.palette-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+@media (max-width: 760px) {
+  .contrast-inputs,
+  .contrast-result {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .contrast-swap {
+    margin: 0;
+    justify-self: start;
+  }
+}
+
+/* ==========================================================================
+   Box Shadow Generator
+   ========================================================================== */
+
+.shadow-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+
+/* Stays in view while the sliders beside it are dragged. */
+.shadow-stage {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  min-height: 420px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  transition: background-color var(--t) var(--ease);
+}
+
+.shadow-box {
+  width: 52%;
+  max-width: 240px;
+  aspect-ratio: 1;
+}
+
+.shadow-layers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shadow-layers li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.shadow-layer-select {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.shadow-layers li.active .shadow-layer-select {
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+  color: var(--text);
+}
+
+.shadow-layer-swatch {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.shadow-layer-name {
+  flex: none;
+  font-weight: 600;
+}
+
+.shadow-layer-select code {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shadow-layer-editor {
+  margin: 0 0 var(--sp-4);
+  padding: var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.shadow-layer-editor legend {
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.shadow-layer-editor .field {
+  margin-bottom: var(--sp-3);
+}
+
+.shadow-color-row,
+.shadow-surface-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-4);
+}
+
+.shadow-color-row .field,
+.shadow-surface-row .field:first-child {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.shadow-color-row {
+  margin-bottom: var(--sp-3);
+}
+
+.shadow-surface-color {
+  margin-bottom: 0;
+}
+
+.shadow-surface-color .color-picker {
+  width: 46px;
+  height: 40px;
+}
+
+.shadow-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--sp-3);
+}
+
+.shadow-preset {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-2) var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: border-color var(--t-fast) var(--ease);
+}
+
+.shadow-preset:hover {
+  border-color: var(--accent);
+}
+
+.shadow-preset-box {
+  width: 48px;
+  height: 48px;
+}
+
+/* Preset tiles use their own fixed colors, so the label gets its own
+   plate to stay readable on both light and dark tiles. */
+.shadow-preset-name {
+  padding: 1px 8px;
+  border-radius: var(--r-full);
+  background: rgba(255, 255, 255, 0.85);
+  color: #18181b;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .shadow-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Sticks just below the 73px phone header, small enough to leave
+     most of the screen for the sliders it previews. */
+  .shadow-stage {
+    top: 80px;
+    z-index: 1;
+    min-height: 200px;
+  }
+
+  .shadow-box {
+    width: 120px;
+  }
+}
+
+/* ==========================================================================
+   Color Palette Extractor
+   ========================================================================== */
+
+.palette-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-5);
+}
+
+.palette-image {
+  align-self: start;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+
+.palette-image.dragging {
+  border-color: var(--accent);
+}
+
+.palette-image img {
+  display: block;
+  width: 100%;
+  max-height: 460px;
+  object-fit: contain;
+}
+
+.palette-bar {
+  display: flex;
+  height: 18px;
+}
+
+.palette-bar span {
+  min-width: 2px;
+}
+
+.palette-count {
+  min-width: 200px;
+}
+
+.palette-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.palette-swatch {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 96px;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-family: var(--font-mono);
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--t-fast) var(--ease);
+}
+
+.palette-swatch:hover {
+  transform: translateY(-2px);
+}
+
+.palette-swatch-hex {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.palette-swatch-share {
+  font-size: var(--fs-xs);
+  opacity: 0.85;
+}
+
+.palette-swatch-meta {
+  display: block;
+  margin-top: var(--sp-1);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.palette-formats {
+  margin-bottom: 0;
+}
+
+@media (max-width: 860px) {
+  .palette-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .palette-image img {
+    max-height: 300px;
+  }
+
+  /* Five format names fit in a wrapped row better than a column. */
+  .palette-formats {
+    flex-direction: row;
   }
 }

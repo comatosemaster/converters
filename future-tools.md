@@ -3,7 +3,7 @@
 Candidate tools for NeatSize, ranked. The site has 35 tools today; this lists
 ~130 more that don't overlap with them.
 
-**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21), CSV to JSON Converter, YAML to JSON Converter, Markdown Editor & Preview (2026-10-22) - marked ✅ below.
+**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21), CSV to JSON Converter, YAML to JSON Converter, Markdown Editor & Preview, Box Shadow Generator, Color Contrast Checker, Color Palette Extractor (2026-10-22) - marked ✅ below.
 (Image Cropper was removed: the existing Image Resizer & Cropper already crops.)
 
 Focus order: **Graphics & Media → Text & Data → Developer** first, Business &
@@ -47,9 +47,9 @@ Finance next, Everyday and Fun last.
 | 13 | ✅ CSV ↔ JSON Converter | Text & Data | S | Constant dev and data-analyst need |
 | 14 | ✅ YAML ↔ JSON Converter | Developer | S | `js-yaml`; reuse JSON formatter UI |
 | 15 | ✅ Markdown Editor & Preview | Text & Data | S | `marked` + `prismjs` are already dependencies |
-| 16 | Box Shadow Generator | Developer | S | Same family as CSS Gradient Generator |
-| 17 | Color Contrast Checker (WCAG) | Graphics | S | Reuse `colorConversions.js` |
-| 18 | Palette Extractor from Image | Graphics | S | Reuse Image Color Picker |
+| 16 | ✅ Box Shadow Generator | Developer | S | Same family as CSS Gradient Generator |
+| 17 | ✅ Color Contrast Checker (WCAG) | Graphics | S | Reuse `colorConversions.js` |
+| 18 | ✅ Palette Extractor from Image | Graphics | S | Reuse Image Color Picker |
 | 19 | SVG to PNG Converter | Graphics | S | Canvas-only; very common search |
 | 20 | Lorem Ipsum Generator | Text & Data | S | Evergreen designer/dev tool |
 | 21 | Number Base Converter | Developer | S | Bin/oct/dec/hex; trivial |
@@ -73,8 +73,8 @@ Finance next, Everyday and Fun last.
 | ✅ EXIF Viewer & Remover | P1 | M | Shipped: lossless strip for JPG/PNG/WebP, keeps orientation, verified, batch |
 | ✅ Image Filters & Adjustments | P1 | M | Shipped: 8 sliders, 10 presets, before/after, full-resolution export |
 | Blur / Pixelate Areas | P1 | M | Redact faces, plates, text; reuse the watermark brush |
-| Color Contrast Checker (WCAG) | P1 | S | AA/AAA verdicts and suggested fixes; reuse color utilities |
-| Palette Extractor from Image | P1 | S | Dominant colors (k-means); reuse Image Color Picker |
+| ✅ Color Contrast Checker (WCAG) | P1 | S | Shipped: AA/AAA + UI (1.4.11), alpha blending, CSS names, nearest passing colors |
+| ✅ Palette Extractor from Image | P1 | S | Shipped as Color Palette Extractor: k-means in CIELAB, deterministic, CSS/SCSS/Tailwind/JSON/PNG export |
 | Format landing pages (PNG→JPG, WebP→PNG, JPG→WebP, AVIF→JPG…) | P1 | S | Registry entries presetting Image Converter; cheap SEO wins |
 | Color Palette Generator | P2 | S | Harmonies (complementary, triadic…), lock and shuffle |
 | SVG Optimizer | P2 | M | Browser build of `svgo`; before/after size |
@@ -158,7 +158,7 @@ Finance next, Everyday and Fun last.
 | Number Base Converter | P1 | S | Bin/oct/dec/hex, bit view |
 | JSON to TypeScript / Zod / Go types | P1 | M | Huge dev demand; custom generator |
 | Cron Expression Builder & Explainer | P1 | M | `cronstrue` plus next-run preview |
-| Box Shadow Generator | P1 | S | CSS generator family |
+| ✅ Box Shadow Generator | P1 | S | Shipped: up to 6 layers, 9 presets, CSS + Tailwind class |
 | Meta Tag & Open Graph Generator + Preview | P1 | S | Google/X/Facebook preview cards |
 | JSON Diff | P2 | M | Structural diff; reuse JSON tree view |
 | JSON Schema Validator / Generator | P2 | M | `ajv` |
@@ -230,7 +230,7 @@ Finance next, Everyday and Fun last.
 
 ## Notes for building these
 
-- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 15 already shipped.
+- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 18 already shipped.
 - **Cheap SEO wins:** format-pair landing pages (Image Converter presets) and reference pages (HTTP status codes) cost little and match exact-phrase searches.
 - **Shared foundations worth building once:**
   - `pdf-lib` + `pdf.js` unlock about 8 PDF tools - now installed, with a shared loader in `src/utils/pdfjs.js` and page-range parsing in `pdfMergeUtils.js`.
