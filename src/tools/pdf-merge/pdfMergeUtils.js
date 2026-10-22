@@ -45,7 +45,7 @@ export async function readPdf(file) {
   } catch (error) {
     if (/encrypt/i.test(error?.message ?? '')) {
       throw new Error(
-        'This PDF is password-protected or encrypted, which the merge tool can’t read. Remove the protection first, then try again.',
+        'This PDF is password-protected or encrypted, which this tool can’t read. Remove the protection first, then try again.',
       );
     }
     throw new Error('This PDF appears to be damaged and couldn’t be read.');

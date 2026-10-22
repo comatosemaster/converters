@@ -60,8 +60,10 @@ import {
   RotateCw,
   Ruler,
   Scale,
+  ScanFace,
   ScanQrCode,
   ScanText,
+  Scissors,
   Shapes,
   Shrink,
   Shuffle,
@@ -70,6 +72,7 @@ import {
   Stamp,
   SwatchBook,
   Type,
+  WandSparkles,
   Wrench,
 } from 'lucide-react';
 
@@ -273,6 +276,28 @@ export const tools = [
     keywords: ['watermark', 'remove watermark', 'logo removal', 'object removal', 'inpaint', 'image', 'edit'],
   },
   {
+    id: 'background-remover',
+    name: 'Background Remover',
+    description: 'Remove the background from a photo automatically with AI that runs in your browser.',
+    category: 'graphics-media',
+    metaDescription:
+      'Remove the background from any photo with AI that runs in your browser. Transparent PNG or a new color, full resolution, no upload, no watermark.',
+    icon: WandSparkles,
+    component: lazyWithPreload(() => import('./background-remover/BackgroundRemover.jsx')),
+    keywords: ['remove background', 'background remover', 'transparent background', 'cut out', 'remove bg', 'png', 'ai', 'product photo', 'image'],
+  },
+  {
+    id: 'blur-pixelate-image',
+    name: 'Blur & Pixelate Image',
+    description: 'Blur, pixelate or black out faces, plates and private text in a photo or screenshot.',
+    category: 'graphics-media',
+    metaDescription:
+      'Blur, pixelate or black out faces, license plates and private text in a photo or screenshot. Full resolution, metadata stripped, nothing uploaded.',
+    icon: ScanFace,
+    component: lazyWithPreload(() => import('./blur-pixelate/BlurPixelate.jsx')),
+    keywords: ['blur', 'pixelate', 'redact', 'censor', 'hide face', 'blur face', 'license plate', 'black out', 'privacy', 'screenshot', 'image'],
+  },
+  {
     id: 'add-watermark',
     name: 'Add Watermark to Image',
     description: 'Add a text or logo watermark to one image or a whole batch, in your browser.',
@@ -303,7 +328,18 @@ export const tools = [
       'Merge PDF files into one document in your browser. Reorder files, pick page ranges, keep text selectable. No upload, no sign-up, no watermark.',
     icon: Merge,
     component: lazyWithPreload(() => import('./pdf-merge/PdfMerge.jsx')),
-    keywords: ['pdf', 'merge', 'combine', 'join', 'pages', 'split', 'extract pages', 'documents'],
+    keywords: ['pdf', 'merge', 'combine', 'join', 'pages', 'documents'],
+  },
+  {
+    id: 'pdf-split',
+    name: 'PDF Split & Extract Pages',
+    description: 'Split a PDF into parts, or extract and remove pages, with thumbnails of every page.',
+    category: 'text-data',
+    metaDescription:
+      'Split a PDF or extract and remove pages, with page thumbnails. Split every N pages, by ranges, or into single pages. Free, private, in your browser.',
+    icon: Scissors,
+    component: lazyWithPreload(() => import('./pdf-split/PdfSplit.jsx')),
+    keywords: ['pdf', 'split', 'split pdf', 'extract pages', 'remove pages', 'delete pages', 'separate', 'pages', 'documents'],
   },
   {
     id: 'pdf-to-image',

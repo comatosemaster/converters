@@ -8046,3 +8046,263 @@ del.diff-word-removed {
     margin: 0;
   }
 }
+
+/* ==========================================================================
+   Blur & Pixelate Image
+   ========================================================================== */
+
+.redact-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: repeating-conic-gradient(var(--surface-2) 0 25%, var(--surface) 0 50%) 0 0 / 16px 16px;
+}
+
+.redact-frame {
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.redact-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 65vh;
+  height: auto;
+}
+
+/* Stretched over the frame, which is exactly the image canvas's size. */
+.redact-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Dragging draws areas instead of scrolling the page on touch screens. */
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.redact-tool-brush {
+  cursor: cell;
+}
+
+.redact-download {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Background Remover
+   ========================================================================== */
+
+.bg-remove-stage {
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.bg-remove-result img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bg-remove-pending {
+  filter: saturate(0.6) brightness(0.75);
+}
+
+.bg-remove-status {
+  position: absolute;
+  inset: auto var(--sp-4) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: rgba(10, 10, 16, 0.78);
+  color: #fff;
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+
+.bg-remove-status p {
+  margin: 0;
+}
+
+.bg-remove-status progress {
+  width: 100%;
+  height: 6px;
+  accent-color: var(--accent);
+}
+
+.bg-remove-spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+.bg-remove-download {
+  width: 100%;
+}
+
+/* ==========================================================================
+   PDF Split
+   ========================================================================== */
+
+.pdf-split-file {
+  margin-right: auto;
+}
+
+.pdf-split-mode-hint {
+  margin: calc(-1 * var(--sp-3)) 0 var(--sp-4);
+}
+
+.pdf-split-select {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-2) var(--sp-4);
+}
+
+.pdf-split-select .field {
+  flex: 1 1 320px;
+}
+
+.pdf-split-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin-bottom: var(--sp-5);
+}
+
+.pdf-split-every input {
+  max-width: 140px;
+}
+
+.pdf-split-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.pdf-split-action .field-hint {
+  margin: 0;
+}
+
+.pdf-split-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--sp-4) var(--sp-3);
+  margin: 0 0 var(--sp-6);
+  padding: 0;
+  list-style: none;
+}
+
+.pdf-split-grid li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.pdf-split-page {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid var(--border);
+  border-radius: var(--r-md);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+}
+
+.pdf-split-page:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.pdf-split-page:not(:disabled):hover {
+  border-color: var(--accent-border);
+}
+
+.pdf-split-page img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pdf-split-placeholder {
+  display: block;
+  aspect-ratio: 1 / 1.414;
+  background: var(--surface-2);
+}
+
+.pdf-split-page.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.pdf-split-page.removed {
+  border-color: var(--danger);
+}
+
+.pdf-split-page.removed img {
+  opacity: 0.35;
+}
+
+.pdf-split-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pdf-split-page.removed .pdf-split-check {
+  background: var(--danger);
+}
+
+.pdf-split-badge {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 1px 7px;
+  border-radius: var(--r-full);
+  background: rgba(24, 24, 27, 0.85);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pdf-split-number {
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .pdf-split-grid {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  }
+
+  .pdf-split-action .btn {
+    width: 100%;
+  }
+}

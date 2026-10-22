@@ -28,6 +28,7 @@
     "jszip": "^3.10.1",
     "lucide-react": "^1.29.0",
     "marked": "^18.0.9",
+    "onnxruntime-web": "^1.30.0",
     "papaparse": "^5.7.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.4.299",

@@ -3,7 +3,7 @@
 Candidate tools for NeatSize, ranked. The site has 35 tools today; this lists
 ~130 more that don't overlap with them.
 
-**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21), CSV to JSON Converter, YAML to JSON Converter, Markdown Editor & Preview, Box Shadow Generator, Color Contrast Checker, Color Palette Extractor, SVG to PNG Converter, Lorem Ipsum Generator, Number Base Converter (2026-10-22) - marked ✅ below.
+**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21), CSV to JSON Converter, YAML to JSON Converter, Markdown Editor & Preview, Box Shadow Generator, Color Contrast Checker, Color Palette Extractor, SVG to PNG Converter, Lorem Ipsum Generator, Number Base Converter, Blur & Pixelate Image, Background Remover, PDF Split & Extract Pages (2026-10-22) - marked ✅ below.
 (Image Cropper was removed: the existing Image Resizer & Cropper already crops.)
 
 Focus order: **Graphics & Media → Text & Data → Developer** first, Business &
@@ -53,9 +53,9 @@ Finance next, Everyday and Fun last.
 | 19 | ✅ SVG to PNG Converter | Graphics | S | Canvas-only; very common search |
 | 20 | ✅ Lorem Ipsum Generator | Text & Data | S | Evergreen designer/dev tool |
 | 21 | ✅ Number Base Converter | Developer | S | Bin/oct/dec/hex; trivial |
-| 22 | Blur / Pixelate Image Areas (redact) | Graphics | M | Reuse Watermark Remover's brush and mask |
-| 23 | Background Remover | Graphics | L | Top-demand image tool; needs an in-browser ML model (see notes) |
-| 24 | PDF Split / Extract Pages | Text & Data | M | Same `pdf-lib` as Merge; build them together |
+| 22 | ✅ Blur / Pixelate Image Areas (redact) | Graphics | M | Reuse Watermark Remover's brush and mask |
+| 23 | ✅ Background Remover | Graphics | L | Top-demand image tool; needs an in-browser ML model (see notes) |
+| 24 | ✅ PDF Split / Extract Pages | Text & Data | M | Same `pdf-lib` as Merge; build them together |
 | 25 | Meta Tag & Open Graph Generator + Preview | Developer | S | SEO audience; reuse `src/seo/` knowledge |
 
 ---
@@ -64,7 +64,7 @@ Finance next, Everyday and Fun last.
 
 | Tool | Priority | Effort | Notes |
 |------|----------|--------|-------|
-| Background Remover | P1 | L | Needs an ONNX/WebGPU segmentation model (tens of MB). Cache it, and show the download size up front |
+| ✅ Background Remover | P1 | L | Shipped: ISNet int8 (44 MB, MIT) via onnxruntime-web, WebGPU or CPU-in-a-worker, model cached in Cache Storage. Model from Hugging Face + runtime wasm from jsDelivr (both pinned) - the 27 MB WebGPU wasm exceeds Cloudflare's 25 MB file limit. Leftover: manual erase/restore brush, multi-threaded CPU needs COOP/COEP headers |
 | ✅ Image Rotator | P1 | S | Shipped: 90°/180°/free angle, fit/crop/zoom-to-fill, exact quarter turns |
 | ✅ QR Code Scanner | P1 | S | Shipped: image/paste/camera, multi-size retry, WiFi/vCard/link parsing |
 | Barcode Generator | P1 | S | EAN-13, UPC, Code 128; `JsBarcode` |
@@ -72,7 +72,7 @@ Finance next, Everyday and Fun last.
 | ✅ Add Watermark to Image | P1 | S | Shipped: text or logo, 9 positions or tiled, batch to ZIP |
 | ✅ EXIF Viewer & Remover | P1 | M | Shipped: lossless strip for JPG/PNG/WebP, keeps orientation, verified, batch |
 | ✅ Image Filters & Adjustments | P1 | M | Shipped: 8 sliders, 10 presets, before/after, full-resolution export |
-| Blur / Pixelate Areas | P1 | M | Redact faces, plates, text; reuse the watermark brush |
+| ✅ Blur / Pixelate Areas | P1 | M | Shipped as Blur & Pixelate Image: rectangle/ellipse/brush areas kept as shapes (full-res export), pixelate/blur/solid, undo |
 | ✅ Color Contrast Checker (WCAG) | P1 | S | Shipped: AA/AAA + UI (1.4.11), alpha blending, CSS names, nearest passing colors |
 | ✅ Palette Extractor from Image | P1 | S | Shipped as Color Palette Extractor: k-means in CIELAB, deterministic, CSS/SCSS/Tailwind/JSON/PNG export |
 | Format landing pages (PNG→JPG, WebP→PNG, JPG→WebP, AVIF→JPG…) | P1 | S | Registry entries presetting Image Converter; cheap SEO wins |
@@ -106,7 +106,7 @@ Finance next, Everyday and Fun last.
 | Tool | Priority | Effort | Notes |
 |------|----------|--------|-------|
 | ✅ PDF Merge | P1 | M | Shipped: `pdf-lib`, reorder, per-file page ranges |
-| PDF Split / Extract Pages | P1 | M | Same library as Merge |
+| ✅ PDF Split / Extract Pages | P1 | M | Shipped: thumbnails, extract/remove/every N/ranges/single, ZIP |
 | ✅ PDF to Image | P1 | M | Shipped: `pdf.js`, PNG/JPG/WebP, 72-300 DPI, ZIP, password-protected PDFs |
 | PDF to Text | P1 | M | `pdf.js` text layer; fall back to `ocrPipeline.js` for scanned PDFs |
 | ✅ Text Diff / Compare | P1 | M | Shipped as Text Diff Checker: lines/words/chars, side-by-side and inline, patch export |
@@ -230,7 +230,7 @@ Finance next, Everyday and Fun last.
 
 ## Notes for building these
 
-- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 21 already shipped.
+- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 24 already shipped.
 - **Cheap SEO wins:** format-pair landing pages (Image Converter presets) and reference pages (HTTP status codes) cost little and match exact-phrase searches.
 - **Shared foundations worth building once:**
   - `pdf-lib` + `pdf.js` unlock about 8 PDF tools - now installed, with a shared loader in `src/utils/pdfjs.js` and page-range parsing in `pdfMergeUtils.js`.
