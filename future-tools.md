@@ -3,7 +3,7 @@
 Candidate tools for NeatSize, ranked. The site has 35 tools today; this lists
 ~130 more that don't overlap with them.
 
-**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21) - marked ✅ below.
+**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21), CSV to JSON Converter, YAML to JSON Converter, Markdown Editor & Preview (2026-10-22) - marked ✅ below.
 (Image Cropper was removed: the existing Image Resizer & Cropper already crops.)
 
 Focus order: **Graphics & Media → Text & Data → Developer** first, Business &
@@ -44,9 +44,9 @@ Finance next, Everyday and Fun last.
 | 10 | ✅ Image Rotator | Graphics | S | Reuse Image Flipper's canvas pipeline |
 | 11 | ✅ EXIF Viewer & Remover | Graphics | M | Privacy angle fits the brand perfectly |
 | 12 | ✅ Add Watermark to Image | Graphics | S | Complements Watermark Remover |
-| 13 | CSV ↔ JSON Converter | Text & Data | S | Constant dev and data-analyst need |
-| 14 | YAML ↔ JSON Converter | Developer | S | `js-yaml`; reuse JSON formatter UI |
-| 15 | Markdown Editor & Preview | Text & Data | S | `marked` + `prismjs` are already dependencies |
+| 13 | ✅ CSV ↔ JSON Converter | Text & Data | S | Constant dev and data-analyst need |
+| 14 | ✅ YAML ↔ JSON Converter | Developer | S | `js-yaml`; reuse JSON formatter UI |
+| 15 | ✅ Markdown Editor & Preview | Text & Data | S | `marked` + `prismjs` are already dependencies |
 | 16 | Box Shadow Generator | Developer | S | Same family as CSS Gradient Generator |
 | 17 | Color Contrast Checker (WCAG) | Graphics | S | Reuse `colorConversions.js` |
 | 18 | Palette Extractor from Image | Graphics | S | Reuse Image Color Picker |
@@ -111,8 +111,8 @@ Finance next, Everyday and Fun last.
 | PDF to Text | P1 | M | `pdf.js` text layer; fall back to `ocrPipeline.js` for scanned PDFs |
 | ✅ Text Diff / Compare | P1 | M | Shipped as Text Diff Checker: lines/words/chars, side-by-side and inline, patch export |
 | ✅ Case Converter | P1 | S | Shipped: 14 cases incl. headline Title Case and code cases; Georgian-aware |
-| CSV ↔ JSON Converter | P1 | S | Delimiter detection, header row option |
-| Markdown Editor & Preview | P1 | S | `marked` + `prismjs` already installed |
+| ✅ CSV ↔ JSON Converter | P1 | S | Shipped: delimiter auto-detect, safe typing (keeps leading zeros), flatten/nest, table preview, Excel BOM |
+| ✅ Markdown Editor & Preview | P1 | S | Shipped: GFM live preview, toolbar + shortcuts (native undo), DOMPurify-sanitized, .md/.html export |
 | Lorem Ipsum Generator | P1 | S | Words, sentences, or paragraphs; HTML option |
 | Line Tools (sort, dedupe, reverse, shuffle, trim) | P1 | S | One tool, many modes |
 | CSV Viewer & Editor | P2 | M | Sortable table, edit cells, export CSV |
@@ -149,7 +149,7 @@ Finance next, Everyday and Fun last.
 | ✅ Hash Generator | P1 | S | Shipped: MD5 + SHA family, text and files, HMAC, checksum verify |
 | ✅ UUID Generator | P1 | S | Shipped: v4/v7, bulk up to 1,000, 4 formats, UUID inspector |
 | ✅ Unix Timestamp Converter | P1 | S | Shipped: s/ms/µs/ns auto-detect, any zone, ISO/RFC formats, live clock |
-| YAML ↔ JSON | P1 | S | `js-yaml`; reuse the JSON formatter UI |
+| ✅ YAML ↔ JSON | P1 | S | Shipped: YAML 1.2 + merge keys, multi-document, exact error lines, sort/indent options |
 | XML Formatter / Validator + XML ↔ JSON | P1 | M | `DOMParser`; reuse the JSON tree view |
 | HTML Formatter & Minifier | P1 | M | Prettier standalone (lazy) or a light beautifier |
 | CSS Formatter & Minifier | P1 | S | |
@@ -230,7 +230,7 @@ Finance next, Everyday and Fun last.
 
 ## Notes for building these
 
-- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 12 already shipped.
+- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 15 already shipped.
 - **Cheap SEO wins:** format-pair landing pages (Image Converter presets) and reference pages (HTTP status codes) cost little and match exact-phrase searches.
 - **Shared foundations worth building once:**
   - `pdf-lib` + `pdf.js` unlock about 8 PDF tools - now installed, with a shared loader in `src/utils/pdfjs.js` and page-range parsing in `pdfMergeUtils.js`.

@@ -6963,3 +6963,338 @@ del.diff-word-removed {
   width: 60px;
   flex: none;
 }
+
+/* ==========================================================================
+   CSV to JSON + YAML to JSON converters (shared two-pane layout)
+   ========================================================================== */
+
+.data-convert-panes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-4);
+}
+
+.data-convert-panes > .field {
+  margin-bottom: var(--sp-3);
+}
+
+/* The output's label row also holds Copy/Download; this keeps the input's
+   label the same height so both boxes start on the same line. */
+.data-convert-panes > .field > label {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  margin-bottom: var(--sp-2);
+}
+
+.data-convert-actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.data-convert-input,
+.data-convert-output {
+  width: 100%;
+  height: 380px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+
+.data-convert-input {
+  resize: vertical;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: auto;
+}
+
+.data-convert-input.dragging {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.data-convert-output {
+  overflow: auto;
+  padding: var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-elevated);
+  color: var(--text);
+  white-space: pre;
+}
+
+.data-convert-output:empty::before {
+  content: 'The result appears here as you type.';
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+}
+
+.data-convert-bom {
+  margin: var(--sp-2) 0 0;
+}
+
+.data-convert-preview {
+  margin-top: var(--sp-4);
+}
+
+.data-convert-table-wrap {
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.data-convert-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.data-convert-table th,
+.data-convert-table td {
+  max-width: 280px;
+  padding: var(--sp-2) var(--sp-3);
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-convert-table th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.data-convert-table td {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 860px) {
+  .data-convert-panes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .data-convert-input,
+  .data-convert-output {
+    height: 280px;
+  }
+}
+
+/* ==========================================================================
+   Markdown Editor
+   ========================================================================== */
+
+.md-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-4);
+  margin-bottom: var(--sp-3);
+}
+
+.md-topbar .mode-toggle,
+.md-topbar .converter-toolbar {
+  margin-bottom: 0;
+}
+
+.md-panes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-4);
+  height: 620px;
+  max-height: 85vh;
+}
+
+.md-view-write,
+.md-view-preview {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.md-view-write .md-pane-preview,
+.md-view-preview .md-pane-editor {
+  display: none;
+}
+
+.md-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+
+.md-pane-editor:focus-within {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+.md-format-bar,
+.md-pane-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  min-height: 42px;
+  padding: var(--sp-1) var(--sp-2);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.md-pane-label {
+  padding: 0 var(--sp-4);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.md-format-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.md-format-button:hover {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.md-format-divider {
+  width: 1px;
+  height: 20px;
+  margin: 0 var(--sp-1);
+  background: var(--border);
+}
+
+.md-textarea {
+  flex: 1;
+  min-height: 0;
+  padding: var(--sp-4);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  resize: none;
+}
+
+/* The pane draws the focus ring for the whole editor, toolbar included. */
+.md-textarea:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.md-textarea.dragging {
+  background: var(--accent-subtle);
+}
+
+.md-preview {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--sp-4) var(--sp-6);
+}
+
+/* The blog styles assume an article's own <h1> sits above the body. */
+.md-preview h1 {
+  margin: var(--sp-6) 0 var(--sp-3);
+  font-size: var(--fs-2xl);
+  line-height: 1.25;
+}
+
+.md-preview img {
+  max-width: 100%;
+  height: auto;
+}
+
+.md-preview li:has(> input[type='checkbox']) {
+  list-style: none;
+}
+
+.md-preview li > input[type='checkbox'] {
+  margin: 0 var(--sp-2) 0 calc(-1 * var(--sp-5));
+  vertical-align: -2px;
+}
+
+.md-preview-empty {
+  color: var(--text-muted);
+}
+
+.md-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+.md-stats {
+  margin: 0;
+}
+
+.md-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+}
+
+.md-options .checkbox-field {
+  margin-bottom: 0;
+}
+
+.md-export {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+/* Side by side gets too cramped on a phone - the two panes stack, each
+   with a sensible height, and Write/Preview give one the whole space. */
+@media (max-width: 860px) {
+  .md-panes {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 380px 380px;
+    height: auto;
+    max-height: none;
+  }
+
+  .md-view-write,
+  .md-view-preview {
+    grid-template-rows: 70vh;
+  }
+
+  .md-preview {
+    padding: var(--sp-4);
+  }
+
+  /* Phones stack .mode-toggle buttons in a column site-wide; three short
+     view names read better as one full-width row of equal buttons. */
+  .md-topbar .mode-toggle {
+    flex: 1 1 100%;
+    flex-direction: row;
+  }
+
+  .md-topbar .mode-toggle .mode-button {
+    flex: 1;
+  }
+}
