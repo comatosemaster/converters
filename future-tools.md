@@ -3,7 +3,7 @@
 Candidate tools for NeatSize, ranked. The site has 35 tools today; this lists
 ~130 more that don't overlap with them.
 
-**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21), CSV to JSON Converter, YAML to JSON Converter, Markdown Editor & Preview, Box Shadow Generator, Color Contrast Checker, Color Palette Extractor (2026-10-22) - marked ✅ below.
+**Shipped from this list:** PDF Merge, PDF to Image, Text Diff Checker, Image Filters & Adjustments, Hash Generator, UUID Generator, Unix Timestamp Converter, Case Converter, QR Code Scanner, Image Rotator, EXIF Viewer & Remover, Add Watermark to Image (2026-10-21), CSV to JSON Converter, YAML to JSON Converter, Markdown Editor & Preview, Box Shadow Generator, Color Contrast Checker, Color Palette Extractor, SVG to PNG Converter, Lorem Ipsum Generator, Number Base Converter (2026-10-22) - marked ✅ below.
 (Image Cropper was removed: the existing Image Resizer & Cropper already crops.)
 
 Focus order: **Graphics & Media → Text & Data → Developer** first, Business &
@@ -50,9 +50,9 @@ Finance next, Everyday and Fun last.
 | 16 | ✅ Box Shadow Generator | Developer | S | Same family as CSS Gradient Generator |
 | 17 | ✅ Color Contrast Checker (WCAG) | Graphics | S | Reuse `colorConversions.js` |
 | 18 | ✅ Palette Extractor from Image | Graphics | S | Reuse Image Color Picker |
-| 19 | SVG to PNG Converter | Graphics | S | Canvas-only; very common search |
-| 20 | Lorem Ipsum Generator | Text & Data | S | Evergreen designer/dev tool |
-| 21 | Number Base Converter | Developer | S | Bin/oct/dec/hex; trivial |
+| 19 | ✅ SVG to PNG Converter | Graphics | S | Canvas-only; very common search |
+| 20 | ✅ Lorem Ipsum Generator | Text & Data | S | Evergreen designer/dev tool |
+| 21 | ✅ Number Base Converter | Developer | S | Bin/oct/dec/hex; trivial |
 | 22 | Blur / Pixelate Image Areas (redact) | Graphics | M | Reuse Watermark Remover's brush and mask |
 | 23 | Background Remover | Graphics | L | Top-demand image tool; needs an in-browser ML model (see notes) |
 | 24 | PDF Split / Extract Pages | Text & Data | M | Same `pdf-lib` as Merge; build them together |
@@ -68,7 +68,7 @@ Finance next, Everyday and Fun last.
 | ✅ Image Rotator | P1 | S | Shipped: 90°/180°/free angle, fit/crop/zoom-to-fill, exact quarter turns |
 | ✅ QR Code Scanner | P1 | S | Shipped: image/paste/camera, multi-size retry, WiFi/vCard/link parsing |
 | Barcode Generator | P1 | S | EAN-13, UPC, Code 128; `JsBarcode` |
-| SVG to PNG / JPG | P1 | S | Pick the output size; canvas |
+| ✅ SVG to PNG / JPG | P1 | S | Shipped: vector-sharp at any size, PNG/JPG/WebP, pasted code + xmlns repair, batch ZIP |
 | ✅ Add Watermark to Image | P1 | S | Shipped: text or logo, 9 positions or tiled, batch to ZIP |
 | ✅ EXIF Viewer & Remover | P1 | M | Shipped: lossless strip for JPG/PNG/WebP, keeps orientation, verified, batch |
 | ✅ Image Filters & Adjustments | P1 | M | Shipped: 8 sliders, 10 presets, before/after, full-resolution export |
@@ -113,7 +113,7 @@ Finance next, Everyday and Fun last.
 | ✅ Case Converter | P1 | S | Shipped: 14 cases incl. headline Title Case and code cases; Georgian-aware |
 | ✅ CSV ↔ JSON Converter | P1 | S | Shipped: delimiter auto-detect, safe typing (keeps leading zeros), flatten/nest, table preview, Excel BOM |
 | ✅ Markdown Editor & Preview | P1 | S | Shipped: GFM live preview, toolbar + shortcuts (native undo), DOMPurify-sanitized, .md/.html export |
-| Lorem Ipsum Generator | P1 | S | Words, sentences, or paragraphs; HTML option |
+| ✅ Lorem Ipsum Generator | P1 | S | Shipped: paragraphs/sentences/words/exact characters/lists, text/HTML/Markdown |
 | Line Tools (sort, dedupe, reverse, shuffle, trim) | P1 | S | One tool, many modes |
 | CSV Viewer & Editor | P2 | M | Sortable table, edit cells, export CSV |
 | Excel (XLSX) ↔ CSV / JSON | P2 | M | `SheetJS`; lazy-load it |
@@ -155,7 +155,7 @@ Finance next, Everyday and Fun last.
 | CSS Formatter & Minifier | P1 | S | |
 | JavaScript Formatter & Minifier | P1 | M | Prettier standalone / `terser`; both heavy, so lazy-load |
 | HTML Entity Encoder / Decoder | P1 | S | Same shape as URL Encoder |
-| Number Base Converter | P1 | S | Bin/oct/dec/hex, bit view |
+| ✅ Number Base Converter | P1 | S | Shipped: BigInt-exact, bases 2-36, two's complement bit view with clickable bits |
 | JSON to TypeScript / Zod / Go types | P1 | M | Huge dev demand; custom generator |
 | Cron Expression Builder & Explainer | P1 | M | `cronstrue` plus next-run preview |
 | ✅ Box Shadow Generator | P1 | S | Shipped: up to 6 layers, 9 presets, CSS + Tailwind class |
@@ -230,7 +230,7 @@ Finance next, Everyday and Fun last.
 
 ## Notes for building these
 
-- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 18 already shipped.
+- **Total:** 25 top picks (all repeated in their categories) and 136 tools across categories, 21 already shipped.
 - **Cheap SEO wins:** format-pair landing pages (Image Converter presets) and reference pages (HTTP status codes) cost little and match exact-phrase searches.
 - **Shared foundations worth building once:**
   - `pdf-lib` + `pdf.js` unlock about 8 PDF tools - now installed, with a shared loader in `src/utils/pdfjs.js` and page-range parsing in `pdfMergeUtils.js`.

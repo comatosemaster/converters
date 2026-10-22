@@ -7835,3 +7835,214 @@ del.diff-word-removed {
     flex-direction: row;
   }
 }
+
+/* ==========================================================================
+   Number Base Converter
+   ========================================================================== */
+
+.base-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.base-fields .field {
+  margin-bottom: 0;
+}
+
+.base-radix {
+  margin-left: var(--sp-1);
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.base-custom-label {
+  display: inline-flex !important;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.base-custom-label select {
+  width: auto;
+  min-height: 0;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.base-input-row {
+  display: flex;
+  align-items: center;
+}
+
+.base-prefix {
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: var(--r-md) 0 0 var(--r-md);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+
+.base-input-row input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+}
+
+.base-prefix + input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.base-bits {
+  margin-bottom: var(--sp-6);
+}
+
+.base-width-field {
+  margin-bottom: 0;
+}
+
+.base-width-field label {
+  display: inline;
+  margin-right: var(--sp-2);
+}
+
+.base-width-field select {
+  width: auto;
+}
+
+/* Bits come in byte blocks; only whole bytes wrap onto the next line. */
+.base-bit-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  margin: var(--sp-3) 0;
+  font-family: var(--font-mono);
+}
+
+.base-byte {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.base-bit {
+  width: 26px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+
+/* A small gap splits each byte into its two hex digits (nibbles). */
+.base-bit:nth-child(4) {
+  margin-right: 4px;
+}
+
+@media (max-width: 400px) {
+  .base-bit {
+    width: 22px;
+    height: 30px;
+  }
+}
+
+.base-bit.on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 700;
+}
+
+.base-bit:hover {
+  border-color: var(--accent-border);
+}
+
+.base-facts {
+  margin-top: var(--sp-3);
+}
+
+/* ==========================================================================
+   Lorem Ipsum Generator
+   ========================================================================== */
+
+.lorem-count input {
+  max-width: 160px;
+}
+
+.lorem-stats {
+  margin: 0 0 0 auto;
+}
+
+.lorem-output {
+  max-height: 520px;
+  overflow-y: auto;
+  padding: var(--sp-5) var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.lorem-output p {
+  margin: 0 0 var(--sp-4);
+}
+
+.lorem-output p:last-child {
+  margin-bottom: 0;
+}
+
+.lorem-code {
+  max-height: 520px;
+}
+
+/* ==========================================================================
+   SVG to PNG
+   ========================================================================== */
+
+.svg-code-field textarea {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+
+.svg-code-field .converter-toolbar {
+  margin: var(--sp-2) 0 0;
+}
+
+.svg-preview-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: var(--sp-6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.svg-preview-frame img {
+  max-width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+}
+
+.svg-convert {
+  width: 100%;
+  margin-top: var(--sp-2);
+}
+
+@media (max-width: 640px) {
+  .lorem-stats {
+    width: 100%;
+    margin: 0;
+  }
+}

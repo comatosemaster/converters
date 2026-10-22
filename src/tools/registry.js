@@ -22,6 +22,7 @@ import {
   Clock,
   Code,
   Coins,
+  Cpu,
   Contrast,
   Crop,
   Database,
@@ -51,6 +52,7 @@ import {
   Palette,
   PartyPopper,
   PiggyBank,
+  Pilcrow,
   Pipette,
   QrCode,
   Receipt,
@@ -60,6 +62,7 @@ import {
   Scale,
   ScanQrCode,
   ScanText,
+  Shapes,
   Shrink,
   Shuffle,
   SlidersHorizontal,
@@ -358,6 +361,17 @@ export const tools = [
     keywords: ['markdown', 'md', 'markdown editor', 'markdown preview', 'readme', 'gfm', 'markdown to html', 'live preview', 'writer'],
   },
   {
+    id: 'lorem-ipsum-generator',
+    name: 'Lorem Ipsum Generator',
+    description: 'Generate placeholder text by paragraphs, sentences, words, characters or list items.',
+    category: 'text-data',
+    metaDescription:
+      'Generate lorem ipsum placeholder text: paragraphs, sentences, words, exact character counts or lists, as plain text, HTML or Markdown. Free and instant.',
+    icon: Pilcrow,
+    component: lazyWithPreload(() => import('./lorem-ipsum-generator/LoremIpsumGenerator.jsx')),
+    keywords: ['lorem ipsum', 'placeholder text', 'dummy text', 'filler text', 'lipsum', 'generator', 'mockup', 'paragraphs'],
+  },
+  {
     id: 'heic-to-jpg',
     name: 'HEIC to JPG Converter',
     description: 'Convert iPhone HEIC photos to JPG in your browser. Files never leave your device.',
@@ -367,6 +381,17 @@ export const tools = [
     icon: Smartphone,
     component: lazyWithPreload(() => import('./heic-to-jpg/HeicToJpg.jsx')),
     keywords: ['heic', 'heif', 'iphone', 'apple', 'jpg', 'jpeg', 'photo', 'convert'],
+  },
+  {
+    id: 'svg-to-png',
+    name: 'SVG to PNG Converter',
+    description: 'Convert SVG files or code to sharp PNG, JPG or WebP images at any size, in your browser.',
+    category: 'graphics-media',
+    metaDescription:
+      'Convert SVG to PNG, JPG or WebP at any size - sharp at 2x, 4x or exact pixels, with a transparent or colored background. Batch to ZIP, in your browser.',
+    icon: Shapes,
+    component: lazyWithPreload(() => import('./svg-to-png/SvgToPng.jsx')),
+    keywords: ['svg', 'svg to png', 'svg to jpg', 'vector', 'rasterize', 'convert', 'icon', 'logo', 'transparent png', 'webp'],
   },
   {
     id: 'favicon-generator',
@@ -804,6 +829,17 @@ export const tools = [
     icon: CalendarClock,
     component: lazyWithPreload(() => import('./unix-timestamp-converter/UnixTimestampConverter.jsx')),
     keywords: ['unix', 'timestamp', 'epoch', 'unix time', 'convert', 'date', 'milliseconds', 'iso 8601', 'time zone', 'posix'],
+  },
+  {
+    id: 'number-base-converter',
+    name: 'Number Base Converter',
+    description: 'Convert numbers between binary, octal, decimal, hexadecimal and any base from 2 to 36.',
+    category: 'developer',
+    metaDescription:
+      "Convert numbers between binary, octal, decimal, hex and any base 2-36. Exact for huge numbers, with negatives, two's complement and a clickable bit view.",
+    icon: Cpu,
+    component: lazyWithPreload(() => import('./number-base-converter/NumberBaseConverter.jsx')),
+    keywords: ['binary', 'hex', 'hexadecimal', 'octal', 'decimal', 'base converter', 'radix', 'bits', 'twos complement', 'convert number'],
   },
 ];
 
