@@ -1,7 +1,11 @@
 // Email templates: plain, light HTML plus a plain-text version of each.
-// Deliberately simple - one column, system fonts, no images or tracking
-// pixels - so they render the same in every mail app and read like a
-// note, not a marketing blast.
+// Deliberately simple - one column, system fonts, the logo as the only
+// image, no tracking pixels - so they render the same in every mail app
+// and read like a note, not a marketing blast.
+
+// Absolute URL: mail apps load images from the live site. Served from
+// dist/, so the Worker script never runs for it.
+const LOGO_URL = 'https://neatsize.com/icon-192.png';
 
 export function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -22,7 +26,10 @@ function layout({ preheader, body, footer }) {
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border:1px solid #e6e6e9;border-radius:12px;">
 <tr><td style="padding:28px 28px 8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;color:#18181b;">
-<p style="margin:0 0 20px;font-size:18px;font-weight:700;color:#18181b;">Neat<span style="color:#5b3df5;">Size</span></p>
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 20px;"><tr>
+<td style="padding:0 10px 0 0;vertical-align:middle;"><img src="${LOGO_URL}" width="32" height="32" alt="" style="display:block;width:32px;height:32px;border:0;border-radius:8px;"></td>
+<td style="vertical-align:middle;font-size:18px;font-weight:700;color:#18181b;">Neat<span style="color:#5b3df5;">Size</span></td>
+</tr></table>
 ${body}
 </td></tr>
 <tr><td style="padding:8px 28px 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#71717a;">
