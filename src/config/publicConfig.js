@@ -15,7 +15,7 @@
 // the rest is set up can't put a broken form on the site.
 // -----------------------------------------------------------------------
 
-const TURNSTILE_SITE_KEY_PRODUCTION = '';
+const TURNSTILE_SITE_KEY_PRODUCTION = '0x4AAAAAAFhr7uhjSsMHrDKa';
 
 const fromBuild =
   typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_TURNSTILE_SITE_KEY : undefined;

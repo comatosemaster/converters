@@ -35,6 +35,7 @@
     {
       "binding": "DB",
       "database_name": "neatsize-db",
+      "database_id": "b7eff4c7-9e01-4e47-9188-96a633df9691",
       "migrations_dir": "migrations"
     }
   ],

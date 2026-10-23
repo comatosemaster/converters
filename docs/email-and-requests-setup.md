@@ -45,14 +45,42 @@ those steps need you (logins, API keys, DNS). This file lists them in order.
 
 ### 2. A contact mailbox: hello@neatsize.com (5 minutes)
 
-The privacy page, the unsubscribe page and every email's Reply-To use
-`hello@neatsize.com`. Make it real with **Cloudflare dashboard ->
-neatsize.com -> Email -> Email Routing -> Get started**: create the address
-`hello@neatsize.com` -> forward to your own inbox, and let Cloudflare add its
-MX/TXT records. (These are on the root domain; Resend's are on `send.` -
-they don't clash.)
-Want a different address? Change `CONTACT_EMAIL` in
-`src/config/publicConfig.js` and `EMAIL_REPLY_TO` in `wrangler.jsonc`.
+**Why:** the privacy page, the unsubscribe page and the Reply-To of every
+email show `hello@neatsize.com`. Right now that address doesn't exist, so
+anything sent to it bounces. You don't need a real mailbox - Cloudflare
+Email Routing (free) just **forwards** mail for that address to the inbox
+you already use (e.g. your Gmail).
+
+Open **Cloudflare dashboard -> neatsize.com -> Email -> Email Routing**.
+It has tabs: Overview, Activity log, Routing rules, Destination addresses,
+Settings.
+
+1. **Destination addresses** tab = where mail gets *delivered*, so your
+   **own Gmail** goes here - **not** hello@neatsize.com (that one would sit
+   on "Pending" forever: its verification email can't arrive anywhere).
+   Type your Gmail -> **Add address** -> open Gmail and click Cloudflare's
+   verification link -> status becomes **Verified**.
+2. **Routing rules** tab -> **Create address**: custom address `hello`,
+   action **Send to an email**, destination = your Gmail (from the
+   dropdown). Save.
+3. **Overview** tab: if it says DNS records are missing or routing is
+   disabled, click **Add records / Enable** (3 MX + 1 TXT on the root
+   `neatsize.com`). If other MX records already exist on the root, let it
+   replace them (unless you use another mail provider for neatsize.com).
+   These don't clash with Resend's records from step 1, which are on
+   `send.neatsize.com`.
+4. **Test:** from a different account, send an email to
+   `hello@neatsize.com` - it should arrive in your Gmail within a minute.
+
+Short version: Destination addresses = your Gmail; Routing rules =
+hello@ -> your Gmail.
+
+Note: this is receive-only. When you reply, the reply comes from your Gmail
+address, not from hello@ - fine for answering the odd question.
+
+Want a different address than `hello@`? Change `CONTACT_EMAIL` in
+`src/config/publicConfig.js` and `EMAIL_REPLY_TO` in `wrangler.jsonc` to
+match. Otherwise there's nothing to change in the code.
 
 ### 3. Turnstile (bot protection) - site key + secret (3 minutes)
 
@@ -98,19 +126,50 @@ npx wrangler d1 migrations apply neatsize-db --remote
 (Two migrations: `0001_subscribers.sql`, `0002_tool_requests.sql`. Later
 schema changes = new numbered files + the same command.)
 
-### 5. Secrets (2 minutes)
+### 5. Secrets (5 minutes)
 
-Each command asks for the value (paste it; it's never shown or stored in git):
+Three private values must be stored **on Cloudflare, attached to the
+`converters` Worker** - never in a file in the repo:
+
+| Name (type exactly) | Value |
+|---------------------|-------|
+| `RESEND_API_KEY` | the `re_...` key from step 1.5 |
+| `TURNSTILE_SECRET_KEY` | the **Secret Key** from step 3 (not the site key) |
+| `IP_HASH_SALT` | any long random string - generate one with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+
+Pick **one** of the two ways:
+
+**A. Dashboard (easiest)**
+1. **Cloudflare dashboard -> Workers & Pages -> `converters` -> Settings
+   -> Variables and Secrets -> + Add**.
+2. **Type: Secret**, **Variable name:** `RESEND_API_KEY`, **Value:** paste
+   the key. Click **Deploy** (or Save).
+3. Repeat for `TURNSTILE_SECRET_KEY` and `IP_HASH_SALT`.
+4. The list should now show all three as type "Secret" with the value
+   hidden. (Ignore the plain-text vars like `SITE_URL` - those come from
+   `wrangler.jsonc` and are re-applied on every deploy.)
+
+**B. Terminal** (run `npx wrangler login` first if you never have):
 
 ```bash
-npx wrangler secret put RESEND_API_KEY          # the re_... key from step 1
-npx wrangler secret put TURNSTILE_SECRET_KEY    # the secret from step 3
-npx wrangler secret put IP_HASH_SALT            # any long random string, e.g. the output of:
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+npx wrangler secret put RESEND_API_KEY          # prompts for the value - paste, Enter
+npx wrangler secret put TURNSTILE_SECRET_KEY
+npx wrangler secret put IP_HASH_SALT
+npx wrangler secret list                        # should list all three
 ```
 
-Keep `IP_HASH_SALT` stable - changing it only resets the rate limits.
-Check with `npx wrangler secret list`.
+Either way:
+- Secrets survive every later deploy - set them once.
+- If the dashboard/command complains because the Worker has no script yet,
+  do step 6 first and come back: until the three secrets exist the site
+  simply answers "Email sign-up isn't available right now", nothing breaks.
+- Keep `IP_HASH_SALT` stable - changing it only resets the rate limits.
+- **Separately, for your own computer only:** the `npm run digest:test`
+  command in step 7 runs locally and can't read Cloudflare secrets, so it
+  needs the Resend key in the gitignored `.env` file in the project root:
+  `RESEND_API_KEY=re_...` (one line). Nothing else goes there.
+  (`.dev.vars` is only for local `wrangler dev` testing with fake values -
+  don't put real keys in it.)
 
 ### 6. Merge and deploy
 
